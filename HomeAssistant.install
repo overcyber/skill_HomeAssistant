@@ -1,0 +1,22 @@
+{
+    "name": "HomeAssistant",
+    "version": "0.0.1",
+    "icon": "fab fa-battle-net",
+    "category": "undefined",
+    "author": "LazzaAU",
+    "maintainers": [],
+    "desc": "Connect alice to your home assistant",
+    "aliceMinVersion": "1.0.0-b1",
+    "systemRequirements": [
+        ""
+    ],
+    "pipRequirements": [
+        ""
+    ],
+    "conditions": {
+        "lang": [
+            "en"
+        ],
+        "asrArbitraryCapture": true
+    }
+}
