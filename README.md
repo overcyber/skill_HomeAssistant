@@ -48,8 +48,8 @@ In Home Assistant:
 2. Click into Skills
 3. Go to the HomeAssistant skill and click on -> Settings
 4. In "HAaccessToken" field add your copied long life token
-5. In "HAIpAddress" field add your HomeAssistant IP address (make sure you append /api to the address)
-    - Example 192.168.4.1:8123/api
+5. In "HAIpAddress" field add your HomeAssistant IP address (make sure you append /api/ to the address)
+    - Example 192.168.4.1:8123/api/
 6. SIDE NOTE: For now all switches captured by Alice from HA will get installed in one location / room 
 -  You will have to later go to "My Home" in the web Ui and move each switch to a appropriate room not critical
 for now but, to keep a tidy house keeps Alice happy :)
