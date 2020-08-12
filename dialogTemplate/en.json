@@ -2,6 +2,98 @@
     "skill": "HomeAssistant",
     "icon": "time",
     "description": "Connect alice to your home assistant",
-    "slotTypes": [],
-    "intents": []
+    "slotTypes": [
+        {
+            "name": "switchNames",
+            "matchingStrictness": null,
+            "automaticallyExtensible": true,
+            "useSynonyms": true,
+            "values": [
+                {
+                    "value": "bedroom light",
+                    "synonyms": [
+
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "HomeAssistantOnOrOff",
+            "matchingStrictness": null,
+            "automaticallyExtensible": true,
+            "useSynonyms": true,
+            "values": [
+                {
+                    "value": "on",
+                    "synonyms": [
+                        "off",
+                        "toggle",
+                        "open",
+                        "close"
+                    ]
+                }
+            ]
+        }
+    ],
+    "intents": [
+        {
+            "name": "AddHomeAssistantDevices",
+            "description": "Add home assistant devices to Alice",
+            "enabledByDefault": true,
+            "utterances": [
+                "Add my home assistant devices",
+                "connect Home Assistant"
+            ]
+        },
+        {
+            "name": "HomeAssistantAction",
+            "description": "switch a devie on or off",
+            "enabledByDefault": true,
+            "utterances": [
+                "turn {on:=>OnOrOff} the {toilet light:=>switchNames}",
+                "turn {off:=>OnOrOff} the {bedroom light:=>switchNames}",
+                "switch {off:=>OnOrOff} the {bedroom light:=>switchNames}",
+                "{toggle:=>OnOrOff} the {kitchen lights:=>switchNames}",
+                "{open:=>OnOrOff} the {garage door:=>switchNames}",
+                "{close:=>OnOrOff} the {bedroom windows:=>switchNames}"
+            ],
+            "slots": [
+                {
+                    "name": "switchNames",
+                    "description": null,
+                    "required": false,
+                    "type": "switchNames",
+                    "missingQuestion": ""
+                },
+                {
+                    "name": "OnOrOff",
+                    "description": null,
+                    "required": false,
+                    "type": "HomeAssistantOnOrOff",
+                    "missingQuestion": ""
+                }
+            ]
+        },
+        {
+            "name": "HomeAssistantState",
+            "description": "Returns the state of a switch",
+            "enabledByDefault": true,
+            "utterances": [
+                "what is the state of the {kitchen light:=>DeviceState}",
+                "whats the state of the {toilet light:=>DeviceState}",
+                "what's the state of the {sun:=>DeviceState}",
+                "when is {sunrise:=>DeviceState}",
+                "when is {sunset:=>DeviceState}"
+            ],
+            "slots": [
+                {
+                    "name": "DeviceState",
+                    "description": null,
+                    "required": false,
+                    "type": "switchNames",
+                    "missingQuestion": ""
+                }
+            ]
+        }
+    ]
 }
