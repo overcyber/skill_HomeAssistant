@@ -70,3 +70,10 @@ Once setup is completed (takes 30 seconds or so) you should be able to ask
 - "Turn off/on the *entity Friendly name*"
 
 EG: turn off the bathroom light
+
+- "Hey Alice/Snips"
+- whats the state of the pool pump
+
+**Possible Future additions**
+- Add sun events like sunrise and sunset times
+- Capture sensor and binary sensor data
