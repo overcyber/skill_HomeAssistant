@@ -77,3 +77,4 @@ EG: turn off the bathroom light
 **Possible Future additions**
 - Add sun events like sunrise and sunset times
 - Capture sensor and binary sensor data
+- Tell you the IP of a requested device
