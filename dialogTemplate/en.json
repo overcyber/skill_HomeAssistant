@@ -1,7 +1,7 @@
 {
     "skill": "HomeAssistant",
     "icon": "time",
-    "description": "Connect alice to your home assistant",
+    "description": "Connect Alice to your home assistant",
     "slotTypes": [
         {
             "name": "switchNames",

@@ -1,1 +1,77 @@
-{}
+{
+	"sayListOfDevices": {
+			"default": [
+				"You can now ask me to turn on and off any of the following. {}",
+				"These are the devices you can ask me to turn on and off {} "
+			],
+			"short": [
+				"You have these devices {} connected"
+				]
+		},
+	"sayConnectionOffline": {
+			"default": [
+				"Sorry but your home assistant seems to be offline",
+				"I'm having trouble connecting to your Home Assistant, Is it online ?"
+			],
+			"short": [
+				"Your Hoem Assistant is offline",
+				"Home Assistant is offline"
+			]
+		},
+	"getActiveDeviceState": {
+			"default": [
+				"{0} is currently {1}",
+				"the {0} is currently turned {1}"
+			],
+			"short": [
+				"{0} is {1}"
+
+			]
+		},
+	"getDeviceStateError": {
+			"default": [
+				"Sorry for teasing you but i havent got those values yet. It's a future enhancement",
+				"oops, That's a future enhancement that hasn't happened yet"
+			],
+			"short": [
+				"Can't do that yet sorry"
+
+			]
+		},
+	"homeAssistantSwitchDevice": {
+			"default": [
+				"No drama's doing that now",
+				"All over it like a bad rash",
+				"ok done"
+			],
+			"short": [
+				"sure",
+				"done"
+
+			]
+		},
+	"addHomeAssistantDevices": {
+			"default": [
+				"Ok let's do this, give me a moment to sort this out for you. Once I'm finished you'll need to restart me",
+				"This may take a moment or two, remember to restart me after i've read out the list of devices to you",
+				"All over it. you'll have to restart me after i've read out the list of devices to you"
+			],
+			"short": [
+				"no problem, give me a minute to configure",
+				"on it"
+
+			]
+		},
+	"addHomeAssistantDevicesError": {
+			"default": [
+				"I couldn't find and switches in Home assistant sorry",
+				"Sorry but wasn't able to add any devices. Please check Home Assistant has active switches",
+				"I wasn't able to add any devices sorry. Please check Home Assistant has switch's"
+			],
+			"short": [
+				"Couldnt add switches sorry",
+				"Un able to add any switches. Sorry"
+
+			]
+		}
+}

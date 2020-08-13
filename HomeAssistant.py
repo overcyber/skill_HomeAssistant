@@ -27,6 +27,7 @@ class HomeAssistant(AliceSkill):
 	}
 
 	#todo Add Ipaddress
+	#todo add sensor support and auto backlog
 	def __init__(self):
 		self._entityId = list()
 		self._broadcastFlag = threading.Event()
@@ -42,16 +43,7 @@ class HomeAssistant(AliceSkill):
 
 
 	############################### INTENT HANDLERS #############################
-	def saylistOfDeviceViaThread(self):
-		currentFriendlyNameList = self.listOfFriendlyNames()
-		activeFriendlyName = list()
-		for name in currentFriendlyNameList:
-			activeFriendlyName.append(name[0])
 
-		self.say(
-			text=f'you can now ask me to turn on and off any of the following. {activeFriendlyName}',
-			siteId=self.getAliceConfig('deviceName')
-		)
 
 	@IntentHandler('WhatHomeAssistantDevices')
 	def sayListOfDevices(self, session: DialogSession):
@@ -62,7 +54,7 @@ class HomeAssistant(AliceSkill):
 
 		self.endDialog(
 			sessionId=session.sessionId,
-			text=f'i can turn on and off any of the following. {activeFriendlyName}',
+			text=self.randomTalk(text='sayListOfDevices', replace=[activeFriendlyName]),
 			siteId=session.siteId
 		)
 	@IntentHandler('AddHomeAssistantDevices')
@@ -122,7 +114,7 @@ class HomeAssistant(AliceSkill):
 		if self._entireList:
 			self.endDialog(
 				sessionId=session.sessionId,
-				text='Ok let\'s do this, give me a moment to sort this out for you. Once I\'m finished you\'ll need to restart me',
+				text=self.randomTalk(text='addHomeAssistantDevices'),
 				siteId=session.siteId
 			)
 			self.ThreadManager.doLater(
@@ -132,7 +124,7 @@ class HomeAssistant(AliceSkill):
 		else:
 			self.endDialog(
 				sessionId=session.sessionId,
-				text='I didn\'t find any switches in Home Assistant to add. Sorry',
+				text=self.randomTalk(text='addHomeAssistantDevicesError'),
 				siteId=session.siteId
 			)
 
@@ -161,7 +153,7 @@ class HomeAssistant(AliceSkill):
 			self.logInfo(str(responce))
 			self.endDialog(
 				sessionId=session.sessionId,
-				text='No drama\'s doing that now',
+				text=self.randomTalk(text='homeAssistantSwitchDevice', replace=[self._action]),
 				siteId=session.siteId
 			)
 
@@ -175,7 +167,7 @@ class HomeAssistant(AliceSkill):
 		if 'sun' in session.slotRawValue('DeviceState') or 'sunrise' in session.slotRawValue('DeviceState') or 'sunset' in session.slotRawValue('DeviceState'):
 			self.endDialog(
 				sessionId=session.sessionId,
-				text="Sorry for teasing you but i havent got those values yet. It\'s a future enhancement",
+				text=self.randomTalk(text='getDeviceStateError'),
 				siteId=session.siteId
 			)
 			return
@@ -185,7 +177,7 @@ class HomeAssistant(AliceSkill):
 			# get info from HomeAssitant
 			header, url = self.retrieveAuthHeader(urlPath='states/', urlAction=entityName["entityName"])
 			stateResponce = requests.get(url=url, headers=header)
-			# print(stateResponce.text)
+			# print(stateResponce.text) disable me at line 179-ish
 			data = stateResponce.json()
 			entityID = data['entity_id']
 			entityState = data['state']
@@ -193,7 +185,7 @@ class HomeAssistant(AliceSkill):
 			self.updateSwitchValueInDB(key=entityID, value=entityState, uid=session.slotRawValue("DeviceState"))
 			self.endDialog(
 				sessionId=session.sessionId,
-				text=f'The {session.slotRawValue("DeviceState")} state is currently {entityState}',
+				text=self.randomTalk(text='getActiveDeviceState', replace=[session.slotRawValue("DeviceState"),entityState]),
 				siteId=session.siteId
 			)
 
@@ -427,10 +419,21 @@ class HomeAssistant(AliceSkill):
 	# self.logDebug(f'Just updated Datebase by adding a ip of {ip} ')
 
 	################# General Methods ###################
+	def saylistOfDeviceViaThread(self):
+		currentFriendlyNameList = self.listOfFriendlyNames()
+		activeFriendlyName = list()
+		for name in currentFriendlyNameList:
+			activeFriendlyName.append(name[0])
+
+		self.say(
+			text=self.randomTalk(text='sayListOfDevices', replace=[activeFriendlyName]),
+			siteId=self.getAliceConfig('deviceName')
+		)
+
 	def sayConnectionOffline(self, session: DialogSession):
 		self.endDialog(
 			sessionId=session.sessionId,
-			text='Sorry but your Home Assistant connection seems to be offline',
+			text=self.randomTalk(text='sayConnectionOffline'),
 			siteId=session.siteId
 		)
 
