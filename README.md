@@ -27,8 +27,10 @@ the Tasmota skill and also installing the telemetry skill to store the data. Tha
 commands that control groups of switch.<entityName> devices. 
 
 *Pre Req's* -
-This skill uses HA friendly names to trigger commands. So if your friendly names in tasmota for example are "gardenlights"
-then i suggest you fine tune that a little to read "garden lights" ( two words with no strange charactors). That way 
+-Make sure you're running the latest version of Home Assistant ( minimum is version 0107.5)
+
+-This skill uses HA friendly names to trigger commands. So if your friendly name, for example are "gardenlights"
+then i suggest you fine tune that i HA a little to read "garden lights" ( two words with no strange charactors). That way 
 "turn off the garden lights" is more natural than " turn off gardenlights" which only sounds natural when drunk :)
 
 **SetUp**
@@ -76,5 +78,6 @@ EG: turn off the bathroom light
 
 **Possible Future additions**
 - Add sun events like sunrise and sunset times
-- Capture sensor and binary sensor data
+- Capture sensor data and magically do a backlog so it's compatible with telemetry skill
 - Tell you the IP of a requested device
+- 

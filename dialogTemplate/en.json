@@ -42,7 +42,7 @@
             "enabledByDefault": true,
             "utterances": [
                 "Add my home assistant devices",
-                "connect Home Assistant"
+                "update with home assistant devices"
             ]
         },
         {
@@ -93,6 +93,17 @@
                     "type": "switchNames",
                     "missingQuestion": ""
                 }
+            ]
+        },
+        {
+            "name": "WhatHomeAssistantDevices",
+            "description": "Get a list of Home assistant devices",
+            "enabledByDefault": true,
+            "utterances": [
+                "What home assistant devices do you know",
+                "what home assistant devices can you control",
+                "tell me what my home assistant devices are please",
+                "what can you turn on or off"
             ]
         }
     ]

@@ -6,7 +6,7 @@
 		"description": "Adds a Access token for homeAssistant"
 	},
 	"HAIpAddress": {
-		"defaultValue": "http://localhost:8123/api",
+		"defaultValue": "http://localhost:8123/api/",
 		"dataType": "string",
 		"isSensitive": false,
 		"description": "Adds your HA address"

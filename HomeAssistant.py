@@ -11,7 +11,7 @@ from requests import get
 
 class HomeAssistant(AliceSkill):
 	"""
-	Author: LazzaAU
+	Author: Lazza
 	Description: Connect alice to your home assistant
 	"""
 	DATABASE = {
@@ -37,18 +37,40 @@ class HomeAssistant(AliceSkill):
 		self._grouplist = list()
 		self._action = ""
 		self._entity = ""
+
 		super().__init__(databaseSchema=self.DATABASE)
 
 
 	############################### INTENT HANDLERS #############################
+	def saylistOfDeviceViaThread(self):
+		currentFriendlyNameList = self.listOfFriendlyNames()
+		activeFriendlyName = list()
+		for name in currentFriendlyNameList:
+			activeFriendlyName.append(name[0])
 
-	@IntentHandler('AddHomeAssistantDevices')
-	def addHomeAssistantDevices(self, session: DialogSession):
+		self.say(
+			text=f'you can now ask me to turn on and off any of the following. {activeFriendlyName}',
+			siteId=self.getAliceConfig('deviceName')
+		)
+
+	@IntentHandler('WhatHomeAssistantDevices')
+	def sayListOfDevices(self, session: DialogSession):
+		currentFriendlyNameList = self.listOfFriendlyNames()
+		activeFriendlyName = list()
+		for name in currentFriendlyNameList:
+			activeFriendlyName.append(name[0])
+
 		self.endDialog(
 			sessionId=session.sessionId,
-			text='Ok let\'s do this, give me a moment to sort this out for you',
+			text=f'i can turn on and off any of the following. {activeFriendlyName}',
 			siteId=session.siteId
 		)
+	@IntentHandler('AddHomeAssistantDevices')
+	def addHomeAssistantDevices(self, session: DialogSession):
+		if not self.checkConnection():
+			self.sayConnectionOffline(session)
+			return
+
 		# connect to the HomeAssistant API/States to retrieve entity names and values
 		header, url = self.retrieveAuthHeader(urlPath='states')
 		data = get(url, headers=header).json()
@@ -90,16 +112,36 @@ class HomeAssistant(AliceSkill):
 		finalList = [list(x) for x in duplicateList]
 		for group, value in self._grouplist:
 			self.addEntityToDatabase(entityName=group, friendlyName=value, uID=value)
-
+		friendlyNameList = list()
 		for switchItem in finalList:
 			self.addEntityToDatabase(entityName=switchItem[0], friendlyName=switchItem[1], deviceState=switchItem[2], uID=switchItem[1])
 			self.AddToAliceDB(switchItem[1])
+			friendlyNameList.append(switchItem[1])
 
 		self.addSynomyns()
-
+		if self._entireList:
+			self.endDialog(
+				sessionId=session.sessionId,
+				text='Ok let\'s do this, give me a moment to sort this out for you. Once I\'m finished you\'ll need to restart me',
+				siteId=session.siteId
+			)
+			self.ThreadManager.doLater(
+				interval=10,
+				func=self.saylistOfDeviceViaThread
+			)
+		else:
+			self.endDialog(
+				sessionId=session.sessionId,
+				text='I didn\'t find any switches in Home Assistant to add. Sorry',
+				siteId=session.siteId
+			)
 
 	@IntentHandler('HomeAssistantAction')
 	def homeAssistantSwitchDevice(self, session: DialogSession):
+		if not self.checkConnection():
+			self.sayConnectionOffline(session)
+			return
+
 		if 'on' in session.slotRawValue('OnOrOff') or 'open' in session.slotRawValue('OnOrOff'):
 			self._action = "turn_on"
 		elif 'off' in session.slotRawValue('OnOrOff') or 'close' in session.slotRawValue('OnOrOff'):
@@ -126,7 +168,10 @@ class HomeAssistant(AliceSkill):
 
 	@IntentHandler('HomeAssistantState')
 	def getDeviceState(self, session: DialogSession):
-		print(f'session payload is {session.slotRawValue("DeviceState")}')
+		if not self.checkConnection():
+			self.sayConnectionOffline(session)
+			return
+
 		if 'sun' in session.slotRawValue('DeviceState') or 'sunrise' in session.slotRawValue('DeviceState') or 'sunset' in session.slotRawValue('DeviceState'):
 			self.endDialog(
 				sessionId=session.sessionId,
@@ -203,15 +248,39 @@ class HomeAssistant(AliceSkill):
 
 		return header, url
 
+	def checkConnection(self) -> bool:
+		try:
+			header, url = self.retrieveAuthHeader('na', 'na')
+			response = get(self.getConfig('HAIpAddress'), headers=header)
+			if '{"message": "API running."}' in response.text:
+				return True
+			else:
+				self.logWarning(f'It seems HomeAssistant is currently not connected ')
+				return False
+		except Exception as e:
+			self.logWarning(f'HomeAssistant failed with an error: {e}')
+			return False
 
 	def onBooted(self) -> bool:
-		header, url = self.retrieveAuthHeader('na', 'na')
-		response = get(self.getConfig('HAIpAddress'), headers=header)
-		if '{"message": "API running."}' in response.text:
-			self.logInfo(f'HomeAssistant Connected')
+		if 'http://localhost:8123/api/'  in self.getConfig("HAIpAddress"):
+			self.logWarning(f'You need to update the HAIpAddress in Homeassistant Skill ==> settings')
+			return False
 		else:
-			self.logWarning(f'Issue connecting to HoemAssistant : {response.text}')
-		return True
+			try:
+				header, url = self.retrieveAuthHeader('na', 'na')
+				response = get(self.getConfig('HAIpAddress'), headers=header)
+				#print(f'{response.text} turn me off on line 234')
+				if '{"message": "API running."}' in response.text:
+					self.logInfo(f'HomeAssistant Connected')
+
+					return True
+				else:
+					self.logWarning(f'Issue connecting to HomeAssistant : {response.text}')
+
+					return False
+			except Exception as e:
+				self.logWarning(f'HomeAssistant failed to start. Don\'t panic..... Suspect you haven\'t added your HomeAssistant IP address in settings yet: {e}')
+				return False
 
 
 	def AddToAliceDB(self, uID: str):
@@ -231,6 +300,7 @@ class HomeAssistant(AliceSkill):
 
 
 	########################## DATABASE ITEMS ####################################
+
 	def addEntityToDatabase(self, entityName: str, friendlyName: str, deviceState: str = None, ipAddress: str = None, deviceGroup: str = None, uID: str = None):
 		# adds sensor data to the HomeAssistant database
 		# noinspection SqlResolve
@@ -356,8 +426,17 @@ class HomeAssistant(AliceSkill):
 
 	# self.logDebug(f'Just updated Datebase by adding a ip of {ip} ')
 
-	################# Extra Methods ###################
+	################# General Methods ###################
+	def sayConnectionOffline(self, session: DialogSession):
+		self.endDialog(
+			sessionId=session.sessionId,
+			text='Sorry but your Home Assistant connection seems to be offline',
+			siteId=session.siteId
+		)
+
 	def onFiveMinute(self):
+		if not self.checkConnection():
+			return
 		self.updateDBStates()
 
 
