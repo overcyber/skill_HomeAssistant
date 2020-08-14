@@ -18,20 +18,28 @@ It does this through using the RESTful API.
 **What this skill will control**
 
 You will be able to control an entity in HomeAssistant that is a existing switch.*entityName* in HA
-*It captures sensor.<entityName> devices too but currently does nothing with it.*
+
+It also captures sensor.<entityName> devices too but currently only utilises some sensor readings like temperature, 
+humidity etc. It does so by sending that data to Telemetry skill so you can ask Alice what's the inside 
+temperature for example. (still work in progress but the data is there)
 
 "group.*entityName*" are also captured with this skill so you can "turn off kitchen lights" or smiliar
 commands that control groups of switch.<entityName> devices. 
 
-Device states get updated every 5 minutes or when you ask " whats the state of the <device name>"
+Device states get updated every 5 minutes or when you ask " whats the state of the *device name*"
 
 
 *Pre Req's* -
--Make sure you're running the latest version of Home Assistant ( minimum is version 0107.5)
+- Make sure you're running the latest version of Home Assistant ( minimum is version 0107.5)
+- Make sure you also have installed the Telemetry skill
+- This skill uses HA friendly names to trigger commands. So if your friendly name, for example are "gardenlights"
+then i suggest you fine tune that in HA a little to read "garden lights" ( two words with no strange charactors).
+ That way "turn off the garden lights" is more natural than " turn off gardenlights" which only sounds natural
+  when drunk :)
+For now it also assumes your temperature sensors are called something like "inside temperature", "office temperature"
+and not "BME280 in the Shed". Based on current code, The latter would mean you'd have to ask 
+Alice " whats the BME280 temperature ", which is not very natural either :)
 
--This skill uses HA friendly names to trigger commands. So if your friendly name, for example are "gardenlights"
-then i suggest you fine tune that in HA a little to read "garden lights" ( two words with no strange charactors). That way 
-"turn off the garden lights" is more natural than " turn off gardenlights" which only sounds natural when drunk :)
 
 **SetUp**
 In Home Assistant:
@@ -80,6 +88,23 @@ EG: turn off the bathroom light
 
 **Future additions**
 - Add sun events like sunrise and sunset times
-- Capture sensor data and send it to telemetry skill. ( Sensor data currently captured but does not send to telemetry skill yet)
+- Capture various types of sensor data for possble use in other skills ?
 - Tell you the IP of a requested device
-- 
+
+**Usage:**
+Some examples of what to say 
+*for set up* 
+- "Add my home assistant devices"
+- "Configure the home assistant skill"
+
+*General usage*
+- Turn on the Bedroom light
+- Turn off the Bathroom light
+- close the bedroom blinds 
+- open the garage door
+
+- what's the state of the garage door
+
+- "What home assistant devices do you know",
+- "tell me what my home assistant devices are please",
+- "what can you turn on or off"
