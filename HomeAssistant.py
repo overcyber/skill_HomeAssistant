@@ -30,7 +30,7 @@ class HomeAssistant(AliceSkill):
 
 
 	# todo Add Ipaddress
-	# todo add sensor support and auto backlog
+	# todo add further sensor support ?
 	def __init__(self):
 		self._entityId = list()
 		self._broadcastFlag = threading.Event()
@@ -90,10 +90,8 @@ class HomeAssistant(AliceSkill):
 					sensorFriendlyName = item["attributes"]["friendly_name"]
 					sensorentity = item["entity_id"]
 					sensorValue = item["state"]
-					sensorList = [sensorType, sensorValue, sensorFriendlyName, sensorentity]
-					dbSensorList = [sensorFriendlyName, sensorentity, sensorValue, sensorType]
 
-					self._entireSensorlist.append(sensorList)
+					dbSensorList = [sensorFriendlyName, sensorentity, sensorValue, sensorType]
 					self._dbSensorList.append(dbSensorList)
 
 				if 'entity_id' in item["attributes"]:
@@ -104,7 +102,6 @@ class HomeAssistant(AliceSkill):
 					self._deviceState = item['state']
 
 					grouplist = item['entity_id']
-					# print(f' grouplist is {grouplist} and is associated with {entitiesInDictionaryList}')
 
 					if grouplist and 'switch.' in entitiesInDictionaryList:  # NOSONAR
 						listOfEntitiesToStore.append(grouplist)
@@ -444,9 +441,9 @@ class HomeAssistant(AliceSkill):
 		activeFriendlyName = list()
 		for name in currentFriendlyNameList:
 			activeFriendlyName.append(name[0])
-
+		listLength = len(activeFriendlyName)
 		self.say(
-			text=self.randomTalk(text='sayListOfDevices', replace=[activeFriendlyName]),
+			text=self.randomTalk(text='sayListOfDevices', replace=[listLength]),
 			siteId=self.getAliceConfig('deviceName')
 		)
 
@@ -474,6 +471,7 @@ class HomeAssistant(AliceSkill):
 				siteID: str = sensor["uID"]
 				siteIDlist = siteID.split()
 				siteID = siteIDlist[0]
+				siteID.replace(" ", "").lower()
 				# {'Switch1': 'OFF', 'Switch2': 'ON', 'Illuminance': 0, 'Temperature': 79.3, 'Humidity': 52.4, 'DewPoint': 60.4}
 				if 'temperature' in sensor["deviceType"]:
 					newPayload['TEMPERATURE'] = sensor['deviceState']
@@ -540,11 +538,7 @@ class HomeAssistant(AliceSkill):
 			self.AddToAliceDB(switchItem[1])
 			friendlyNameList.append(switchItem[1])
 
-		#todo add motion sensor data etc to database
-		#NOSONAR
-		# for sensorItem in self._entireSensorlist:
-		#	print(f' this other sensor data will go to telemetry DB eventually {sensorItem} ')
-
+		# Process Sensor entities
 		for sensorItem in self._dbSensorList:
 			self.addEntityToDatabase(entityName=sensorItem[1], friendlyName=sensorItem[0], uID=sensorItem[0], deviceState=sensorItem[2], deviceGroup='sensor', deviceType=sensorItem[3])
 
@@ -559,7 +553,7 @@ class HomeAssistant(AliceSkill):
 				self.logDebug(f'The {teleType} reading for the {siteId} is {item[1]} (code triggered line 580 ish)')  # uncomment me to see incoming temperature payload
 			try:
 				if 'TEMPERATURE' in teleType:
-					self.TelemetryManager.storeData(ttype=TelemetryType.TEMPERATURE, value=item[1], service='Tasmota', siteId=siteId)
+					self.TelemetryManager.storeData(ttype=TelemetryType.TEMPERATURE, value=item[1], service='Whatever', siteId=siteId)
 				elif 'HUMIDITY' in teleType:
 					self.TelemetryManager.storeData(ttype=TelemetryType.HUMIDITY, value=item[1], service=self.name, siteId=siteId)
 				elif 'DEWPOINT' in teleType:
@@ -598,7 +592,7 @@ class HomeAssistant(AliceSkill):
 
 
 	def onBooted(self) -> bool:
-
+		self.onFiveMinute()
 		if 'http://localhost:8123/api/' in self.getConfig("HAIpAddress"):
 			self.logWarning(f'You need to update the HAIpAddress in Homeassistant Skill ==> settings')
 			return False

@@ -1,11 +1,11 @@
 {
 	"sayListOfDevices": {
 			"default": [
-				"You can now ask me to turn on and off any of the following. {}",
-				"These are the devices you can ask me to turn on and off {} "
+				"I found {0} new devices which i've added to my Database",
+				"I now have {} devices stored in my memory banks "
 			],
 			"short": [
-				"You have these devices {} connected"
+				"You have {} new devices connected"
 				]
 		},
 	"sayConnectionOffline": {
