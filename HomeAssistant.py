@@ -7,6 +7,7 @@ from core.base.model.AliceSkill import AliceSkill
 from core.dialog.model.DialogSession import DialogSession
 from core.util.Decorators import IntentHandler
 from requests import get
+from core.util.model.TelemetryType import TelemetryType
 
 
 class HomeAssistant(AliceSkill):
@@ -22,6 +23,7 @@ class HomeAssistant(AliceSkill):
 			'deviceState TEXT ',
 			'ipAddress TEXT',
 			'deviceGroup TEXT',
+			'deviceType TEXT',
 			'uID TEXT'
 		]
 	}
@@ -62,7 +64,6 @@ class HomeAssistant(AliceSkill):
 		)
 
 
-
 	@IntentHandler('AddHomeAssistantDevices')
 	def addHomeAssistantDevices(self, session: DialogSession):
 		if not self.checkConnection():
@@ -72,8 +73,11 @@ class HomeAssistant(AliceSkill):
 		# connect to the HomeAssistant API/States to retrieve entity names and values
 		header, url = self.retrieveAuthHeader(urlPath='states')
 		data = get(url, headers=header).json()
-		#print(f'{data}) - Turn this off on line 72 - ish')
-
+		if self.getConfig('DebugMode'):
+			self.logDebug(f'{data}')
+			print("")
+			self.logInfo(f' You\'ll probably need to be in manual start mode to copy the above debug message - code triggered around line 80')
+			print("")
 		# delete and existing values in DB so we can update with a fresh list of Devices
 		self.deleteAliceHADatabaseEntries()
 		self.deleteHomeAssistantDBEntries()
@@ -87,7 +91,7 @@ class HomeAssistant(AliceSkill):
 					sensorentity = item["entity_id"]
 					sensorValue = item["state"]
 					sensorList = [sensorType, sensorValue, sensorFriendlyName, sensorentity]
-					dbSensorList = [sensorFriendlyName, sensorentity, sensorValue,]
+					dbSensorList = [sensorFriendlyName, sensorentity, sensorValue, sensorType]
 
 					self._entireSensorlist.append(sensorList)
 					self._dbSensorList.append(dbSensorList)
@@ -206,6 +210,8 @@ class HomeAssistant(AliceSkill):
 
 
 	##################### POST AND GET HANDLERS ##############################
+
+
 	def updateDBStates(self):
 		"""Update entity states from a 5 min timer"""
 		header, url = self.retrieveAuthHeader(urlPath='states')
@@ -218,7 +224,8 @@ class HomeAssistant(AliceSkill):
 					sensorFriendlyName = item["attributes"]["friendly_name"]
 					sensorentity = item["entity_id"]
 					sensorValue = item["state"]
-					dbSensorList = [sensorFriendlyName, sensorentity, sensorValue,]
+					sensorType = item["attributes"]["device_class"]
+					dbSensorList = [sensorFriendlyName, sensorentity, sensorValue, sensorType]
 
 					self._dbSensorList.append(dbSensorList)
 
@@ -243,10 +250,12 @@ class HomeAssistant(AliceSkill):
 		for switchItem, uid, state in finalList:
 			if self.getDatabaseEntityID(uid=uid):
 				self.updateSwitchValueInDB(key=switchItem, value=state)
-		for sensorName, entity, state in self._dbSensorList:
+
+		for sensorName, entity, state, haClass in self._dbSensorList:
 
 			if self.getDatabaseEntityID(uid=sensorName):
 				self.updateSwitchValueInDB(key=sensorName, value=state)
+
 
 	def retrieveAuthHeader(self, urlPath: str, urlAction: str = None):
 		"""
@@ -281,26 +290,7 @@ class HomeAssistant(AliceSkill):
 			return False
 
 
-	def onBooted(self) -> bool:
-		if 'http://localhost:8123/api/' in self.getConfig("HAIpAddress"):
-			self.logWarning(f'You need to update the HAIpAddress in Homeassistant Skill ==> settings')
-			return False
-		else:
-			try:
-				header, url = self.retrieveAuthHeader('na', 'na')
-				response = get(self.getConfig('HAIpAddress'), headers=header)
-				# print(f'{response.text} turn me off on line 234')
-				if '{"message": "API running."}' in response.text:
-					self.logInfo(f'HomeAssistant Connected')
-
-					return True
-				else:
-					self.logWarning(f'Issue connecting to HomeAssistant : {response.text}')
-
-					return False
-			except Exception as e:
-				self.logWarning(f'HomeAssistant failed to start. Double check your settings in the skill {e}')
-				return False
+	########################## DATABASE ITEMS ####################################
 
 
 	def AddToAliceDB(self, uID: str):
@@ -314,25 +304,19 @@ class HomeAssistant(AliceSkill):
 		self.DatabaseManager.insert(tableName=self.DeviceManager.DB_DEVICE, values=values, callerName=self.DeviceManager.name)
 
 
-	@property
-	def broadcastFlag(self) -> threading.Event:
-		return self._broadcastFlag
-
-
-	########################## DATABASE ITEMS ####################################
-
-	def addEntityToDatabase(self, entityName: str, friendlyName: str, deviceState: str = None, ipAddress: str = None, deviceGroup: str = None, uID: str = None):
+	def addEntityToDatabase(self, entityName: str, friendlyName: str, deviceState: str = None, ipAddress: str = None, deviceGroup: str = None, deviceType: str = None, uID: str = None):
 		# adds sensor data to the HomeAssistant database
 		# noinspection SqlResolve
 		self.databaseInsert(
 			tableName='HomeAssistant',
-			query='INSERT INTO :__table__ (entityName, friendlyName, deviceState, ipAddress, deviceGroup, uID) VALUES (:entityName, :friendlyName, :deviceState, :ipAddress, :deviceGroup, :uID)',
+			query='INSERT INTO :__table__ (entityName, friendlyName, deviceState, ipAddress, deviceGroup, deviceType, uID) VALUES (:entityName, :friendlyName, :deviceState, :ipAddress, :deviceGroup, :deviceType, :uID)',
 			values={
 				'entityName'  : entityName,
 				'friendlyName': friendlyName,
 				'deviceState' : deviceState,
 				'ipAddress'   : ipAddress,
 				'deviceGroup' : deviceGroup,
+				'deviceType'  : deviceType,
 				'uID'         : uID
 			}
 		)
@@ -396,6 +380,16 @@ class HomeAssistant(AliceSkill):
 
 
 	# noinspection SqlResolve
+	def getSensorValues(self):
+		"""Returns a list of known sensors"""
+		return self.databaseFetch(
+			tableName='HomeAssistant',
+			query='SELECT * FROM :__table__  WHERE deviceGroup == "sensor" ',
+			method='all'
+		)
+
+
+	# noinspection SqlResolve
 	def rowOfRequestedDevice(self, friendlyName: str):
 		"""Returns the row for the selected friendlyname
 		:params friendlyName is for example kitchen light"""
@@ -426,9 +420,7 @@ class HomeAssistant(AliceSkill):
 		)
 
 
-	# self.logDebug(f'Just updated Device state for {uid} to {value} ')
-
-
+	# Future enhancement
 	# noinspection SqlResolve
 	def updateDeviceIPInfo(self, ip: str, uid: str):
 		"""updates the device with it's Ip address"""
@@ -444,9 +436,9 @@ class HomeAssistant(AliceSkill):
 		)
 
 
-	# self.logDebug(f'Just updated Datebase by adding a ip of {ip} ')
-
 	################# General Methods ###################
+
+
 	def saylistOfDeviceViaThread(self):
 		currentFriendlyNameList = self.listOfFriendlyNames()
 		activeFriendlyName = list()
@@ -468,10 +460,37 @@ class HomeAssistant(AliceSkill):
 
 
 	def onFiveMinute(self):
-		#"BME680":{"Temperature":25.0,"Humidity":62.7,"DewPoint":17.4,"Pressure":1016.1,"Gas":125.75},"PressureUnit":"hPa","TempUnit":"C"}}
+		# "BME680":{"Temperature":25.0,"Humidity":62.7,"DewPoint":17.4,"Pressure":1016.1,"Gas":125.75},"PressureUnit":"hPa","TempUnit":"C"}}
 		if not self.checkConnection():
 			return
+
 		self.updateDBStates()
+		sensorDBrows = self.getSensorValues()
+		for sensor in sensorDBrows:
+			if not 'unavailable' in sensor['deviceState'] and not 'unknown' in sensor['deviceState']:
+				if self.getConfig('DebugMode'):
+					self.logDebug(f'device type in upDateDBStates is {sensor["deviceType"]} code triggered around line 499')
+				newPayload = dict()
+				siteID: str = sensor["uID"]
+				siteIDlist = siteID.split()
+				siteID = siteIDlist[0]
+				# {'Switch1': 'OFF', 'Switch2': 'ON', 'Illuminance': 0, 'Temperature': 79.3, 'Humidity': 52.4, 'DewPoint': 60.4}
+				if 'temperature' in sensor["deviceType"]:
+					newPayload['TEMPERATURE'] = sensor['deviceState']
+				if 'humidity' in sensor["deviceType"]:
+					newPayload['HUMIDITY'] = sensor['deviceState']
+				if 'pressure' in sensor["deviceType"]:
+					newPayload['PRESSURE'] = sensor['deviceState']
+				if 'gas' in sensor["deviceType"]:
+					newPayload['GAS'] = sensor['deviceState']
+				if 'dewpoint' in sensor["deviceType"]:
+					newPayload['DEWPOINT'] = sensor['deviceState']
+
+				if newPayload:
+					try:
+						self.sendToTelemetry(newPayload=newPayload, siteId=siteID)
+					except Exception as e:
+						self.logWarning(f'There was a error logging data for sensor {siteID} as : {e}')
 
 
 	# add friendlyNames to dialog template as a list of synonyms
@@ -502,6 +521,7 @@ class HomeAssistant(AliceSkill):
 			file.write_text(json.dumps(data, ensure_ascii=False, indent=4))
 			return True
 
+
 	def processHADataRetrieval(self):
 		# method to reduce complexity value of addHomeAssistantDevices()
 		# clean up any duplicates in the list
@@ -509,17 +529,100 @@ class HomeAssistant(AliceSkill):
 		finalList = [list(x) for x in duplicateList]
 		duplicateGroupList = set(tuple(x) for x in self._grouplist)
 		finalGroupList = [list(x) for x in duplicateGroupList]
-		#process group entities
+		# process group entities
 		for group, value in finalGroupList:
 			self.addEntityToDatabase(entityName=group, friendlyName=value, uID=value, deviceGroup='group')
 		friendlyNameList = list()
-		#process Switch entities
+		# process Switch entities
 		for switchItem in finalList:
 			self.addEntityToDatabase(entityName=switchItem[0], friendlyName=switchItem[1], deviceState=switchItem[2], uID=switchItem[1], deviceGroup='switch')
+
 			self.AddToAliceDB(switchItem[1])
 			friendlyNameList.append(switchItem[1])
 
-		#for sensorItem in self._entireSensorlist:
-		#	print(f' this data will go to telemetry DB eventually {sensorItem} ')
+		#todo add motion sensor data etc to database
+		#NOSONAR
+		# for sensorItem in self._entireSensorlist:
+		#	print(f' this other sensor data will go to telemetry DB eventually {sensorItem} ')
+
 		for sensorItem in self._dbSensorList:
-			self.addEntityToDatabase(entityName=sensorItem[1], friendlyName=sensorItem[0], uID=sensorItem[0], deviceState=sensorItem[2], deviceGroup='sensor')
+			self.addEntityToDatabase(entityName=sensorItem[1], friendlyName=sensorItem[0], uID=sensorItem[0], deviceState=sensorItem[2], deviceGroup='sensor', deviceType=sensorItem[3])
+
+
+	def sendToTelemetry(self, newPayload: dict, siteId: str):
+
+		for item in newPayload.items():
+			teleType: str = item[0]
+			teleType = teleType.upper()
+
+			if self.getConfig('DebugMode'):
+				self.logDebug(f'The {teleType} reading for the {siteId} is {item[1]} (code triggered line 580 ish)')  # uncomment me to see incoming temperature payload
+			try:
+				if 'TEMPERATURE' in teleType:
+					self.TelemetryManager.storeData(ttype=TelemetryType.TEMPERATURE, value=item[1], service='Tasmota', siteId=siteId)
+				elif 'HUMIDITY' in teleType:
+					self.TelemetryManager.storeData(ttype=TelemetryType.HUMIDITY, value=item[1], service=self.name, siteId=siteId)
+				elif 'DEWPOINT' in teleType:
+					self.TelemetryManager.storeData(ttype=TelemetryType.DEWPOINT, value=item[1], service=self.name, siteId=siteId)
+				elif 'PRESSURE' in teleType:
+					self.TelemetryManager.storeData(ttype=TelemetryType.PRESSURE, value=item[1], service=self.name, siteId=siteId)
+				elif 'GAS' in teleType:
+					self.TelemetryManager.storeData(ttype=TelemetryType.GAS, value=item[1], service=self.name, siteId=siteId)
+				elif 'AIR_QUALITY' in teleType:
+					self.TelemetryManager.storeData(ttype=TelemetryType.AIR_QUALITY, value=item[1], service=self.name, siteId=siteId)
+				elif 'UV_INDEX' in teleType:
+					self.TelemetryManager.storeData(ttype=TelemetryType.UV_INDEX, value=item[1], service=self.name, siteId=siteId)
+				elif 'NOISE' in teleType:
+					self.TelemetryManager.storeData(ttype=TelemetryType.NOISE, value=item[1], service=self.name, siteId=siteId)
+				elif 'CO2' in teleType:
+					self.TelemetryManager.storeData(ttype=TelemetryType.CO2, value=item[1], service=self.name, siteId=siteId)
+				elif 'RAIN' in teleType:
+					self.TelemetryManager.storeData(ttype=TelemetryType.RAIN, value=item[1], service=self.name, siteId=siteId)
+				elif 'SUM_RAIN_1' in teleType:
+					self.TelemetryManager.storeData(ttype=TelemetryType.SUM_RAIN_1, value=item[1], service=self.name, siteId=siteId)
+				elif 'SUM_RAIN_24' in teleType:
+					self.TelemetryManager.storeData(ttype=TelemetryType.SUM_RAIN_24, value=item[1], service=self.name, siteId=siteId)
+				elif 'WIND_STRENGTH' in teleType:
+					self.TelemetryManager.storeData(ttype=TelemetryType.WIND_STRENGTH, value=item[1], service=self.name, siteId=siteId)
+				elif 'WIND_ANGLE' in teleType:
+					self.TelemetryManager.storeData(ttype=TelemetryType.WIND_ANGLE, value=item[1], service=self.name, siteId=siteId)
+				elif 'GUST_STREGTH' in teleType:
+					self.TelemetryManager.storeData(ttype=TelemetryType.GUST_STRENGTH, value=item[1], service=self.name, siteId=siteId)
+				elif 'GUST_ANGLE' in teleType:
+					self.TelemetryManager.storeData(ttype=TelemetryType.GUST_ANGLE, value=item[1], service=self.name, siteId=siteId)
+				elif 'Illuminance' in teleType:
+					self.TelemetryManager.storeData(ttype=TelemetryType.LIGHT, value=item[1], service=self.name, siteId=siteId)
+
+			except Exception as e:
+				self.logInfo(f'A exception occured adding {teleType} reading: {e}')
+
+
+	def onBooted(self) -> bool:
+
+		if 'http://localhost:8123/api/' in self.getConfig("HAIpAddress"):
+			self.logWarning(f'You need to update the HAIpAddress in Homeassistant Skill ==> settings')
+			return False
+		else:
+			try:
+				header, url = self.retrieveAuthHeader('na', 'na')
+				response = get(self.getConfig('HAIpAddress'), headers=header)
+				if self.getConfig('DebugMode'):
+					self.logDebug(f'{response.text} - onBooted connection code')
+					self.logDebug(f' The header is {header} ')
+					self.logDebug(f'The Url is {url} ')
+				if '{"message": "API running."}' in response.text:
+					self.logInfo(f'HomeAssistant Connected')
+
+					return True
+				else:
+					self.logWarning(f'Issue connecting to HomeAssistant : {response.text}')
+
+					return False
+			except Exception as e:
+				self.logWarning(f'HomeAssistant failed to start. Double check your settings in the skill {e}')
+				return False
+
+
+	@property
+	def broadcastFlag(self) -> threading.Event:
+		return self._broadcastFlag

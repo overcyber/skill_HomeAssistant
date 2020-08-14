@@ -10,5 +10,11 @@
 		"dataType": "string",
 		"isSensitive": false,
 		"description": "Adds your HA address"
+	},
+	"DebugMode": {
+		"defaultValue": false,
+		"dataType": "boolean",
+		"isSensitive": false,
+		"description": "allows debug mode to view whats going on"
 	}
 }
