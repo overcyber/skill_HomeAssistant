@@ -12,37 +12,39 @@ Connect alice to your home assistant
 
 **What this does :**
 
-This skill allows you to connect your exisiting Home Assistant to Alice so you can turn on or off switches
+This skill allows you to connect your exisiting Home Assistant (HA) to Alice so you can turn on or off switches
 It does this through using the RESTful API.
 
 **What this skill will control**
 
 You will be able to control an entity in HomeAssistant that is a existing switch.*entityName* in HA
-*It will not listen to sensors or binary sensors at this stage.*
-If you're wanting to get sensor data such as temperature sensors please consider flashing your sensor with 
-the Tasmota skill and also installing the telemetry skill to store the data. That way Alice can respond with
- enviroment readings
+*It captures sensor.<entityName> devices too but currently does nothing with it.*
 
 "group.*entityName*" are also captured with this skill so you can "turn off kitchen lights" or smiliar
 commands that control groups of switch.<entityName> devices. 
+
+Device states get updated every 5 minutes or when you ask " whats the state of the <device name>"
+
 
 *Pre Req's* -
 -Make sure you're running the latest version of Home Assistant ( minimum is version 0107.5)
 
 -This skill uses HA friendly names to trigger commands. So if your friendly name, for example are "gardenlights"
-then i suggest you fine tune that i HA a little to read "garden lights" ( two words with no strange charactors). That way 
+then i suggest you fine tune that in HA a little to read "garden lights" ( two words with no strange charactors). That way 
 "turn off the garden lights" is more natural than " turn off gardenlights" which only sounds natural when drunk :)
 
 **SetUp**
 In Home Assistant:
-1. create a long life token from your user profile screen. (Copy it and store it safe for now, you'll only get one chance to copy it)
-2. Add the following to your configuration screen
+1. Create a long life token from your user profile screen. (Copy it and store it safe for now, you'll only get one chance to copy it)
+2. Add the following to your configuration.yaml file
   - api:
      - *your HomeassistantIP:port*/api/
     
 **Example:**
 - api:
   - http://192.168.4.1:8123/api/
+
+NOTE the /api/ not just /api 
 
 **In Alice:**
 
@@ -58,7 +60,7 @@ for now but, to keep a tidy house keeps Alice happy :)
 
 7.Restart Alice and ask her to :
 - "Hey Snips/Alice"
-- "connect HomeAssistant"
+- "Add my home assistant devices"
 
 You really only need to ask that once. By asking that she will
 
@@ -76,8 +78,8 @@ EG: turn off the bathroom light
 - "Hey Alice/Snips"
 - whats the state of the pool pump
 
-**Possible Future additions**
+**Future additions**
 - Add sun events like sunrise and sunset times
-- Capture sensor data and magically do a backlog so it's compatible with telemetry skill
+- Capture sensor data and send it to telemetry skill. ( Sensor data currently captured but does not send to telemetry skill yet)
 - Tell you the IP of a requested device
 - 

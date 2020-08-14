@@ -26,8 +26,9 @@ class HomeAssistant(AliceSkill):
 		]
 	}
 
-	#todo Add Ipaddress
-	#todo add sensor support and auto backlog
+
+	# todo Add Ipaddress
+	# todo add sensor support and auto backlog
 	def __init__(self):
 		self._entityId = list()
 		self._broadcastFlag = threading.Event()
@@ -35,6 +36,8 @@ class HomeAssistant(AliceSkill):
 		self._friendlyName = ""
 		self._deviceState = ""
 		self._entireList = list()
+		self._entireSensorlist = list()
+		self._dbSensorList = list()
 		self._grouplist = list()
 		self._action = ""
 		self._entity = ""
@@ -57,6 +60,9 @@ class HomeAssistant(AliceSkill):
 			text=self.randomTalk(text='sayListOfDevices', replace=[activeFriendlyName]),
 			siteId=session.siteId
 		)
+
+
+
 	@IntentHandler('AddHomeAssistantDevices')
 	def addHomeAssistantDevices(self, session: DialogSession):
 		if not self.checkConnection():
@@ -66,17 +72,31 @@ class HomeAssistant(AliceSkill):
 		# connect to the HomeAssistant API/States to retrieve entity names and values
 		header, url = self.retrieveAuthHeader(urlPath='states')
 		data = get(url, headers=header).json()
-		#print(data)
+		#print(f'{data}) - Turn this off on line 72 - ish')
+
 		# delete and existing values in DB so we can update with a fresh list of Devices
 		self.deleteAliceHADatabaseEntries()
 		self.deleteHomeAssistantDBEntries()
+
 		# Loop through the incoming json payload to grab data that we need
 		for item in data:
 			if isinstance(item, dict):
+				if 'device_class' in item["attributes"]:
+					sensorType = item["attributes"]["device_class"]
+					sensorFriendlyName = item["attributes"]["friendly_name"]
+					sensorentity = item["entity_id"]
+					sensorValue = item["state"]
+					sensorList = [sensorType, sensorValue, sensorFriendlyName, sensorentity]
+					dbSensorList = [sensorFriendlyName, sensorentity, sensorValue,]
+
+					self._entireSensorlist.append(sensorList)
+					self._dbSensorList.append(dbSensorList)
+
 				if 'entity_id' in item["attributes"]:
 
 					entitiesInDictionaryList: list = item["attributes"]["entity_id"]
 					listOfEntitiesToStore = entitiesInDictionaryList
+
 					self._deviceState = item['state']
 
 					grouplist = item['entity_id']
@@ -100,16 +120,7 @@ class HomeAssistant(AliceSkill):
 						grouplist = [i, groupFriendlyName]
 						self._grouplist.append(grouplist)
 
-		duplicateList = set(tuple(x) for x in self._entireList)
-		finalList = [list(x) for x in duplicateList]
-		for group, value in self._grouplist:
-			self.addEntityToDatabase(entityName=group, friendlyName=value, uID=value)
-		friendlyNameList = list()
-		for switchItem in finalList:
-			self.addEntityToDatabase(entityName=switchItem[0], friendlyName=switchItem[1], deviceState=switchItem[2], uID=switchItem[1])
-			self.AddToAliceDB(switchItem[1])
-			friendlyNameList.append(switchItem[1])
-
+		self.processHADataRetrieval()
 		self.addSynomyns()
 		if self._entireList:
 			self.endDialog(
@@ -127,6 +138,7 @@ class HomeAssistant(AliceSkill):
 				text=self.randomTalk(text='addHomeAssistantDevicesError'),
 				siteId=session.siteId
 			)
+
 
 	@IntentHandler('HomeAssistantAction')
 	def homeAssistantSwitchDevice(self, session: DialogSession):
@@ -150,12 +162,14 @@ class HomeAssistant(AliceSkill):
 
 			jsonData = {"entity_id": self._entity}
 			responce = requests.request("POST", url=url, headers=header, json=jsonData)
-			self.logInfo(str(responce))
-			self.endDialog(
-				sessionId=session.sessionId,
-				text=self.randomTalk(text='homeAssistantSwitchDevice', replace=[self._action]),
-				siteId=session.siteId
-			)
+			if '200' in responce.text:
+				self.endDialog(
+					sessionId=session.sessionId,
+					text=self.randomTalk(text='homeAssistantSwitchDevice', replace=[self._action]),
+					siteId=session.siteId
+				)
+			else:
+				self.logWarning(f' Switching that Device encountered a error')
 
 
 	@IntentHandler('HomeAssistantState')
@@ -179,13 +193,14 @@ class HomeAssistant(AliceSkill):
 			stateResponce = requests.get(url=url, headers=header)
 			# print(stateResponce.text) disable me at line 179-ish
 			data = stateResponce.json()
+
 			entityID = data['entity_id']
 			entityState = data['state']
 			# add the device state to the database
 			self.updateSwitchValueInDB(key=entityID, value=entityState, uid=session.slotRawValue("DeviceState"))
 			self.endDialog(
 				sessionId=session.sessionId,
-				text=self.randomTalk(text='getActiveDeviceState', replace=[session.slotRawValue("DeviceState"),entityState]),
+				text=self.randomTalk(text='getActiveDeviceState', replace=[session.slotRawValue("DeviceState"), entityState]),
 				siteId=session.siteId
 			)
 
@@ -199,6 +214,14 @@ class HomeAssistant(AliceSkill):
 		# Loop through the incoming json payload to grab data that we need
 		for item in data:
 			if isinstance(item, dict):
+				if 'device_class' in item["attributes"]:
+					sensorFriendlyName = item["attributes"]["friendly_name"]
+					sensorentity = item["entity_id"]
+					sensorValue = item["state"]
+					dbSensorList = [sensorFriendlyName, sensorentity, sensorValue,]
+
+					self._dbSensorList.append(dbSensorList)
+
 				if 'entity_id' in item["attributes"]:
 
 					entitiesInDictionaryList: list = item["attributes"]["entity_id"]
@@ -220,7 +243,10 @@ class HomeAssistant(AliceSkill):
 		for switchItem, uid, state in finalList:
 			if self.getDatabaseEntityID(uid=uid):
 				self.updateSwitchValueInDB(key=switchItem, value=state)
+		for sensorName, entity, state in self._dbSensorList:
 
+			if self.getDatabaseEntityID(uid=sensorName):
+				self.updateSwitchValueInDB(key=sensorName, value=state)
 
 	def retrieveAuthHeader(self, urlPath: str, urlAction: str = None):
 		"""
@@ -240,6 +266,7 @@ class HomeAssistant(AliceSkill):
 
 		return header, url
 
+
 	def checkConnection(self) -> bool:
 		try:
 			header, url = self.retrieveAuthHeader('na', 'na')
@@ -250,18 +277,19 @@ class HomeAssistant(AliceSkill):
 				self.logWarning(f'It seems HomeAssistant is currently not connected ')
 				return False
 		except Exception as e:
-			self.logWarning(f'HomeAssistant failed with an error: {e}')
+			self.logWarning(f'HomeAssistant connection failed with an error: {e}')
 			return False
 
+
 	def onBooted(self) -> bool:
-		if 'http://localhost:8123/api/'  in self.getConfig("HAIpAddress"):
+		if 'http://localhost:8123/api/' in self.getConfig("HAIpAddress"):
 			self.logWarning(f'You need to update the HAIpAddress in Homeassistant Skill ==> settings')
 			return False
 		else:
 			try:
 				header, url = self.retrieveAuthHeader('na', 'na')
 				response = get(self.getConfig('HAIpAddress'), headers=header)
-				#print(f'{response.text} turn me off on line 234')
+				# print(f'{response.text} turn me off on line 234')
 				if '{"message": "API running."}' in response.text:
 					self.logInfo(f'HomeAssistant Connected')
 
@@ -271,7 +299,7 @@ class HomeAssistant(AliceSkill):
 
 					return False
 			except Exception as e:
-				self.logWarning(f'HomeAssistant failed to start. Don\'t panic..... Suspect you haven\'t added your HomeAssistant IP address in settings yet: {e}')
+				self.logWarning(f'HomeAssistant failed to start. Double check your settings in the skill {e}')
 				return False
 
 
@@ -362,7 +390,7 @@ class HomeAssistant(AliceSkill):
 		"""Returns a list of known friendly names"""
 		return self.databaseFetch(
 			tableName='HomeAssistant',
-			query='SELECT friendlyName FROM :__table__ ',
+			query='SELECT friendlyName FROM :__table__  WHERE deviceGroup != "sensor" ',
 			method='all'
 		)
 
@@ -430,6 +458,7 @@ class HomeAssistant(AliceSkill):
 			siteId=self.getAliceConfig('deviceName')
 		)
 
+
 	def sayConnectionOffline(self, session: DialogSession):
 		self.endDialog(
 			sessionId=session.sessionId,
@@ -437,7 +466,9 @@ class HomeAssistant(AliceSkill):
 			siteId=session.siteId
 		)
 
+
 	def onFiveMinute(self):
+		#"BME680":{"Temperature":25.0,"Humidity":62.7,"DewPoint":17.4,"Pressure":1016.1,"Gas":125.75},"PressureUnit":"hPa","TempUnit":"C"}}
 		if not self.checkConnection():
 			return
 		self.updateDBStates()
@@ -470,3 +501,25 @@ class HomeAssistant(AliceSkill):
 			data['slotTypes'][i]['values'][i]['synonyms'] = self._newSynonymList
 			file.write_text(json.dumps(data, ensure_ascii=False, indent=4))
 			return True
+
+	def processHADataRetrieval(self):
+		# method to reduce complexity value of addHomeAssistantDevices()
+		# clean up any duplicates in the list
+		duplicateList = set(tuple(x) for x in self._entireList)
+		finalList = [list(x) for x in duplicateList]
+		duplicateGroupList = set(tuple(x) for x in self._grouplist)
+		finalGroupList = [list(x) for x in duplicateGroupList]
+		#process group entities
+		for group, value in finalGroupList:
+			self.addEntityToDatabase(entityName=group, friendlyName=value, uID=value, deviceGroup='group')
+		friendlyNameList = list()
+		#process Switch entities
+		for switchItem in finalList:
+			self.addEntityToDatabase(entityName=switchItem[0], friendlyName=switchItem[1], deviceState=switchItem[2], uID=switchItem[1], deviceGroup='switch')
+			self.AddToAliceDB(switchItem[1])
+			friendlyNameList.append(switchItem[1])
+
+		#for sensorItem in self._entireSensorlist:
+		#	print(f' this data will go to telemetry DB eventually {sensorItem} ')
+		for sensorItem in self._dbSensorList:
+			self.addEntityToDatabase(entityName=sensorItem[1], friendlyName=sensorItem[0], uID=sensorItem[0], deviceState=sensorItem[2], deviceGroup='sensor')
