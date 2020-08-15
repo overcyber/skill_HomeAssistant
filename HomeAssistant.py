@@ -141,7 +141,7 @@ class HomeAssistant(AliceSkill):
 			)
 			self.ThreadManager.doLater(
 				interval=10,
-				func=self.saylistOfDeviceViaThread, kwargs="setup"
+				func=self.saylistOfDeviceViaThread
 			)
 		else:
 			self.endDialog(
