@@ -58,19 +58,11 @@ class HomeAssistant(AliceSkill):
 		for name in currentFriendlyNameList:
 			activeFriendlyName.append(name[0])
 
-		if not self._setup:
-			self.endDialog(
-				sessionId=session.sessionId,
-				text=self.randomTalk(text='sayListOfDevices', replace=[activeFriendlyName]),
-				siteId=session.siteId
-			)
-		else:
-			self.endDialog(
-				sessionId=session.sessionId,
-				text=self.randomTalk(text='sayNumberOfDevices', replace=[activeFriendlyName]),
-				siteId=session.siteId
-			)
-			self._setup = True
+		self.endDialog(
+			sessionId=session.sessionId,
+			text=self.randomTalk(text='sayListOfDevices', replace=[activeFriendlyName]),
+			siteId=session.siteId
+		)
 
 
 	@IntentHandler('AddHomeAssistantDevices')
@@ -141,7 +133,7 @@ class HomeAssistant(AliceSkill):
 			)
 			self.ThreadManager.doLater(
 				interval=10,
-				func=self.saylistOfDeviceViaThread
+				func=self.sayNumberOfDeviceViaThread
 			)
 		else:
 			self.endDialog(
@@ -446,7 +438,7 @@ class HomeAssistant(AliceSkill):
 	################# General Methods ###################
 
 
-	def saylistOfDeviceViaThread(self):
+	def sayNumberOfDeviceViaThread(self):
 		currentFriendlyNameList = self.listOfFriendlyNames()
 		activeFriendlyName = list()
 		for name in currentFriendlyNameList:
