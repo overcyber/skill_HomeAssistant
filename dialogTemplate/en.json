@@ -42,7 +42,10 @@
             "enabledByDefault": true,
             "utterances": [
                 "Add my home assistant devices",
-                "update with home assistant devices"
+                "Configure the home assistant skill",
+                "configure home assistant skill",
+                "setup home assistant skill",
+                "reset home assistant skill"
             ]
         },
         {
@@ -103,7 +106,11 @@
                 "What home assistant devices do you know",
                 "what home assistant devices can you control",
                 "tell me what my home assistant devices are please",
-                "what can you turn on or off"
+                "what can you turn on or off",
+                "what can you turn on and off",
+                "what switches can you turn on or off",
+                "what are the switches you can turn on"
+
             ]
         }
     ]

@@ -43,6 +43,7 @@ class HomeAssistant(AliceSkill):
 		self._grouplist = list()
 		self._action = ""
 		self._entity = ""
+		self._setup: bool = False
 
 		super().__init__(databaseSchema=self.DATABASE)
 
@@ -57,11 +58,19 @@ class HomeAssistant(AliceSkill):
 		for name in currentFriendlyNameList:
 			activeFriendlyName.append(name[0])
 
-		self.endDialog(
-			sessionId=session.sessionId,
-			text=self.randomTalk(text='sayListOfDevices', replace=[activeFriendlyName]),
-			siteId=session.siteId
-		)
+		if not self._setup:
+			self.endDialog(
+				sessionId=session.sessionId,
+				text=self.randomTalk(text='sayListOfDevices', replace=[activeFriendlyName]),
+				siteId=session.siteId
+			)
+		else:
+			self.endDialog(
+				sessionId=session.sessionId,
+				text=self.randomTalk(text='sayNumberOfDevices', replace=[activeFriendlyName]),
+				siteId=session.siteId
+			)
+			self._setup = True
 
 
 	@IntentHandler('AddHomeAssistantDevices')
@@ -123,6 +132,7 @@ class HomeAssistant(AliceSkill):
 
 		self.processHADataRetrieval()
 		self.addSynomyns()
+		self._setup = True
 		if self._entireList:
 			self.endDialog(
 				sessionId=session.sessionId,
@@ -131,7 +141,7 @@ class HomeAssistant(AliceSkill):
 			)
 			self.ThreadManager.doLater(
 				interval=10,
-				func=self.saylistOfDeviceViaThread
+				func=self.saylistOfDeviceViaThread, kwargs="setup"
 			)
 		else:
 			self.endDialog(
@@ -472,7 +482,7 @@ class HomeAssistant(AliceSkill):
 				siteIDlist = siteID.split()
 				siteID = siteIDlist[0]
 				siteID.replace(" ", "").lower()
-				# {'Switch1': 'OFF', 'Switch2': 'ON', 'Illuminance': 0, 'Temperature': 79.3, 'Humidity': 52.4, 'DewPoint': 60.4}
+
 				if 'temperature' in sensor["deviceType"]:
 					newPayload['TEMPERATURE'] = sensor['deviceState']
 				if 'humidity' in sensor["deviceType"]:
@@ -553,7 +563,7 @@ class HomeAssistant(AliceSkill):
 				self.logDebug(f'The {teleType} reading for the {siteId} is {item[1]} (code triggered line 580 ish)')  # uncomment me to see incoming temperature payload
 			try:
 				if 'TEMPERATURE' in teleType:
-					self.TelemetryManager.storeData(ttype=TelemetryType.TEMPERATURE, value=item[1], service='Whatever', siteId=siteId)
+					self.TelemetryManager.storeData(ttype=TelemetryType.TEMPERATURE, value=item[1], service=self.name, siteId=siteId)
 				elif 'HUMIDITY' in teleType:
 					self.TelemetryManager.storeData(ttype=TelemetryType.HUMIDITY, value=item[1], service=self.name, siteId=siteId)
 				elif 'DEWPOINT' in teleType:
@@ -592,7 +602,7 @@ class HomeAssistant(AliceSkill):
 
 
 	def onBooted(self) -> bool:
-		self.onFiveMinute()
+
 		if 'http://localhost:8123/api/' in self.getConfig("HAIpAddress"):
 			self.logWarning(f'You need to update the HAIpAddress in Homeassistant Skill ==> settings')
 			return False

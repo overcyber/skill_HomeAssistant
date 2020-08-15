@@ -1,8 +1,17 @@
 {
 	"sayListOfDevices": {
 			"default": [
-				"I found {0} new devices which i've added to my Database",
-				"I now have {} devices stored in my memory banks "
+				"I can turn on or off the following. {} ",
+				"These are the devices i can control. {} "
+			],
+			"short": [
+				"i can control. {}"
+				]
+		},
+	"saynumberOfDevices": {
+			"default": [
+				"I found {0} new devices which i've added to my Database. To hear the list ask me. What home assistant devices do you know ? ",
+				"I now have {} devices stored in my memory banks. To hear the list ask me. What can you turn on or off ? "
 			],
 			"short": [
 				"You have {} new devices connected"
@@ -52,9 +61,9 @@
 		},
 	"addHomeAssistantDevices": {
 			"default": [
-				"Ok let's do this, give me a moment to sort this out for you. Once I'm finished you'll need to restart me",
-				"This may take a moment or two, remember to restart me after i've read out the list of devices to you",
-				"All over it. you'll have to restart me after i've read out the list of devices to you"
+				"Ok let's do this, give me a moment to sort this out for you. Once i'm finished you'll need to restart me",
+				"This may take a moment or two, remember to restart me after i've told you how many devices i've found",
+				"All over it. you'll have to restart me after i've read out the number of devices found"
 			],
 			"short": [
 				"no problem, give me a minute to configure",
