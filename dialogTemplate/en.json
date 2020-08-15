@@ -12,35 +12,7 @@
                 {
                     "value": "bedroom light",
                     "synonyms": [
-                        "light controllers",
-                        "all main lights",
-                        "outside lights",
-                        "media items",
-                        "weather",
-                        "climate control",
-                        "people",
-                        "bedroom lights",
-                        "randoms",
-                        "lounge lights",
-                        "kitchen lights",
-                        "bathroom lights",
-                        "round lights",
-                        "couch light",
-                        "sonoff",
-                        "sonoff2",
-                        "laptop charger",
-                        "pillow light",
-                        "sink light",
-                        "toilet light",
-                        "awning light",
-                        "rain water pump",
-                        "main light",
-                        "diesel heater",
-                        "entrance light",
-                        "air conditioning",
-                        "window light",
-                        "coffee machine",
-                        "external light"
+
                     ]
                 }
             ]
