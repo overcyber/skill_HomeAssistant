@@ -33,6 +33,25 @@
                     ]
                 }
             ]
+        },
+        {
+            "name": "Sun",
+            "matchingStrictness": null,
+            "automaticallyExtensible": true,
+            "useSynonyms": true,
+            "values": [
+                {
+                    "value": "sun",
+                    "synonyms": [
+                        "position",
+                        "dawm",
+                        "rising",
+                        "setting",
+                        "dusk"
+
+                    ]
+                }
+            ]
         }
     ],
     "intents": [
@@ -83,10 +102,7 @@
             "enabledByDefault": true,
             "utterances": [
                 "what is the state of the {kitchen light:=>DeviceState}",
-                "whats the state of the {toilet light:=>DeviceState}",
-                "what's the state of the {sun:=>DeviceState}",
-                "when is {sunrise:=>DeviceState}",
-                "when is {sunset:=>DeviceState}"
+                "what's the state of the {toilet light:=>DeviceState}"
             ],
             "slots": [
                 {
@@ -94,6 +110,30 @@
                     "description": null,
                     "required": false,
                     "type": "switchNames",
+                    "missingQuestion": ""
+                }
+            ]
+        },
+        {
+            "name": "HomeAssistantSun",
+            "description": "Returns sun information",
+            "enabledByDefault": true,
+            "utterances": [
+                "when is {sunrise:=>sunState}",
+                "when is the next {sunset:=>sunState}",
+                "what {position:=>sunState} is the sun",
+                "when's the next {sunrise:=>sunState}",
+                "when will {dusk:=>sunState} be next",
+                "what time is {sunrise:=>sunState}",
+                "how long until {sunset:=>sunState} ",
+                "when's {sunset:=>sunState}"
+            ],
+            "slots": [
+                {
+                    "name": "sunState",
+                    "description": null,
+                    "required": false,
+                    "type": "Sun",
                     "missingQuestion": ""
                 }
             ]
