@@ -33,9 +33,9 @@ class HomeAssistant(AliceSkill):
 	}
 
 
-	# todo Add Ipaddress
+	# todo Add Ipaddress's
 	# todo add further sensor support ?
-	#todo CLEAN UP CODE so its more readable and efficent
+	# todo CLEAN UP CODE so its more readable and efficent
 	def __init__(self):
 		self._entityId = list()
 		self._broadcastFlag = threading.Event()
@@ -56,7 +56,7 @@ class HomeAssistant(AliceSkill):
 
 	############################### INTENT HANDLERS #############################
 
-
+	# Returns what Devices Alice knows about
 	@IntentHandler('WhatHomeAssistantDevices')
 	def sayListOfDevices(self, session: DialogSession):
 		currentFriendlyNameList = self.listOfFriendlyNames()
@@ -71,6 +71,8 @@ class HomeAssistant(AliceSkill):
 		)
 
 
+	# todo merge this with similair code further down
+	# Used to reduce complexity reading of calling method
 	def siftThroughJson(self, item):
 
 		if 'device_class' in item["attributes"]:
@@ -111,6 +113,7 @@ class HomeAssistant(AliceSkill):
 
 			self._entityId = listOfEntitiesToStore
 			self._friendlyName = item["attributes"]["friendly_name"]
+
 
 	@IntentHandler('AddHomeAssistantDevices')
 	def addHomeAssistantDevices(self, session: DialogSession):
@@ -397,7 +400,7 @@ class HomeAssistant(AliceSkill):
 		locationID = self.LocationManager.getLocation(location='StoreRoom')
 		locationID = locationID.id
 
-		values = {'typeID': 3, 'uid': uID, 'locationID': locationID, 'name': uID, 'display': "{'x': '10', 'y': '10', 'rotation': 0, 'width': 45, 'height': 45}"}
+		values = {'typeID': 3, 'uid': uID, 'locationID': locationID, 'name': uID, 'display': "{'x': '10', 'y': '10', 'rotation': 0, 'width': 45, 'height': 45}", 'skillName': self.name}
 		self.DatabaseManager.insert(tableName=self.DeviceManager.DB_DEVICE, values=values, callerName=self.DeviceManager.name)
 
 
@@ -421,14 +424,19 @@ class HomeAssistant(AliceSkill):
 
 	# noinspection SqlResolve
 	def deleteAliceHADatabaseEntries(self):
+		""""
+		 Deletes values from Alice's devices table if name value is HomeAssistant
+
+		"""
 		self.DatabaseManager.delete(
 			tableName=self.DeviceManager.DB_DEVICE,
-			query='DELETE FROM :__table__ WHERE name IS NOT NULL ',
+			query='DELETE FROM :__table__ WHERE skillName = "HomeAssistant" ',
 			callerName=self.DeviceManager.name
 		)
 
 
 	def deleteHomeAssistantDBEntries(self):
+		""" Deletes the entire database table from the Homeassistant Table"""
 		self.DatabaseManager.delete(
 			tableName='HomeAssistant',
 			query='DELETE FROM :__table__ ',
@@ -556,6 +564,7 @@ class HomeAssistant(AliceSkill):
 		)
 
 
+	# todo OnFive - quick reference point
 	def onFiveMinute(self):
 		if not self.checkConnection():
 			return
@@ -565,8 +574,7 @@ class HomeAssistant(AliceSkill):
 		for sensor in sensorDBrows:
 
 			if not 'unavailable' in sensor['deviceState'] and not 'unknown' in sensor['deviceState']:
-				if self.getConfig('DebugMode'):
-					self.logDebug(f'device type in upDateDBStates is {sensor["deviceType"]} code triggered around line 499')
+
 				newPayload = dict()
 				siteID: str = sensor["uID"]
 				siteIDlist = siteID.split()
@@ -584,6 +592,8 @@ class HomeAssistant(AliceSkill):
 				if 'dewpoint' in sensor["deviceType"]:
 					newPayload['DEWPOINT'] = sensor['deviceState']
 
+				if self.getConfig('DebugMode'):
+					self.logDebug(f'upDateDBStates Method = "deviceType" is {sensor["deviceType"]} code triggered around line 587')
 				if newPayload:
 					try:
 						self.sendToTelemetry(newPayload=newPayload, siteId=siteID)

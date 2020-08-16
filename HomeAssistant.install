@@ -6,7 +6,7 @@
     "author": "Lazza",
     "maintainers": [],
     "desc": "Connect alice to your home assistant",
-    "aliceMinVersion": "1.0.0-b1",
+    "aliceMinVersion": "1.0.0-b2",
     "systemRequirements": [
         ""
     ],
