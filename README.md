@@ -27,7 +27,7 @@ temperature for example. (still work in progress but the data is there)
 commands that control groups of switch.<entityName> devices. 
 
 Device states get updated every 5 minutes or when you ask " whats the state of the *device name*"
-
+It will also tell you how long until sunset, sunrise, dusk and dawn.
 
 *Pre Req's* -
 - Make sure you're running the latest version of Home Assistant ( minimum is version 0107.5)
@@ -68,7 +68,7 @@ for now but, to keep a tidy house keeps Alice happy :)
 
 7.Restart Alice and ask her to :
 - "Hey Snips/Alice"
-- "Add my home assistant devices"
+- "setup home assistant skill" 
 
 You really only need to ask that once. By asking that she will
 
@@ -84,10 +84,9 @@ Once setup is completed (takes 30 seconds or so) you should be able to ask
 EG: turn off the bathroom light
 
 - "Hey Alice/Snips"
-- whats the state of the pool pump
+- what's the state of the pool pump
 
 **Future additions**
-- Add sun events like sunrise and sunset times
 - Capture various types of sensor data for possble use in other skills ?
 - Tell you the IP of a requested device
 
@@ -108,3 +107,8 @@ Some examples of what to say
 - "What home assistant devices do you know",
 - "tell me what my home assistant devices are please",
 - "what can you turn on or off"
+
+- when is sunrise
+- when is sunset
+- what state is the sun
+- how long until dusk

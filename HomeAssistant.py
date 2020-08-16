@@ -3,6 +3,10 @@ import re
 import json
 import requests
 
+from datetime import datetime
+from dateutil import tz
+import pytz
+
 from core.base.model.AliceSkill import AliceSkill
 from core.dialog.model.DialogSession import DialogSession
 from core.util.Decorators import IntentHandler
@@ -44,6 +48,7 @@ class HomeAssistant(AliceSkill):
 		self._action = ""
 		self._entity = ""
 		self._setup: bool = False
+		self._sunState: tuple
 
 		super().__init__(databaseSchema=self.DATABASE)
 
@@ -181,13 +186,6 @@ class HomeAssistant(AliceSkill):
 			self.sayConnectionOffline(session)
 			return
 
-		if 'sun' in session.slotRawValue('DeviceState') or 'sunrise' in session.slotRawValue('DeviceState') or 'sunset' in session.slotRawValue('DeviceState'):
-			self.endDialog(
-				sessionId=session.sessionId,
-				text=self.randomTalk(text='getDeviceStateError'),
-				siteId=session.siteId
-			)
-			return
 		if 'DeviceState' in session.slots:
 			entityName = self.getDatabaseEntityID(uid=session.slotRawValue("DeviceState"))
 
@@ -206,6 +204,62 @@ class HomeAssistant(AliceSkill):
 				text=self.randomTalk(text='getActiveDeviceState', replace=[session.slotRawValue("DeviceState"), entityState]),
 				siteId=session.siteId
 			)
+
+
+	@IntentHandler('HomeAssistantSun')
+	def sunData(self, session: DialogSession):
+		"""Returns various states of the sun"""
+		if not self.checkConnection():
+			self.sayConnectionOffline(session)
+			return
+
+		# connect to the HomeAssistant API/States to retrieve sun values
+		header, url = self.retrieveAuthHeader(urlPath='states')
+		data = get(url, headers=header).json()
+
+		# Loop through the incoming json payload to grab the Sun data that we need
+		for item in data:
+
+			if isinstance(item, dict) and 'friendly_name' in item["attributes"] and 'Sun' in item["attributes"]['friendly_name']:
+
+				self._sunState = item["attributes"]['friendly_name'], item["attributes"]['next_dawn'], item["attributes"]['next_dusk'], item["attributes"]['next_rising'], item["attributes"]['next_setting'], item['state']
+		# print(f'frindlyName is {self._sunState[0]} next dawn is {self._sunState[1]} next dusk is {self._sunState[2]} next rising is {self._sunState[3]} and next setting is {self._sunState[4]} state is {self._sunState[5]}')
+
+		request = session.slotRawValue('sunState')
+		if 'position' in request:
+			horizon = self._sunState[5].replace("_", " the ")
+			self.endDialog(
+				sessionId=session.sessionId,
+				text=self.randomTalk(text='sayHorizon', replace=[horizon]),
+				siteId=session.siteId
+			)
+
+		elif 'dusk' in request:
+			dateObj = self.makeDateObjFromString(sunState=self._sunState[2])
+			result, hours, minutes = self.standard_date(dateObj)
+			if result:
+				stateType = 'Next dusk will be on'
+				self.saysunState(session=session, state=stateType, result=result, hours=hours, minutes=minutes)
+		elif 'sunrise' in request:
+			dateObj = self.makeDateObjFromString(sunState=self._sunState[3])
+			result, hours, minutes = self.standard_date(dateObj)
+			if result:
+				stateType = 'The next sunrise will be on'
+				self.saysunState(session=session, state=stateType, result=result, hours=hours, minutes=minutes)
+
+		elif 'dawn' in request:
+			dateObj = self.makeDateObjFromString(sunState=self._sunState[1])
+			result, hours, minutes = self.standard_date(dateObj)
+			if result:
+				stateType = 'The next dawn will be on'
+				self.saysunState(session=session, state=stateType, result=result, hours=hours, minutes=minutes)
+
+		elif 'sunset' in request:
+			dateObj = self.makeDateObjFromString(sunState=self._sunState[4])
+			result, hours, minutes = self.standard_date(dateObj)
+			if result:
+				stateType = 'The sun will go down on'
+				self.saysunState(session=session, state=stateType, result=result, hours=hours, minutes=minutes)
 
 
 	##################### POST AND GET HANDLERS ##############################
@@ -232,6 +286,7 @@ class HomeAssistant(AliceSkill):
 
 					entitiesInDictionaryList: list = item["attributes"]["entity_id"]
 					listOfEntitiesToStore = entitiesInDictionaryList
+
 					self._deviceState = item['state']
 
 					self._entityId = listOfEntitiesToStore
@@ -459,7 +514,6 @@ class HomeAssistant(AliceSkill):
 
 
 	def onFiveMinute(self):
-		# "BME680":{"Temperature":25.0,"Humidity":62.7,"DewPoint":17.4,"Pressure":1016.1,"Gas":125.75},"PressureUnit":"hPa","TempUnit":"C"}}
 		if not self.checkConnection():
 			return
 
@@ -622,3 +676,52 @@ class HomeAssistant(AliceSkill):
 	@property
 	def broadcastFlag(self) -> threading.Event:
 		return self._broadcastFlag
+
+
+	@staticmethod
+	def makeDateObjFromString(sunState: str):
+		"""Takes HA's UTC string and turns it to a datetime object"""
+		utcDatetime = datetime.strptime(sunState, "%Y-%m-%dT%H:%M:%S%z")
+		utcDatetimeTimestamp = float(utcDatetime.strftime("%s"))
+		localDatetimeConverted = datetime.fromtimestamp(utcDatetimeTimestamp)
+		return localDatetimeConverted
+
+
+	@staticmethod
+	def standard_date(dt):
+		"""T
+		Takes a naive UTC datetime stamp, Converts it to local timezone,
+		Outputs time between the converted UTC date and hours and minutes until then
+
+		   params:
+                dt: the date in UTC format to convert no TZ info.
+        """
+
+		now = datetime.now()
+		usersTZ = tz.tzlocal()
+
+		# give the naive stamp timezone info
+		utcTimeStamp = dt.replace(tzinfo=pytz.utc)
+
+		# convert from utc to local time
+		haConvertedTimestamp = utcTimeStamp.astimezone(usersTZ)
+		now = now.astimezone(usersTZ)
+
+		diff = haConvertedTimestamp - now
+		timeStampFormat = '%b %d @ %I:%M%p'
+
+		# apply formatting and obtain hours and minute output
+		timeDifferenceResult = haConvertedTimestamp.strftime(timeStampFormat)
+		days, seconds = diff.days, diff.seconds
+		hours = days * 24 + seconds // 3600
+		minutes = (seconds % 3600) // 60
+
+		return timeDifferenceResult, hours, minutes
+
+
+	def saysunState(self, session, state: str, result, hours, minutes):
+		self.endDialog(
+			sessionId=session.sessionId,
+			text=self.randomTalk(text='saySunState', replace=[state, result, hours, minutes]),
+			siteId=session.siteId
+		)

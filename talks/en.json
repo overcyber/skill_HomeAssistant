@@ -82,5 +82,22 @@
 				"Un able to add any switches. Sorry"
 
 			]
-		}
+		},
+	"saySunState": {
+			"default": [
+				"{0}{1} so that will be in {2} hours and {3} minutes"
+			],
+			"short": [
+				"{0}{1} so that will be in {2} hours and {3} minutes"
+
+			]
+		},
+	"sayHorizon": {
+		"default": [
+			"The sun is currently {0}"
+		],
+		"short": [
+			"The sun is currently {0}"
+		]
+	}
 }
