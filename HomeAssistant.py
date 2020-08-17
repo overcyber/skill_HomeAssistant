@@ -83,7 +83,7 @@ class HomeAssistant(AliceSkill):
 			self._dbSensorList.append(dbSensorList)
 		try:
 			if 'DewPoint' in item["attributes"]["friendly_name"]:
-				sensorType: str  = 'dewpoint'
+				sensorType: str = 'dewpoint'
 				sensorFriendlyName: str = item["attributes"]["friendly_name"]
 				sensorFriendlyName = sensorFriendlyName.lower()
 				sensorEntity: str = item["entity_id"]
@@ -105,10 +105,10 @@ class HomeAssistant(AliceSkill):
 				if 'switch.' in item["entity_id"]:
 					switchFriendlyname: str = item["attributes"]["friendly_name"]
 					switchFriendlyname = switchFriendlyname.lower()
-					switchList = [item["entity_id"], switchFriendlyname, item['state'] ]
+					switchList = [item["entity_id"], switchFriendlyname, item['state']]
 					self._switchAndGroupList.append(switchList)
 				else:
-					groupFriendlyname:str  = item["attributes"]["friendly_name"]
+					groupFriendlyname: str = item["attributes"]["friendly_name"]
 					groupFriendlyname = groupFriendlyname.lower()
 					groupList = [item["entity_id"], groupFriendlyname]
 					self._grouplist.append(groupList)
@@ -118,10 +118,9 @@ class HomeAssistant(AliceSkill):
 			pass
 
 
-
 	@IntentHandler('AddHomeAssistantDevices')
 	def addHomeAssistantDevices(self, session: DialogSession):
-		if not self.checkConnection(): #If not connected to HA, say so and stop
+		if not self.checkConnection():  # If not connected to HA, say so and stop
 			self.sayConnectionOffline(session)
 			return
 
@@ -169,7 +168,8 @@ class HomeAssistant(AliceSkill):
 				siteId=session.siteId
 			)
 
-	#Do the actual switching via here
+
+	# Do the actual switching via here
 	@IntentHandler('HomeAssistantAction')
 	def homeAssistantSwitchDevice(self, session: DialogSession):
 		if not self.checkConnection():
@@ -177,7 +177,7 @@ class HomeAssistant(AliceSkill):
 			return
 
 		if 'on' in session.slotRawValue('OnOrOff') or 'open' in session.slotRawValue('OnOrOff'):
-			self._action = "turn_on" #Set HA compatible on command
+			self._action = "turn_on"  # Set HA compatible on command
 		elif 'off' in session.slotRawValue('OnOrOff') or 'close' in session.slotRawValue('OnOrOff'):
 			self._action = "turn_off"
 
@@ -199,7 +199,8 @@ class HomeAssistant(AliceSkill):
 				siteId=session.siteId
 			)
 
-	#Get the state of a single device
+
+	# Get the state of a single device
 	@IntentHandler('HomeAssistantState')
 	def getDeviceState(self, session: DialogSession):
 		if not self.checkConnection():
@@ -242,7 +243,7 @@ class HomeAssistant(AliceSkill):
 
 			if isinstance(item, dict) and 'friendly_name' in item["attributes"] and 'Sun' in item["attributes"]['friendly_name']:
 
-				self._sunState	= item["attributes"]['friendly_name'], item["attributes"]['next_dawn'], item["attributes"]['next_dusk'], item["attributes"]['next_rising'], item["attributes"]['next_setting'], item['state']
+				self._sunState = item["attributes"]['friendly_name'], item["attributes"]['next_dawn'], item["attributes"]['next_dusk'], item["attributes"]['next_rising'], item["attributes"]['next_setting'], item['state']
 
 		request = session.slotRawValue('sunState')
 		if 'position' in request:
@@ -308,7 +309,7 @@ class HomeAssistant(AliceSkill):
 				self.logDebug(f'I\'m updating {switchItem} with state {state}')
 				self.logDebug(f'')
 
-			#Locate entity in HA database and update it's state
+			# Locate entity in HA database and update it's state
 			if self.getDatabaseEntityID(uid=uid):
 				self.updateSwitchValueInDB(key=switchItem, value=state)
 
@@ -318,7 +319,7 @@ class HomeAssistant(AliceSkill):
 				self.logDebug(f'')
 				self.logDebug(f'i\'m updating the sensor {sensorName} with state {state}')
 
-			#Locate sensor in the database and update it's value
+			# Locate sensor in the database and update it's value
 			if self.getDatabaseEntityID(uid=sensorName):
 				self.updateSwitchValueInDB(key=sensorName, value=state)
 
@@ -338,7 +339,7 @@ class HomeAssistant(AliceSkill):
 
 		if urlAction:
 			url = f'{self.getConfig("HAIpAddress")}{urlPath}{urlAction}'
-		else: #else is used for checking HA connection and boot up
+		else:  # else is used for checking HA connection and boot up
 			url = f'{self.getConfig("HAIpAddress")}{urlPath}'
 
 		return header, url
@@ -539,7 +540,6 @@ class HomeAssistant(AliceSkill):
 		)
 
 
-
 	def onFiveMinute(self):
 		if not self.checkConnection():
 			return
@@ -556,7 +556,7 @@ class HomeAssistant(AliceSkill):
 				siteIDlist = siteID.split()
 
 				siteID = siteIDlist[0]
-				#clean up siteID and make it all lowercase so less errors when using text widget
+				# clean up siteID and make it all lowercase so less errors when using text widget
 				siteID.replace(" ", "").lower()
 
 				if 'temperature' in sensor["deviceType"]:
@@ -631,7 +631,7 @@ class HomeAssistant(AliceSkill):
 			self.addEntityToDatabase(entityName=switchItem[0], friendlyName=switchItem[1], deviceState=switchItem[2], uID=switchItem[1], deviceGroup='switch')
 
 			self.AddToAliceDB(switchItem[1])
-			#friendlyNameList.append(switchItem[1])
+		# friendlyNameList.append(switchItem[1])
 
 		# Process Sensor entities
 		for sensorItem in self._dbSensorList:
@@ -706,7 +706,6 @@ class HomeAssistant(AliceSkill):
 					self.logDebug(f' The header is {header} ')
 					self.logDebug(f'The Url is {url} (note: nana on the end is ignored in this instance)')
 					self.logDebug(f'')
-
 
 				if '{"message": "API running."}' in response.text:
 					self.logInfo(f'HomeAssistant Connected')
