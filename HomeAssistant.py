@@ -7,11 +7,11 @@ from datetime import datetime
 from dateutil import tz
 import pytz
 
-from core.base.model.AliceSkill import AliceSkill
-from core.dialog.model.DialogSession import DialogSession
-from core.util.Decorators import IntentHandler
+from core.base.model.AliceSkill import AliceSkill #NOSONAR
+from core.dialog.model.DialogSession import DialogSession #NOSONAR
+from core.util.Decorators import IntentHandler #NOSONAR
 from requests import get
-from core.util.model.TelemetryType import TelemetryType
+from core.util.model.TelemetryType import TelemetryType #NOSONAR
 
 
 class HomeAssistant(AliceSkill):
@@ -72,7 +72,6 @@ class HomeAssistant(AliceSkill):
 		)
 
 
-	# todo merge this with similair code further down and fix exception
 	# Used to reduce complexity reading of calling method
 	def sortThroughJson(self, item):
 
@@ -80,29 +79,29 @@ class HomeAssistant(AliceSkill):
 			sensorType: str = item["attributes"]["device_class"]
 			sensorFriendlyName: str = item["attributes"]["friendly_name"]
 			sensorFriendlyName = sensorFriendlyName.lower()
-			sensorentity: str = item["entity_id"]
+			sensorEntity: str = item["entity_id"]
 			sensorValue: str = item["state"]
 
-			dbSensorList = [sensorFriendlyName, sensorentity, sensorValue, sensorType]
+			dbSensorList = [sensorFriendlyName, sensorEntity, sensorValue, sensorType]
 			self._dbSensorList.append(dbSensorList)
 		try:
 			if 'DewPoint' in item["attributes"]["friendly_name"]:
 				sensorType: str  = 'dewpoint'
 				sensorFriendlyName: str = item["attributes"]["friendly_name"]
 				sensorFriendlyName = sensorFriendlyName.lower()
-				sensorentity: str = item["entity_id"]
+				sensorEntity: str = item["entity_id"]
 				sensorValue: str = item["state"]
 
-				dbSensorList = [sensorFriendlyName, sensorentity, sensorValue, sensorType]
+				dbSensorList = [sensorFriendlyName, sensorEntity, sensorValue, sensorType]
 				self._dbSensorList.append(dbSensorList)
 			if 'Gas' in item["attributes"]["friendly_name"]:
 				sensorType: str = 'gas'
 				sensorFriendlyName: str = item["attributes"]["friendly_name"]
 				sensorFriendlyName = sensorFriendlyName.lower()
-				sensorentity: str = item["entity_id"]
+				sensorEntity: str = item["entity_id"]
 				sensorValue = item["state"]
 
-				dbSensorList = [sensorFriendlyName, sensorentity, sensorValue, sensorType]
+				dbSensorList = [sensorFriendlyName, sensorEntity, sensorValue, sensorType]
 				self._dbSensorList.append(dbSensorList)
 
 			if 'switch.' in item["entity_id"] or 'group.' in item["entity_id"] and item["entity_id"] not in self._switchAndGroupList:
@@ -120,8 +119,7 @@ class HomeAssistant(AliceSkill):
 
 		except Exception:
 			pass
-		self._entityId = self._switchAndGroupList
-		self._entireList = self._entityId
+
 
 
 	@IntentHandler('AddHomeAssistantDevices')
@@ -134,10 +132,12 @@ class HomeAssistant(AliceSkill):
 		header, url = self.retrieveAuthHeader(urlPath='states')
 		data = get(url, headers=header).json()
 		if self.getConfig('DebugMode'):
+			self.logDebug(f'********* COPY THE FOLLOWING JSON PAYLOAD **********')
+			self.logDebug(f'')
 			self.logDebug(f'{data}')
-			print("")
-			self.logInfo(f' You\'ll probably need to be in manual start mode to copy the above debug message - code triggered around line 80')
-			print("")
+			self.logDebug(f'')
+			self.logInfo(f' You\'ll probably need to be in manual start mode to copy the above debug message ')
+			self.logDebug(f'')
 		# delete and existing values in DB so we can update with a fresh list of Devices
 		self.deleteAliceHADatabaseEntries()
 		self.deleteHomeAssistantDBEntries()
@@ -292,69 +292,21 @@ class HomeAssistant(AliceSkill):
 		for item in data:
 
 			if isinstance(item, dict):
-				try:
+				self.sortThroughJson(item=item)
 
-					if 'device_class' in item["attributes"]:
-						sensorFriendlyName: str = item["attributes"]["friendly_name"]
-						sensorFriendlyName = sensorFriendlyName.lower()
-						sensorentity: str = item["entity_id"]
-						sensorValue = item["state"]
-						sensorType: str = item["attributes"]["device_class"]
-						dbSensorList = [sensorFriendlyName, sensorentity, sensorValue, sensorType]
-
-						self._dbSensorList.append(dbSensorList)
-
-					if 'DewPoint' in item["attributes"]["friendly_name"]:
-						sensorType: str = 'dewpoint'
-						sensorFriendlyName: str = item["attributes"]["friendly_name"]
-						sensorFriendlyName = sensorFriendlyName.lower()
-						sensorentity: str = item["entity_id"]
-						sensorValue = item["state"]
-
-						dbSensorList = [sensorFriendlyName, sensorentity, sensorValue, sensorType]
-						self._dbSensorList.append(dbSensorList)
-
-					if 'Gas' in item["attributes"]["friendly_name"]:
-						sensorType: str = 'gas'
-						sensorFriendlyName: str = item["attributes"]["friendly_name"]
-						sensorFriendlyName = sensorFriendlyName.lower()
-						sensorentity: str = item["entity_id"]
-						sensorValue = item["state"]
-
-						dbSensorList = [sensorFriendlyName, sensorentity, sensorValue, sensorType]
-						self._dbSensorList.append(dbSensorList)
-
-					if 'entity_id' in item["attributes"]:
-
-						entitiesInDictionaryList: list = item["attributes"]["entity_id"]
-						listOfEntitiesToStore = entitiesInDictionaryList
-
-						self._deviceState = item['state']
-
-						self._entityId = listOfEntitiesToStore
-				except:
-					continue
-
-				for i in self._entityId:
-					if 'switch.' in i:
-						uid = re.sub('switch.', '', i)
-						uid = re.sub('_', ' ', uid)
-						uid = uid.lower()
-						currentlist = [i, uid, self._deviceState]
-						self._entireList.append(currentlist)
-
-		duplicateList = set(tuple(x) for x in self._entireList)
-		finalList = [list(x) for x in duplicateList]
-
-		for switchItem, uid, state in finalList:
+		for switchItem, uid, state in self._switchAndGroupList:
 			if self.getConfig('DebugMode'):
-				self.logDebug(f'i\'m updating {switchItem} with state {state}')
+				self.logDebug(f'********* updateDBStates code **********')
+				self.logDebug(f'')
+				self.logDebug(f'I\'m updating {switchItem} with state {state}')
+				self.logDebug(f'')
 			if self.getDatabaseEntityID(uid=uid):
 				self.updateSwitchValueInDB(key=switchItem, value=state)
 
 		for sensorName, entity, state, haClass in self._dbSensorList:
 			if self.getConfig('DebugMode'):
-				self.logDebug('i\'m updating the sensor {sensorName} with state {state}')
+				self.logDebug(f'')
+				self.logDebug(f'i\'m updating the sensor {sensorName} with state {state}')
 			if self.getDatabaseEntityID(uid=sensorName):
 				self.updateSwitchValueInDB(key=sensorName, value=state)
 
@@ -596,7 +548,10 @@ class HomeAssistant(AliceSkill):
 					newPayload['DEWPOINT'] = sensor['deviceState']
 
 				if self.getConfig('DebugMode'):
-					self.logDebug(f'upDateDBStates Method = "deviceType" is {sensor["deviceType"]} code triggered around line 587')
+					self.logDebug(f'*************** OnFiveMinute Timer code ***********')
+					self.logDebug(f'')
+					self.logDebug(f'upDateDBStates Method = "deviceType" is {sensor["deviceType"]} ')
+					self.logDebug(f'')
 				if newPayload:
 					try:
 						self.sendToTelemetry(newPayload=newPayload, siteId=siteID)
@@ -636,7 +591,7 @@ class HomeAssistant(AliceSkill):
 	def processHADataRetrieval(self):
 		# extra method to reduce complexity value of addHomeAssistantDevices()
 		# clean up any duplicates in the list
-		duplicateList = set(tuple(x) for x in self._entireList)
+		duplicateList = set(tuple(x) for x in self._switchAndGroupList)
 
 		finalList = [list(x) for x in duplicateList]
 
@@ -665,7 +620,10 @@ class HomeAssistant(AliceSkill):
 			teleType = teleType.upper()
 
 			if self.getConfig('DebugMode'):
-				self.logDebug(f'The {teleType} reading for the {siteId} is {item[1]} (code triggered line 580 ish)')  # uncomment me to see incoming temperature payload
+				self.logDebug(f'*************** Send to Telemetry code ***************')
+				self.logDebug(f'')
+				self.logDebug(f'The {teleType} reading for the {siteId} is {item[1]} ')  # uncomment me to see incoming temperature payload
+				self.logDebug(f'')
 			try:
 				if 'TEMPERATURE' in teleType:
 					self.TelemetryManager.storeData(ttype=TelemetryType.TEMPERATURE, value=item[1], service=self.name, siteId=siteId)
@@ -716,9 +674,12 @@ class HomeAssistant(AliceSkill):
 				header, url = self.retrieveAuthHeader('na', 'na')
 				response = get(self.getConfig('HAIpAddress'), headers=header)
 				if self.getConfig('DebugMode'):
+					self.logDebug(f'*************** OnBooted code ***********')
+					self.logDebug(f'')
 					self.logDebug(f'{response.text} - onBooted connection code')
 					self.logDebug(f' The header is {header} ')
-					self.logDebug(f'The Url is {url} ')
+					self.logDebug(f'The Url is {url} (note: nana on the end is ignored in this instance)')
+					self.logDebug(f'')
 				if '{"message": "API running."}' in response.text:
 					self.logInfo(f'HomeAssistant Connected')
 

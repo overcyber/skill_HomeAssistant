@@ -12,7 +12,39 @@
                 {
                     "value": "bedroom light",
                     "synonyms": [
-
+                        "bathroom lights",
+                        "people",
+                        "light controllers",
+                        "lounge lights",
+                        "weather",
+                        "default_view",
+                        "outside lights",
+                        "climate control",
+                        "media items",
+                        "kitchen lights",
+                        "all main lights",
+                        "bedroom lights",
+                        "random items",
+                        "spare",
+                        "sink light",
+                        "entrance light",
+                        "pillow light",
+                        "ute power",
+                        "main light",
+                        "fridge fan",
+                        "diesel heater on",
+                        "rain water pump",
+                        "240 power",
+                        "couch light",
+                        "diesel heater off",
+                        "awning light",
+                        "hvac",
+                        "toilet light",
+                        "mirror light",
+                        "window light",
+                        "laptop charger",
+                        "round lights",
+                        "external light"
                     ]
                 }
             ]
@@ -48,7 +80,6 @@
                         "rising",
                         "setting",
                         "dusk"
-
                     ]
                 }
             ]
