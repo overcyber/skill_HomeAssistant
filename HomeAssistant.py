@@ -1,5 +1,4 @@
 import threading
-import re
 import json
 import requests
 
@@ -7,11 +6,11 @@ from datetime import datetime
 from dateutil import tz
 import pytz
 
-from core.base.model.AliceSkill import AliceSkill #NOSONAR
-from core.dialog.model.DialogSession import DialogSession #NOSONAR
-from core.util.Decorators import IntentHandler #NOSONAR
+from core.base.model.AliceSkill import AliceSkill
+from core.dialog.model.DialogSession import DialogSession
+from core.util.Decorators import IntentHandler
 from requests import get
-from core.util.model.TelemetryType import TelemetryType #NOSONAR
+from core.util.model.TelemetryType import TelemetryType
 
 
 class HomeAssistant(AliceSkill):
@@ -35,7 +34,7 @@ class HomeAssistant(AliceSkill):
 
 	# todo Add Ipaddress's
 	# todo add further sensor support ?
-	# todo CLEAN UP CODE so its more readable and efficent
+	# todo CLEAN UP CODE so its more readable and efficent and Psycho friendly
 	def __init__(self):
 		self._entityId = list()
 		self._broadcastFlag = threading.Event()
@@ -50,7 +49,7 @@ class HomeAssistant(AliceSkill):
 		self._action = ""
 		self._entity = ""
 		self._setup: bool = False
-		self._sunState: tuple
+		self._sunState = tuple
 
 		super().__init__(databaseSchema=self.DATABASE)
 
@@ -190,7 +189,7 @@ class HomeAssistant(AliceSkill):
 			header, url = self.retrieveAuthHeader(urlPath='services/switch/', urlAction=self._action)
 
 			jsonData = {"entity_id": self._entity}
-			responce = requests.request("POST", url=url, headers=header, json=jsonData)
+			requests.request("POST", url=url, headers=header, json=jsonData)
 
 			self.endDialog(
 				sessionId=session.sessionId,
@@ -241,7 +240,7 @@ class HomeAssistant(AliceSkill):
 
 			if isinstance(item, dict) and 'friendly_name' in item["attributes"] and 'Sun' in item["attributes"]['friendly_name']:
 
-				self._sunState = item["attributes"]['friendly_name'], item["attributes"]['next_dawn'], item["attributes"]['next_dusk'], item["attributes"]['next_rising'], item["attributes"]['next_setting'], item['state']
+				self._sunState	= item["attributes"]['friendly_name'], item["attributes"]['next_dawn'], item["attributes"]['next_dusk'], item["attributes"]['next_rising'], item["attributes"]['next_setting'], item['state']
 
 		request = session.slotRawValue('sunState')
 		if 'position' in request:
@@ -282,7 +281,7 @@ class HomeAssistant(AliceSkill):
 
 	##################### POST AND GET HANDLERS ##############################
 
-	#todo reduce complexity of this method
+
 	def updateDBStates(self):
 		"""Update entity states from a 5 min timer"""
 		header, url = self.retrieveAuthHeader(urlPath='states')
@@ -519,7 +518,7 @@ class HomeAssistant(AliceSkill):
 		)
 
 
-	# todo OnFive - quick reference point
+	# todo OnFive - larry's quick reference point
 	def onFiveMinute(self):
 		if not self.checkConnection():
 			return
