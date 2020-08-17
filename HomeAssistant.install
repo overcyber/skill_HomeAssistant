@@ -5,7 +5,7 @@
     "category": "household",
     "author": "Lazza",
     "maintainers": [],
-    "desc": "Connect alice to your home assistant",
+    "desc": "Connect alice to your home assistant. You can then control any switches you have in Home Assistant . Refer readme for more info",
     "aliceMinVersion": "1.0.0-b2",
     "systemRequirements": [
         ""

@@ -150,7 +150,7 @@ class HomeAssistant(AliceSkill):
 		self.processHADataRetrieval()
 		self.addSynomyns()
 		self._setup = True
-		if self._entireList:
+		if self._switchAndGroupList:
 			self.endDialog(
 				sessionId=session.sessionId,
 				text=self.randomTalk(text='addHomeAssistantDevices'),
