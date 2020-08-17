@@ -11,7 +11,7 @@
         ""
     ],
     "pipRequirements": [
-        ""
+        "pytz"
     ],
     "conditions": {
         "lang": [

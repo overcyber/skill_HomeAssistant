@@ -34,14 +34,12 @@ class HomeAssistant(AliceSkill):
 
 	# todo Add Ipaddress's
 	# todo add further sensor support ?
-	# todo CLEAN UP CODE so its more readable and efficent and Psycho friendly
+	# todo double check code is Pshyco friendly/compatible
 	def __init__(self):
-		self._entityId = list()
 		self._broadcastFlag = threading.Event()
 		self._newSynonymList = list()
 		self._friendlyName = ""
 		self._deviceState = ""
-		self._entireList = list()
 		self._entireSensorlist = list()
 		self._switchAndGroupList = list()
 		self._dbSensorList = list()
@@ -56,7 +54,7 @@ class HomeAssistant(AliceSkill):
 
 	############################### INTENT HANDLERS #############################
 
-	# Returns what Devices Alice knows about
+	# Alice speaks what Devices she knows about
 	@IntentHandler('WhatHomeAssistantDevices')
 	def sayListOfDevices(self, session: DialogSession):
 		currentFriendlyNameList = self.listOfFriendlyNames()
@@ -71,7 +69,7 @@ class HomeAssistant(AliceSkill):
 		)
 
 
-	# Used to reduce complexity reading of calling method
+	# Used for picking required data from incoming JSON (used in two places)
 	def sortThroughJson(self, item):
 
 		if 'device_class' in item["attributes"]:
@@ -123,13 +121,14 @@ class HomeAssistant(AliceSkill):
 
 	@IntentHandler('AddHomeAssistantDevices')
 	def addHomeAssistantDevices(self, session: DialogSession):
-		if not self.checkConnection():
+		if not self.checkConnection(): #If not connected to HA, say so and stop
 			self.sayConnectionOffline(session)
 			return
 
 		# connect to the HomeAssistant API/States to retrieve entity names and values
 		header, url = self.retrieveAuthHeader(urlPath='states')
 		data = get(url, headers=header).json()
+
 		if self.getConfig('DebugMode'):
 			self.logDebug(f'********* COPY THE FOLLOWING JSON PAYLOAD **********')
 			self.logDebug(f'')
@@ -137,6 +136,7 @@ class HomeAssistant(AliceSkill):
 			self.logDebug(f'')
 			self.logInfo(f' You\'ll probably need to be in manual start mode to copy the above debug message ')
 			self.logDebug(f'')
+
 		# delete and existing values in DB so we can update with a fresh list of Devices
 		self.deleteAliceHADatabaseEntries()
 		self.deleteHomeAssistantDBEntries()
@@ -146,9 +146,11 @@ class HomeAssistant(AliceSkill):
 			if isinstance(item, dict):
 				self.sortThroughJson(item=item)
 
-
+		# Split above and below into other methods to reduce complexity complaint from sonar
 		self.processHADataRetrieval()
-		self.addSynomyns()
+		# write friendly names to dialogTemplate as synonyms
+		self.addSynonyms()
+
 		self._setup = True
 		if self._switchAndGroupList:
 			self.endDialog(
@@ -167,7 +169,7 @@ class HomeAssistant(AliceSkill):
 				siteId=session.siteId
 			)
 
-
+	#Do the actual switching via here
 	@IntentHandler('HomeAssistantAction')
 	def homeAssistantSwitchDevice(self, session: DialogSession):
 		if not self.checkConnection():
@@ -175,7 +177,7 @@ class HomeAssistant(AliceSkill):
 			return
 
 		if 'on' in session.slotRawValue('OnOrOff') or 'open' in session.slotRawValue('OnOrOff'):
-			self._action = "turn_on"
+			self._action = "turn_on" #Set HA compatible on command
 		elif 'off' in session.slotRawValue('OnOrOff') or 'close' in session.slotRawValue('OnOrOff'):
 			self._action = "turn_off"
 
@@ -197,7 +199,7 @@ class HomeAssistant(AliceSkill):
 				siteId=session.siteId
 			)
 
-
+	#Get the state of a single device
 	@IntentHandler('HomeAssistantState')
 	def getDeviceState(self, session: DialogSession):
 		if not self.checkConnection():
@@ -210,7 +212,7 @@ class HomeAssistant(AliceSkill):
 			# get info from HomeAssitant
 			header, url = self.retrieveAuthHeader(urlPath='states/', urlAction=entityName["entityName"])
 			stateResponce = requests.get(url=url, headers=header)
-			# print(stateResponce.text) disable me at line 179-ish
+			# print(stateResponce.text) disable me at line 215-ish
 			data = stateResponce.json()
 
 			entityID = data['entity_id']
@@ -254,12 +256,15 @@ class HomeAssistant(AliceSkill):
 		elif 'dusk' in request:
 			dateObj = self.makeDateObjFromString(sunState=self._sunState[2])
 			result, hours, minutes = self.standard_date(dateObj)
+
 			if result:
 				stateType = 'Next dusk will be on'
 				self.saysunState(session=session, state=stateType, result=result, hours=hours, minutes=minutes)
+
 		elif 'sunrise' in request:
 			dateObj = self.makeDateObjFromString(sunState=self._sunState[3])
 			result, hours, minutes = self.standard_date(dateObj)
+
 			if result:
 				stateType = 'The next sunrise will be on'
 				self.saysunState(session=session, state=stateType, result=result, hours=hours, minutes=minutes)
@@ -267,6 +272,7 @@ class HomeAssistant(AliceSkill):
 		elif 'dawn' in request:
 			dateObj = self.makeDateObjFromString(sunState=self._sunState[1])
 			result, hours, minutes = self.standard_date(dateObj)
+
 			if result:
 				stateType = 'The next dawn will be on'
 				self.saysunState(session=session, state=stateType, result=result, hours=hours, minutes=minutes)
@@ -274,6 +280,7 @@ class HomeAssistant(AliceSkill):
 		elif 'sunset' in request:
 			dateObj = self.makeDateObjFromString(sunState=self._sunState[4])
 			result, hours, minutes = self.standard_date(dateObj)
+
 			if result:
 				stateType = 'The sun will go down on'
 				self.saysunState(session=session, state=stateType, result=result, hours=hours, minutes=minutes)
@@ -294,18 +301,24 @@ class HomeAssistant(AliceSkill):
 				self.sortThroughJson(item=item)
 
 		for switchItem, uid, state in self._switchAndGroupList:
+
 			if self.getConfig('DebugMode'):
 				self.logDebug(f'********* updateDBStates code **********')
 				self.logDebug(f'')
 				self.logDebug(f'I\'m updating {switchItem} with state {state}')
 				self.logDebug(f'')
+
+			#Locate entity in HA database and update it's state
 			if self.getDatabaseEntityID(uid=uid):
 				self.updateSwitchValueInDB(key=switchItem, value=state)
 
 		for sensorName, entity, state, haClass in self._dbSensorList:
+
 			if self.getConfig('DebugMode'):
 				self.logDebug(f'')
 				self.logDebug(f'i\'m updating the sensor {sensorName} with state {state}')
+
+			#Locate sensor in the database and update it's value
 			if self.getDatabaseEntityID(uid=sensorName):
 				self.updateSwitchValueInDB(key=sensorName, value=state)
 
@@ -313,8 +326,10 @@ class HomeAssistant(AliceSkill):
 	def retrieveAuthHeader(self, urlPath: str, urlAction: str = None):
 		"""
 		Sets up and returns the Request Header file and url
+
 		:param urlPath - sets the path such as services/Switch/
 		:param urlAction - sets the action such as turn_on or turn_off
+
 		EG: useage - header, url = self.requestAuthHeader(urlPath='services/switch/', urlAction=self._action)
 		:returns: header and url
 		"""
@@ -323,7 +338,7 @@ class HomeAssistant(AliceSkill):
 
 		if urlAction:
 			url = f'{self.getConfig("HAIpAddress")}{urlPath}{urlAction}'
-		else:
+		else: #else is used for checking HA connection and boot up
 			url = f'{self.getConfig("HAIpAddress")}{urlPath}'
 
 		return header, url
@@ -331,7 +346,7 @@ class HomeAssistant(AliceSkill):
 
 	def checkConnection(self) -> bool:
 		try:
-			header, url = self.retrieveAuthHeader('na', 'na')
+			header, url = self.retrieveAuthHeader(' ', ' ')
 			response = get(self.getConfig('HAIpAddress'), headers=header)
 			if '{"message": "API running."}' in response.text:
 				return True
@@ -400,6 +415,7 @@ class HomeAssistant(AliceSkill):
 	# noinspection SqlResolve
 	def getDatabaseEntityID(self, uid):
 		"""Get entityName where uid is the same as requested"""
+
 		# returns SensorId for all listings of a uid
 		return self.databaseFetch(
 			tableName='HomeAssistant',
@@ -414,6 +430,7 @@ class HomeAssistant(AliceSkill):
 	# noinspection SqlResolve
 	def getSwitchValueFromDB(self, uid, key):
 		""" returns the state of the entityName
+
 		:params uid = Device identification
 		:params key = the entities name IE - switch.kitchen_light"""
 
@@ -430,7 +447,8 @@ class HomeAssistant(AliceSkill):
 
 	# noinspection SqlResolve
 	def listOfFriendlyNames(self):
-		"""Returns a list of known friendly names"""
+		"""Returns a list of known friendly names that are switchable devices"""
+
 		return self.databaseFetch(
 			tableName='HomeAssistant',
 			query='SELECT friendlyName FROM :__table__  WHERE deviceGroup != "sensor" ',
@@ -441,6 +459,7 @@ class HomeAssistant(AliceSkill):
 	# noinspection SqlResolve
 	def getSensorValues(self):
 		"""Returns a list of known sensors"""
+
 		return self.databaseFetch(
 			tableName='HomeAssistant',
 			query='SELECT * FROM :__table__  WHERE deviceGroup == "sensor" ',
@@ -451,7 +470,9 @@ class HomeAssistant(AliceSkill):
 	# noinspection SqlResolve
 	def rowOfRequestedDevice(self, friendlyName: str):
 		"""Returns the row for the selected friendlyname
+
 		:params friendlyName is for example kitchen light"""
+
 		return self.databaseFetch(
 			tableName='HomeAssistant',
 			query='SELECT * FROM :__table__ WHERE friendlyName = :friendlyName ',
@@ -518,13 +539,14 @@ class HomeAssistant(AliceSkill):
 		)
 
 
-	# todo OnFive - larry's quick reference point
+
 	def onFiveMinute(self):
 		if not self.checkConnection():
 			return
 
 		self.updateDBStates()
 		sensorDBrows = self.getSensorValues()
+
 		for sensor in sensorDBrows:
 
 			if not 'unavailable' in sensor['deviceState'] and not 'unknown' in sensor['deviceState']:
@@ -532,7 +554,9 @@ class HomeAssistant(AliceSkill):
 				newPayload = dict()
 				siteID: str = sensor["uID"]
 				siteIDlist = siteID.split()
+
 				siteID = siteIDlist[0]
+				#clean up siteID and make it all lowercase so less errors when using text widget
 				siteID.replace(" ", "").lower()
 
 				if 'temperature' in sensor["deviceType"]:
@@ -551,6 +575,7 @@ class HomeAssistant(AliceSkill):
 					self.logDebug(f'')
 					self.logDebug(f'upDateDBStates Method = "deviceType" is {sensor["deviceType"]} ')
 					self.logDebug(f'')
+
 				if newPayload:
 					try:
 						self.sendToTelemetry(newPayload=newPayload, siteId=siteID)
@@ -559,7 +584,7 @@ class HomeAssistant(AliceSkill):
 
 
 	# add friendlyNames to dialog template as a list of synonyms
-	def addSynomyns(self) -> bool:
+	def addSynonyms(self) -> bool:
 		"""Add synonyms to the existing dialogTemplate file for the skill"""
 
 		file = self.getResource(f'dialogTemplate/{self.activeLanguage()}.json')
@@ -567,7 +592,7 @@ class HomeAssistant(AliceSkill):
 			return False
 		friendlylist = self.listOfFriendlyNames()
 
-		# using duplicate var to capture things like sonoff 4 channel pro or multi button devices
+		# using this duplicate var to capture things like sonoff 4 channel pro or multi button devices
 		duplicate = ''
 
 		for mylist in friendlylist:
@@ -596,10 +621,11 @@ class HomeAssistant(AliceSkill):
 
 		duplicateGroupList = set(tuple(x) for x in self._grouplist)
 		finalGroupList = [list(x) for x in duplicateGroupList]
+
 		# process group entities
 		for group, value in finalGroupList:
 			self.addEntityToDatabase(entityName=group, friendlyName=value, uID=value, deviceGroup='group')
-		#friendlyNameList = list()
+
 		# process Switch entities
 		for switchItem in finalList:
 			self.addEntityToDatabase(entityName=switchItem[0], friendlyName=switchItem[1], deviceState=switchItem[2], uID=switchItem[1], deviceGroup='switch')
@@ -660,7 +686,7 @@ class HomeAssistant(AliceSkill):
 					self.TelemetryManager.storeData(ttype=TelemetryType.LIGHT, value=item[1], service=self.name, siteId=siteId)
 
 			except Exception as e:
-				self.logInfo(f'A exception occured adding {teleType} reading: {e}')
+				self.logInfo(f'An exception occured adding {teleType} reading: {e}')
 
 
 	def onBooted(self) -> bool:
@@ -672,6 +698,7 @@ class HomeAssistant(AliceSkill):
 			try:
 				header, url = self.retrieveAuthHeader('na', 'na')
 				response = get(self.getConfig('HAIpAddress'), headers=header)
+
 				if self.getConfig('DebugMode'):
 					self.logDebug(f'*************** OnBooted code ***********')
 					self.logDebug(f'')
@@ -679,14 +706,17 @@ class HomeAssistant(AliceSkill):
 					self.logDebug(f' The header is {header} ')
 					self.logDebug(f'The Url is {url} (note: nana on the end is ignored in this instance)')
 					self.logDebug(f'')
+
+
 				if '{"message": "API running."}' in response.text:
 					self.logInfo(f'HomeAssistant Connected')
-
 					return True
+
 				else:
 					self.logWarning(f'Issue connecting to HomeAssistant : {response.text}')
 
 					return False
+
 			except Exception as e:
 				self.logWarning(f'HomeAssistant failed to start. Double check your settings in the skill {e}')
 				return False
@@ -700,6 +730,7 @@ class HomeAssistant(AliceSkill):
 	@staticmethod
 	def makeDateObjFromString(sunState: str):
 		"""Takes HA's UTC string and turns it to a datetime object"""
+
 		utcDatetime = datetime.strptime(sunState, "%Y-%m-%dT%H:%M:%S%z")
 		utcDatetimeTimestamp = float(utcDatetime.strftime("%s"))
 		localDatetimeConverted = datetime.fromtimestamp(utcDatetimeTimestamp)
@@ -708,18 +739,18 @@ class HomeAssistant(AliceSkill):
 
 	@staticmethod
 	def standard_date(dt):
-		"""T
+		"""
 		Takes a naive UTC datetime stamp, Converts it to local timezone,
 		Outputs time between the converted UTC date and hours and minutes until then
 
 		   params:
-                dt: the date in UTC format to convert no TZ info.
+                dt: the date in UTC format to convert (no TZ info).
         """
 
 		now = datetime.now()
 		usersTZ = tz.tzlocal()
 
-		# give the naive stamp timezone info
+		# give the naive stamp, timezone info
 		utcTimeStamp = dt.replace(tzinfo=pytz.utc)
 
 		# convert from utc to local time
