@@ -282,7 +282,7 @@ class HomeAssistant(AliceSkill):
 
 	##################### POST AND GET HANDLERS ##############################
 
-
+	#todo reduce complexity of this method
 	def updateDBStates(self):
 		"""Update entity states from a 5 min timer"""
 		header, url = self.retrieveAuthHeader(urlPath='states')
