@@ -44,6 +44,7 @@ class HomeAssistant(AliceSkill):
 		self._deviceState = ""
 		self._entireList = list()
 		self._entireSensorlist = list()
+		self._switchAndGroupList = list()
 		self._dbSensorList = list()
 		self._grouplist = list()
 		self._action = ""
@@ -71,48 +72,56 @@ class HomeAssistant(AliceSkill):
 		)
 
 
-	# todo merge this with similair code further down
+	# todo merge this with similair code further down and fix exception
 	# Used to reduce complexity reading of calling method
-	def siftThroughJson(self, item):
+	def sortThroughJson(self, item):
 
 		if 'device_class' in item["attributes"]:
-			sensorType = item["attributes"]["device_class"]
-			sensorFriendlyName = item["attributes"]["friendly_name"]
-			sensorentity = item["entity_id"]
-			sensorValue = item["state"]
+			sensorType: str = item["attributes"]["device_class"]
+			sensorFriendlyName: str = item["attributes"]["friendly_name"]
+			sensorFriendlyName = sensorFriendlyName.lower()
+			sensorentity: str = item["entity_id"]
+			sensorValue: str = item["state"]
 
 			dbSensorList = [sensorFriendlyName, sensorentity, sensorValue, sensorType]
 			self._dbSensorList.append(dbSensorList)
-		if 'DewPoint' in item["attributes"]["friendly_name"]:
-			sensorType = 'dewpoint'
-			sensorFriendlyName = item["attributes"]["friendly_name"]
-			sensorentity = item["entity_id"]
-			sensorValue = item["state"]
+		try:
+			if 'DewPoint' in item["attributes"]["friendly_name"]:
+				sensorType: str  = 'dewpoint'
+				sensorFriendlyName: str = item["attributes"]["friendly_name"]
+				sensorFriendlyName = sensorFriendlyName.lower()
+				sensorentity: str = item["entity_id"]
+				sensorValue: str = item["state"]
 
-			dbSensorList = [sensorFriendlyName, sensorentity, sensorValue, sensorType]
-			self._dbSensorList.append(dbSensorList)
-		if 'Gas' in item["attributes"]["friendly_name"]:
-			sensorType = 'gas'
-			sensorFriendlyName = item["attributes"]["friendly_name"]
-			sensorentity = item["entity_id"]
-			sensorValue = item["state"]
+				dbSensorList = [sensorFriendlyName, sensorentity, sensorValue, sensorType]
+				self._dbSensorList.append(dbSensorList)
+			if 'Gas' in item["attributes"]["friendly_name"]:
+				sensorType: str = 'gas'
+				sensorFriendlyName: str = item["attributes"]["friendly_name"]
+				sensorFriendlyName = sensorFriendlyName.lower()
+				sensorentity: str = item["entity_id"]
+				sensorValue = item["state"]
 
-			dbSensorList = [sensorFriendlyName, sensorentity, sensorValue, sensorType]
-			self._dbSensorList.append(dbSensorList)
-		if 'entity_id' in item["attributes"]:
+				dbSensorList = [sensorFriendlyName, sensorentity, sensorValue, sensorType]
+				self._dbSensorList.append(dbSensorList)
 
-			entitiesInDictionaryList: list = item["attributes"]["entity_id"]
-			listOfEntitiesToStore = entitiesInDictionaryList
+			if 'switch.' in item["entity_id"] or 'group.' in item["entity_id"] and item["entity_id"] not in self._switchAndGroupList:
+				if 'switch.' in item["entity_id"]:
+					switchFriendlyname: str = item["attributes"]["friendly_name"]
+					switchFriendlyname = switchFriendlyname.lower()
+					switchList = [item["entity_id"], switchFriendlyname, item['state'] ]
+					self._switchAndGroupList.append(switchList)
+				else:
+					groupFriendlyname:str  = item["attributes"]["friendly_name"]
+					groupFriendlyname = groupFriendlyname.lower()
+					groupList = [item["entity_id"], groupFriendlyname]
+					self._grouplist.append(groupList)
 
-			self._deviceState = item['state']
 
-			grouplist = item['entity_id']
-
-			if grouplist and 'switch.' in entitiesInDictionaryList:  # NOSONAR
-				listOfEntitiesToStore.append(grouplist)
-
-			self._entityId = listOfEntitiesToStore
-			self._friendlyName = item["attributes"]["friendly_name"]
+		except Exception:
+			pass
+		self._entityId = self._switchAndGroupList
+		self._entireList = self._entityId
 
 
 	@IntentHandler('AddHomeAssistantDevices')
@@ -136,19 +145,8 @@ class HomeAssistant(AliceSkill):
 		# Loop through the incoming json payload to grab data that we need
 		for item in data:
 			if isinstance(item, dict):
-				self.siftThroughJson(item=item)
+				self.sortThroughJson(item=item)
 
-				for i in self._entityId:
-					if 'switch.' in i:
-						newfriendlyname = re.sub('switch.', '', i)
-						newfriendlyname = re.sub('_', ' ', newfriendlyname)
-						currentlist = [i, newfriendlyname, self._deviceState]
-						self._entireList.append(currentlist)
-					if 'group.' in i:
-						groupFriendlyName = re.sub('group.', '', i)
-						groupFriendlyName = re.sub('_', ' ', groupFriendlyName)
-						grouplist = [i, groupFriendlyName]
-						self._grouplist.append(grouplist)
 
 		self.processHADataRetrieval()
 		self.addSynomyns()
@@ -193,14 +191,12 @@ class HomeAssistant(AliceSkill):
 
 			jsonData = {"entity_id": self._entity}
 			responce = requests.request("POST", url=url, headers=header, json=jsonData)
-			if '200' in responce.text:
-				self.endDialog(
-					sessionId=session.sessionId,
-					text=self.randomTalk(text='homeAssistantSwitchDevice', replace=[self._action]),
-					siteId=session.siteId
-				)
-			else:
-				self.logWarning(f' Switching that Device encountered a error')
+
+			self.endDialog(
+				sessionId=session.sessionId,
+				text=self.randomTalk(text='homeAssistantSwitchDevice', replace=[self._action]),
+				siteId=session.siteId
+			)
 
 
 	@IntentHandler('HomeAssistantState')
@@ -246,7 +242,6 @@ class HomeAssistant(AliceSkill):
 			if isinstance(item, dict) and 'friendly_name' in item["attributes"] and 'Sun' in item["attributes"]['friendly_name']:
 
 				self._sunState = item["attributes"]['friendly_name'], item["attributes"]['next_dawn'], item["attributes"]['next_dusk'], item["attributes"]['next_rising'], item["attributes"]['next_setting'], item['state']
-		# print(f'frindlyName is {self._sunState[0]} next dawn is {self._sunState[1]} next dusk is {self._sunState[2]} next rising is {self._sunState[3]} and next setting is {self._sunState[4]} state is {self._sunState[5]}')
 
 		request = session.slotRawValue('sunState')
 		if 'position' in request:
@@ -300,27 +295,30 @@ class HomeAssistant(AliceSkill):
 				try:
 
 					if 'device_class' in item["attributes"]:
-						sensorFriendlyName = item["attributes"]["friendly_name"]
-						sensorentity = item["entity_id"]
+						sensorFriendlyName: str = item["attributes"]["friendly_name"]
+						sensorFriendlyName = sensorFriendlyName.lower()
+						sensorentity: str = item["entity_id"]
 						sensorValue = item["state"]
-						sensorType = item["attributes"]["device_class"]
+						sensorType: str = item["attributes"]["device_class"]
 						dbSensorList = [sensorFriendlyName, sensorentity, sensorValue, sensorType]
 
 						self._dbSensorList.append(dbSensorList)
 
 					if 'DewPoint' in item["attributes"]["friendly_name"]:
-						sensorType = 'dewpoint'
-						sensorFriendlyName = item["attributes"]["friendly_name"]
-						sensorentity = item["entity_id"]
+						sensorType: str = 'dewpoint'
+						sensorFriendlyName: str = item["attributes"]["friendly_name"]
+						sensorFriendlyName = sensorFriendlyName.lower()
+						sensorentity: str = item["entity_id"]
 						sensorValue = item["state"]
 
 						dbSensorList = [sensorFriendlyName, sensorentity, sensorValue, sensorType]
 						self._dbSensorList.append(dbSensorList)
 
 					if 'Gas' in item["attributes"]["friendly_name"]:
-						sensorType = 'gas'
-						sensorFriendlyName = item["attributes"]["friendly_name"]
-						sensorentity = item["entity_id"]
+						sensorType: str = 'gas'
+						sensorFriendlyName: str = item["attributes"]["friendly_name"]
+						sensorFriendlyName = sensorFriendlyName.lower()
+						sensorentity: str = item["entity_id"]
 						sensorValue = item["state"]
 
 						dbSensorList = [sensorFriendlyName, sensorentity, sensorValue, sensorType]
@@ -341,6 +339,7 @@ class HomeAssistant(AliceSkill):
 					if 'switch.' in i:
 						uid = re.sub('switch.', '', i)
 						uid = re.sub('_', ' ', uid)
+						uid = uid.lower()
 						currentlist = [i, uid, self._deviceState]
 						self._entireList.append(currentlist)
 
@@ -348,11 +347,14 @@ class HomeAssistant(AliceSkill):
 		finalList = [list(x) for x in duplicateList]
 
 		for switchItem, uid, state in finalList:
+			if self.getConfig('DebugMode'):
+				self.logDebug(f'i\'m updating {switchItem} with state {state}')
 			if self.getDatabaseEntityID(uid=uid):
 				self.updateSwitchValueInDB(key=switchItem, value=state)
 
 		for sensorName, entity, state, haClass in self._dbSensorList:
-
+			if self.getConfig('DebugMode'):
+				self.logDebug('i\'m updating the sensor {sensorName} with state {state}')
 			if self.getDatabaseEntityID(uid=sensorName):
 				self.updateSwitchValueInDB(key=sensorName, value=state)
 
@@ -446,6 +448,7 @@ class HomeAssistant(AliceSkill):
 
 	# noinspection SqlResolve
 	def getDatabaseEntityID(self, uid):
+		"""Get entityName where uid is the same as requested"""
 		# returns SensorId for all listings of a uid
 		return self.databaseFetch(
 			tableName='HomeAssistant',
@@ -551,7 +554,7 @@ class HomeAssistant(AliceSkill):
 			activeFriendlyName.append(name[0])
 		listLength = len(activeFriendlyName)
 		self.say(
-			text=self.randomTalk(text='sayListOfDevices', replace=[listLength]),
+			text=self.randomTalk(text='saynumberOfDevices', replace=[listLength]),
 			siteId=self.getAliceConfig('deviceName')
 		)
 
@@ -631,22 +634,24 @@ class HomeAssistant(AliceSkill):
 
 
 	def processHADataRetrieval(self):
-		# method to reduce complexity value of addHomeAssistantDevices()
+		# extra method to reduce complexity value of addHomeAssistantDevices()
 		# clean up any duplicates in the list
 		duplicateList = set(tuple(x) for x in self._entireList)
+
 		finalList = [list(x) for x in duplicateList]
+
 		duplicateGroupList = set(tuple(x) for x in self._grouplist)
 		finalGroupList = [list(x) for x in duplicateGroupList]
 		# process group entities
 		for group, value in finalGroupList:
 			self.addEntityToDatabase(entityName=group, friendlyName=value, uID=value, deviceGroup='group')
-		friendlyNameList = list()
+		#friendlyNameList = list()
 		# process Switch entities
 		for switchItem in finalList:
 			self.addEntityToDatabase(entityName=switchItem[0], friendlyName=switchItem[1], deviceState=switchItem[2], uID=switchItem[1], deviceGroup='switch')
 
 			self.AddToAliceDB(switchItem[1])
-			friendlyNameList.append(switchItem[1])
+			#friendlyNameList.append(switchItem[1])
 
 		# Process Sensor entities
 		for sensorItem in self._dbSensorList:
@@ -702,7 +707,7 @@ class HomeAssistant(AliceSkill):
 
 
 	def onBooted(self) -> bool:
-		self.updateDBStates()
+
 		if 'http://localhost:8123/api/' in self.getConfig("HAIpAddress"):
 			self.logWarning(f'You need to update the HAIpAddress in Homeassistant Skill ==> settings')
 			return False
