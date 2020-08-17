@@ -248,8 +248,11 @@ class HomeAssistant(AliceSkill):
 					self.logDebug(f'The sun JSON is ==> {item}')
 					self.logDebug(f'')
 
-
-				self._sunState = item["attributes"]['friendly_name'], item["attributes"]['next_dawn'], item["attributes"]['next_dusk'], item["attributes"]['next_rising'], item["attributes"]['next_setting'], item['state']
+				try:
+					self._sunState = item["attributes"]['friendly_name'], item["attributes"]['next_dawn'], item["attributes"]['next_dusk'], item["attributes"]['next_rising'], item["attributes"]['next_setting'], item['state']
+				except Exception as e:
+					self.logDebug(f'Error getting full sun attributes from Home Assistant: {e}')
+					return
 
 		request = session.slotRawValue('sunState')
 		if 'position' in request:
@@ -780,3 +783,6 @@ class HomeAssistant(AliceSkill):
 			text=self.randomTalk(text='saySunState', replace=[state, result, hours, minutes]),
 			siteId=session.siteId
 		)
+
+	def onPressureHighAlert(self, *args, **kwargs):
+		print(f'{args} and {kwargs}')
