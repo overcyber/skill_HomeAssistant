@@ -48,12 +48,20 @@ In Home Assistant:
 2. Add the following to your configuration.yaml file
   - api:
      - *your HomeassistantIP:port*/api/
-    
+ 
 **Example:**
 - api:
   - http://192.168.4.1:8123/api/
 
 NOTE the /api/ not just /api 
+
+while in there check if you have in your yaml
+  - default_config:
+
+if not, add
+
+  - :sun
+
 
 **In Alice:**
 

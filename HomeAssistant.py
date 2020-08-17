@@ -242,6 +242,12 @@ class HomeAssistant(AliceSkill):
 		for item in data:
 
 			if isinstance(item, dict) and 'friendly_name' in item["attributes"] and 'Sun' in item["attributes"]['friendly_name']:
+				if self.getConfig('DebugMode'):
+					self.logDebug(f'************* SUN DEBUG LOG ***********')
+					self.logDebug(f'')
+					self.logDebug(f'The sun JSON is ==> {item}')
+					self.logDebug(f'')
+
 
 				self._sunState = item["attributes"]['friendly_name'], item["attributes"]['next_dawn'], item["attributes"]['next_dusk'], item["attributes"]['next_rising'], item["attributes"]['next_setting'], item['state']
 
