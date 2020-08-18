@@ -11,6 +11,7 @@ from core.dialog.model.DialogSession import DialogSession
 from core.util.Decorators import IntentHandler
 from requests import get
 from core.util.model.TelemetryType import TelemetryType
+from core.commons import constants
 
 
 class HomeAssistant(AliceSkill):
@@ -138,7 +139,10 @@ class HomeAssistant(AliceSkill):
 
 		# delete and existing values in DB so we can update with a fresh list of Devices
 		self.deleteAliceHADatabaseEntries()
-		self.deleteHomeAssistantDBEntries()
+		if '1.0.0-b1' in constants.VERSION:
+			self.deleteAliceHADatabaseEntriesB1()
+		else:
+			self.deleteHomeAssistantDBEntries()
 
 		# Loop through the incoming json payload to grab data that we need
 		for item in data:
@@ -377,8 +381,10 @@ class HomeAssistant(AliceSkill):
 
 		locationID = self.LocationManager.getLocation(location='StoreRoom')
 		locationID = locationID.id
-
-		values = {'typeID': 3, 'uid': uID, 'locationID': locationID, 'name': uID, 'display': "{'x': '10', 'y': '10', 'rotation': 0, 'width': 45, 'height': 45}", 'skillName': self.name}
+		if '1.0.0-b1' in constants.VERSION:
+			values = {'typeID': 3, 'uid': uID, 'locationID': locationID,  'name': self.name, 'display': "{'x': '10', 'y': '10', 'rotation': 0, 'width': 45, 'height': 45}"}
+		else:
+			values = {'typeID': 3, 'uid': uID, 'locationID': locationID, 'display': "{'x': '10', 'y': '10', 'rotation': 0, 'width': 45, 'height': 45}", 'skillName': self.name}
 		self.DatabaseManager.insert(tableName=self.DeviceManager.DB_DEVICE, values=values, callerName=self.DeviceManager.name)
 
 
@@ -409,6 +415,18 @@ class HomeAssistant(AliceSkill):
 		self.DatabaseManager.delete(
 			tableName=self.DeviceManager.DB_DEVICE,
 			query='DELETE FROM :__table__ WHERE skillName = "HomeAssistant" ',
+			callerName=self.DeviceManager.name
+		)
+
+	#1.0.0-b1 compatibility
+	def deleteAliceHADatabaseEntriesB1(self):
+		""""
+		 Deletes values from Alice's devices table if name value is HomeAssistant and user on b1
+
+		"""
+		self.DatabaseManager.delete(
+			tableName=self.DeviceManager.DB_DEVICE,
+			query='DELETE FROM :__table__ WHERE name = "HomeAssistant" ',
 			callerName=self.DeviceManager.name
 		)
 
@@ -784,5 +802,5 @@ class HomeAssistant(AliceSkill):
 			siteId=session.siteId
 		)
 
-	#def onPressureHighAlert(self, session, *args, **kwargs):
-	#	print(f'session is {session} {args} and {kwargs}')
+	def onPressureHighAlert(self, *args, **kwargs):
+		print(f'{args} and {kwargs}')
