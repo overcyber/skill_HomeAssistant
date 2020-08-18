@@ -316,7 +316,6 @@ class HomeAssistant(AliceSkill):
 				self.sortThroughJson(item=item)
 
 		for switchItem, uid, state in self._switchAndGroupList:
-
 			if self.getConfig('DebugMode'):
 				self.logDebug(f'********* updateDBStates code **********')
 				self.logDebug(f'')
@@ -335,7 +334,7 @@ class HomeAssistant(AliceSkill):
 
 			# Locate sensor in the database and update it's value
 			if self.getDatabaseEntityID(uid=sensorName):
-				self.updateSwitchValueInDB(key=sensorName, value=state)
+				self.updateSwitchValueInDB(key=entity, value=state, uid=sensorName)
 
 
 	def retrieveAuthHeader(self, urlPath: str, urlAction: str = None):
@@ -576,7 +575,6 @@ class HomeAssistant(AliceSkill):
 		sensorDBrows = self.getSensorValues()
 
 		for sensor in sensorDBrows:
-
 			if not 'unavailable' in sensor['deviceState'] and not 'unknown' in sensor['deviceState']:
 
 				newPayload = dict()
