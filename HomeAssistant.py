@@ -802,5 +802,5 @@ class HomeAssistant(AliceSkill):
 			siteId=session.siteId
 		)
 
-	def onPressureHighAlert(self, *args, **kwargs):
-		print(f'{args} and {kwargs}')
+	#def onPressureHighAlert(self, *args, **kwargs):
+	#	print(f'{args} and {kwargs}')
