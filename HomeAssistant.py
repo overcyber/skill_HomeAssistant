@@ -49,6 +49,7 @@ class HomeAssistant(AliceSkill):
 		self._entity = ""
 		self._setup: bool = False
 		self._sunState = tuple
+		self._triggerType = ""
 
 		super().__init__(databaseSchema=self.DATABASE)
 
