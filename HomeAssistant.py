@@ -636,7 +636,7 @@ class HomeAssistant(AliceSkill):
 
 			data['slotTypes'][i]['values'][i]['synonyms'] = self._newSynonymList
 			file.write_text(json.dumps(data, ensure_ascii=False, indent=4))
-			return True
+		return True
 
 
 	def processHADataRetrieval(self):
