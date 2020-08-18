@@ -8,6 +8,15 @@
 				"i can control. {}"
 				]
 		},
+	"sayConfigureMe": {
+			"default": [
+				"It looks like you have Home Assistant installed but not setup. Please refer to the read me file for instructions",
+				"Awesome, You've installed Home Assistant. Please take a look at the read me file to see how to set it up"
+			],
+			"short": [
+				"To set up home assistant skil, please read the readme file"
+				]
+		},
 	"saynumberOfDevices": {
 			"default": [
 				"I found {0} new devices which i've added to my Database. To hear the list ask me. What home assistant devices do you know ? ",

@@ -720,6 +720,10 @@ class HomeAssistant(AliceSkill):
 
 		if 'http://localhost:8123/api/' in self.getConfig("HAIpAddress"):
 			self.logWarning(f'You need to update the HAIpAddress in Homeassistant Skill ==> settings')
+			self.say(
+				text=self.randomTalk(text='sayConfigureMe'),
+				siteId=self.getAliceConfig('deviceName')
+			)
 			return False
 		else:
 			try:
