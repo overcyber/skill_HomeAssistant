@@ -324,7 +324,7 @@ class HomeAssistant(AliceSkill):
 
 			# Locate entity in HA database and update it's state
 			if self.getDatabaseEntityID(uid=uid):
-				self.updateSwitchValueInDB(key=switchItem, value=state)
+				self.updateSwitchValueInDB(key=switchItem, value=state, uid=uid)
 
 		for sensorName, entity, state, haClass in self._dbSensorList:
 
@@ -642,11 +642,13 @@ class HomeAssistant(AliceSkill):
 		# extra method to reduce complexity value of addHomeAssistantDevices()
 		# clean up any duplicates in the list
 		duplicateList = set(tuple(x) for x in self._switchAndGroupList)
-
 		finalList = [list(x) for x in duplicateList]
 
 		duplicateGroupList = set(tuple(x) for x in self._grouplist)
 		finalGroupList = [list(x) for x in duplicateGroupList]
+
+		duplicateSenorList = set(tuple(x) for x in self._dbSensorList)
+		finalSensorList = [list(x) for x in duplicateSenorList]
 
 		# process group entities
 		for group, value in finalGroupList:
@@ -660,7 +662,7 @@ class HomeAssistant(AliceSkill):
 		# friendlyNameList.append(switchItem[1])
 
 		# Process Sensor entities
-		for sensorItem in self._dbSensorList:
+		for sensorItem in finalSensorList:
 			self.addEntityToDatabase(entityName=sensorItem[1], friendlyName=sensorItem[0], uID=sensorItem[0], deviceState=sensorItem[2], deviceGroup='sensor', deviceType=sensorItem[3])
 
 
