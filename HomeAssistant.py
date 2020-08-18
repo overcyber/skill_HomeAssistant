@@ -807,5 +807,78 @@ class HomeAssistant(AliceSkill):
 			siteId=session.siteId
 		)
 
-	#def onPressureHighAlert(self, *args, **kwargs):
-	#	print(f'{args} and {kwargs}')
+
+	########################## TELEMTRY PROCESSING #############################
+
+	def onGasAlert(self, **kwargs):
+		if self.name in kwargs['service']:
+			self._triggerType = 'gas'
+			self.telemetryEvents(kwargs)
+
+
+	def onPressureHighAlert(self, **kwargs):
+		if self.name in kwargs['service']:
+			self._triggerType = 'pressure'
+			self.telemetryEvents(kwargs)
+
+
+	def onTemperatureHighAlert(self, **kwargs):
+		if self.name in kwargs['service']:
+			self._triggerType = 'temperature'
+			self.telemetryEvents(kwargs)
+
+
+	def onTemperatureLowAlert(self, **kwargs):
+		if self.name in kwargs['service']:
+			self._triggerType = 'Temperature'
+			self.telemetryEvents(kwargs)
+
+
+	def onFreezing(self, **kwargs):
+		if self.name in kwargs['service']:
+			self._triggerType = 'freezing'
+			self.telemetryEvents(kwargs)
+
+
+	def onHumidityHighAlert(self, **kwargs):
+		if self.name in kwargs['service']:
+			self._triggerType = 'humidity'
+			self.telemetryEvents(kwargs)
+
+
+	def onHumidityLowAlert(self, **kwargs):
+		if self.name in kwargs['service']:
+			self._triggerType = 'Humidity'
+			self.telemetryEvents(kwargs)
+
+
+	def onCOTwoAlert(self, **kwargs):
+		if self.name in kwargs['service']:
+			self._triggerType = 'C O 2'
+			self.telemetryEvents(kwargs)
+
+
+	def telemetryEvents(self, kwargs):
+		if '1.0.0-b1' in constants.VERSION:
+			self.logDebug(f'Sorry but Telemetry High/Low reports only available on version 1.0.0-b2 or greater')
+			return
+		trigger = kwargs['trigger']
+		value = kwargs['value']
+		threshold = kwargs['threshold']
+		area = kwargs['area']
+
+		if 'upperThreshold' in trigger:
+			trigger = 'high'
+		else:
+			trigger = 'low'
+
+		if not 'freezing' in self._triggerType:
+			self.say(
+				text=f'ATTENTION. Your {self._triggerType} readings have exceeded the {trigger} limit of {threshold} with a reading of {value}',
+				siteId=self.getAliceConfig('deviceName')
+			)
+		else:
+			self.say(
+				text=self.randomTalk(text='sayTelemetryFreezeAlert', replace=[area, value]),
+				siteId=self.getAliceConfig('deviceName')
+			)
