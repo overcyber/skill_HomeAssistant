@@ -15,6 +15,7 @@ from core.commons import constants
 
 
 class HomeAssistant(AliceSkill):
+
 	"""
 	Author: Lazza
 	Description: Connect alice to your home assistant
@@ -32,11 +33,11 @@ class HomeAssistant(AliceSkill):
 		]
 	}
 
-
 	# todo Add Ipaddress's
 	# todo add further sensor support ?
 	# todo double check code is Pshyco friendly/compatible
 	def __init__(self):
+		self._versionB1 = '1.0.0-b1'
 		self._broadcastFlag = threading.Event()
 		self._newSynonymList = list()
 		self._friendlyName = ""
@@ -49,6 +50,7 @@ class HomeAssistant(AliceSkill):
 		self._entity = ""
 		self._setup: bool = False
 		self._sunState = tuple
+		self._triggerType = ""
 
 		super().__init__(databaseSchema=self.DATABASE)
 
@@ -139,7 +141,7 @@ class HomeAssistant(AliceSkill):
 
 		# delete and existing values in DB so we can update with a fresh list of Devices
 		self.deleteAliceHADatabaseEntries()
-		if '1.0.0-b1' in constants.VERSION:
+		if self._versionB1 in constants.VERSION:
 			self.deleteAliceHADatabaseEntriesB1()
 		else:
 			self.deleteHomeAssistantDBEntries()
@@ -315,7 +317,6 @@ class HomeAssistant(AliceSkill):
 				self.sortThroughJson(item=item)
 
 		for switchItem, uid, state in self._switchAndGroupList:
-
 			if self.getConfig('DebugMode'):
 				self.logDebug(f'********* updateDBStates code **********')
 				self.logDebug(f'')
@@ -324,7 +325,7 @@ class HomeAssistant(AliceSkill):
 
 			# Locate entity in HA database and update it's state
 			if self.getDatabaseEntityID(uid=uid):
-				self.updateSwitchValueInDB(key=switchItem, value=state)
+				self.updateSwitchValueInDB(key=switchItem, value=state, uid=uid)
 
 		for sensorName, entity, state, haClass in self._dbSensorList:
 
@@ -334,7 +335,7 @@ class HomeAssistant(AliceSkill):
 
 			# Locate sensor in the database and update it's value
 			if self.getDatabaseEntityID(uid=sensorName):
-				self.updateSwitchValueInDB(key=sensorName, value=state)
+				self.updateSwitchValueInDB(key=entity, value=state, uid=sensorName)
 
 
 	def retrieveAuthHeader(self, urlPath: str, urlAction: str = None):
@@ -381,8 +382,8 @@ class HomeAssistant(AliceSkill):
 
 		locationID = self.LocationManager.getLocation(location='StoreRoom')
 		locationID = locationID.id
-		if '1.0.0-b1' in constants.VERSION:
-			values = {'typeID': 3, 'uid': uID, 'locationID': locationID,  'name': self.name, 'display': "{'x': '10', 'y': '10', 'rotation': 0, 'width': 45, 'height': 45}"}
+		if self._versionB1 in constants.VERSION:
+			values = {'typeID': 3, 'uid': uID, 'locationID': locationID, 'name': self.name, 'display': "{'x': '10', 'y': '10', 'rotation': 0, 'width': 45, 'height': 45}"}
 		else:
 			values = {'typeID': 3, 'uid': uID, 'locationID': locationID, 'display': "{'x': '10', 'y': '10', 'rotation': 0, 'width': 45, 'height': 45}", 'skillName': self.name}
 		self.DatabaseManager.insert(tableName=self.DeviceManager.DB_DEVICE, values=values, callerName=self.DeviceManager.name)
@@ -575,7 +576,6 @@ class HomeAssistant(AliceSkill):
 		sensorDBrows = self.getSensorValues()
 
 		for sensor in sensorDBrows:
-
 			if not 'unavailable' in sensor['deviceState'] and not 'unknown' in sensor['deviceState']:
 
 				newPayload = dict()
@@ -643,11 +643,13 @@ class HomeAssistant(AliceSkill):
 		# extra method to reduce complexity value of addHomeAssistantDevices()
 		# clean up any duplicates in the list
 		duplicateList = set(tuple(x) for x in self._switchAndGroupList)
-
 		finalList = [list(x) for x in duplicateList]
 
 		duplicateGroupList = set(tuple(x) for x in self._grouplist)
 		finalGroupList = [list(x) for x in duplicateGroupList]
+
+		duplicateSenorList = set(tuple(x) for x in self._dbSensorList)
+		finalSensorList = [list(x) for x in duplicateSenorList]
 
 		# process group entities
 		for group, value in finalGroupList:
@@ -661,7 +663,7 @@ class HomeAssistant(AliceSkill):
 		# friendlyNameList.append(switchItem[1])
 
 		# Process Sensor entities
-		for sensorItem in self._dbSensorList:
+		for sensorItem in finalSensorList:
 			self.addEntityToDatabase(entityName=sensorItem[1], friendlyName=sensorItem[0], uID=sensorItem[0], deviceState=sensorItem[2], deviceGroup='sensor', deviceType=sensorItem[3])
 
 
@@ -806,5 +808,78 @@ class HomeAssistant(AliceSkill):
 			siteId=session.siteId
 		)
 
-	#def onPressureHighAlert(self, *args, **kwargs):
-	#	print(f'{args} and {kwargs}')
+
+	########################## TELEMTRY PROCESSING #############################
+
+	def onGasAlert(self, **kwargs):
+		if self.name in kwargs['service']:
+			self._triggerType = 'gas'
+			self.telemetryEvents(kwargs)
+
+
+	def onPressureHighAlert(self, **kwargs):
+		if self.name in kwargs['service']:
+			self._triggerType = 'pressure'
+			self.telemetryEvents(kwargs)
+
+
+	def onTemperatureHighAlert(self, **kwargs):
+		if self.name in kwargs['service']:
+			self._triggerType = 'temperature'
+			self.telemetryEvents(kwargs)
+
+
+	def onTemperatureLowAlert(self, **kwargs):
+		if self.name in kwargs['service']:
+			self._triggerType = 'Temperature'
+			self.telemetryEvents(kwargs)
+
+
+	def onFreezing(self, **kwargs):
+		if self.name in kwargs['service']:
+			self._triggerType = 'freezing'
+			self.telemetryEvents(kwargs)
+
+
+	def onHumidityHighAlert(self, **kwargs):
+		if self.name in kwargs['service']:
+			self._triggerType = 'humidity'
+			self.telemetryEvents(kwargs)
+
+
+	def onHumidityLowAlert(self, **kwargs):
+		if self.name in kwargs['service']:
+			self._triggerType = 'Humidity'
+			self.telemetryEvents(kwargs)
+
+
+	def onCOTwoAlert(self, **kwargs):
+		if self.name in kwargs['service']:
+			self._triggerType = 'C O 2'
+			self.telemetryEvents(kwargs)
+
+
+	def telemetryEvents(self, kwargs):
+		if self._versionB1 in constants.VERSION:
+			self.logDebug(f'Sorry but Telemetry High/Low reports only available on version 1.0.0-b2 or greater')
+			return
+		trigger = kwargs['trigger']
+		value = kwargs['value']
+		threshold = kwargs['threshold']
+		area = kwargs['area']
+
+		if 'upperThreshold' in trigger:
+			trigger = 'high'
+		else:
+			trigger = 'low'
+
+		if not 'freezing' in self._triggerType:
+			self.say(
+				text=f'ATTENTION. Your {self._triggerType} readings have exceeded the {trigger} limit of {threshold} with a reading of {value}',
+				siteId=self.getAliceConfig('deviceName')
+			)
+		else:
+			self.say(
+				text=self.randomTalk(text='sayTelemetryFreezeAlert', replace=[area, value]),
+				siteId=self.getAliceConfig('deviceName')
+			)

@@ -98,15 +98,32 @@
 			],
 			"short": [
 				"{0}{1} so that will be in {2} hours and {3} minutes"
-
 			]
-		},
+	},
 	"sayHorizon": {
 		"default": [
 			"The sun is currently {0}"
 		],
 		"short": [
 			"The sun is currently {0}"
+		]
+	},
+	"sayTelemetryAlert": {
+		"default": [
+			"ATTENTION, ATTENTION. Your {o} readings for the (4} have exceeded the set {1} limit of {2} with a reading of (3}",
+			"Alert request. Your {4} {0} readings are at {3}",
+			"Just to let you know the {0} readings for the {4} are above {2}"
+		],
+		"short": [
+			"Attention. Your {0) readings around the {4} are {3}"
+		]
+	},
+	"sayTelemetryFreezeAlert": {
+		"default": [
+			"ATTENTION, ATTENTION. It's starting to freeze in the (0}. temperature is currently (1}"
+		],
+		"short": [
+			"Attenetion. It's now starting to freeze in the {0} "
 		]
 	}
 }
