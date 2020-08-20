@@ -338,7 +338,7 @@ class HomeAssistant(AliceSkill):
 
 			if self.getConfig('DebugMode'):
 				self.logDebug(f'')
-				self.logDebug(f'i\'m updating the sensor {sensorName} with state {state}')
+				self.logDebug(f'i\'m updating the sensor {sensorName} with state {state} - entity name is {entity} of class {haClass}')
 
 			# Locate sensor in the database and update it's value
 			if self.getDatabaseEntityID(uid=sensorName):
@@ -668,7 +668,7 @@ class HomeAssistant(AliceSkill):
 			if self.getConfig('DebugMode'):
 				self.logDebug(f'*************** Send to Telemetry code ***************')
 				self.logDebug(f'')
-				self.logDebug(f'The {teleType} reading for the {siteId} is {item[1]} ')  # uncomment me to see incoming temperature payload
+				self.logDebug(f'The {teleType} reading for the {siteId} is {item[1]} ')
 				self.logDebug(f'')
 			try:
 				if 'TEMPERATURE' in teleType:
@@ -721,7 +721,7 @@ class HomeAssistant(AliceSkill):
 			return False
 		else:
 			try:
-				header, url = self.retrieveAuthHeader('na', 'na')
+				header, url = self.retrieveAuthHeader(' ', ' ')
 				response = get(self.getConfig('HAIpAddress'), headers=header)
 
 				if self.getConfig('DebugMode'):
@@ -729,7 +729,7 @@ class HomeAssistant(AliceSkill):
 					self.logDebug(f'')
 					self.logDebug(f'{response.text} - onBooted connection code')
 					self.logDebug(f' The header is {header} ')
-					self.logDebug(f'The Url is {url} (note: nana on the end is ignored in this instance)')
+					self.logDebug(f'The Url is {url} ')
 					self.logDebug(f'')
 
 				if '{"message": "API running."}' in response.text:
