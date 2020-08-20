@@ -14,8 +14,8 @@
 				"Awesome, You've installed Home Assistant. Please take a look at the read me file to see how to set it up"
 			],
 			"short": [
-				"To set up home assistant skil, please read the readme file"
-				]
+				"To set up home assistant skill, please read the readme file"
+			]
 		},
 	"saynumberOfDevices": {
 			"default": [
@@ -32,7 +32,7 @@
 				"I'm having trouble connecting to your Home Assistant, Is it online ?"
 			],
 			"short": [
-				"Your Hoem Assistant is offline",
+				"Your Home Assistant is offline",
 				"Home Assistant is offline"
 			]
 		},
@@ -60,18 +60,21 @@
 			"default": [
 				"No drama's doing that now",
 				"All over it like a bad rash",
-				"ok done"
+				"ok done",
+				"sorted",
+				"sure",
+				"ok"
 			],
 			"short": [
 				"sure",
-				"done"
-
+				"done",
+				"ok"
 			]
 		},
 	"addHomeAssistantDevices": {
 			"default": [
 				"Ok let's do this, give me a moment to sort this out for you. Once i'm finished you'll need to restart me",
-				"This may take a moment or two, remember to restart me after i've told you how many devices i've found",
+				"This may take a moment or two, You'll have to restart me after i've told you how many devices i've found",
 				"All over it. you'll have to restart me after i've read out the number of devices found"
 			],
 			"short": [
@@ -123,7 +126,7 @@
 			"ATTENTION, ATTENTION. It's starting to freeze in the (0}. temperature is currently (1}"
 		],
 		"short": [
-			"Attenetion. It's now starting to freeze in the {0} "
+			"Attention. It's now starting to freeze in the {0} "
 		]
 	}
 }
