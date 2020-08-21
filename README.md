@@ -30,7 +30,7 @@ Device states get updated every 5 minutes or when you ask " whats the state of t
 It will also tell you how long until sunset, sunrise, dusk and dawn.
 
 *Pre Req's* -
-- Alice version 1.0.0-b1 as minimum. However recommendation is 1.0.0-B2 onwards to utilise all features
+- Alice version 1.0.0-B2 onwards 
 - Make sure you're running the latest version of Home Assistant ( minimum is version 0107.5)
 - Make sure you also have installed the Telemetry skill
 - This skill uses HA friendly names to trigger commands. So if your friendly name, for example are "gardenlights"

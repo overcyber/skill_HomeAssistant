@@ -11,7 +11,6 @@ from core.dialog.model.DialogSession import DialogSession
 from core.util.Decorators import IntentHandler
 from requests import get
 from core.util.model.TelemetryType import TelemetryType
-from core.commons import constants
 
 
 class HomeAssistant(AliceSkill):
@@ -33,11 +32,12 @@ class HomeAssistant(AliceSkill):
 		]
 	}
 
+
 	# todo Add Ipaddress's
 	# todo add further sensor support ?
-	# todo double check code is Pshyco friendly/compatible
+
 	def __init__(self):
-		self._versionB1 = '1.0.0-b1'
+
 		self._broadcastFlag = threading.Event()
 		self._newSynonymList = list()
 		self._friendlyName = ""
@@ -121,6 +121,7 @@ class HomeAssistant(AliceSkill):
 			pass
 
 
+
 	@IntentHandler('AddHomeAssistantDevices')
 	def addHomeAssistantDevices(self, session: DialogSession):
 		if not self.checkConnection():  # If not connected to HA, say so and stop
@@ -141,10 +142,7 @@ class HomeAssistant(AliceSkill):
 
 		# delete and existing values in DB so we can update with a fresh list of Devices
 		self.deleteAliceHADatabaseEntries()
-		if self._versionB1 in constants.VERSION:
-			self.deleteAliceHADatabaseEntriesB1()
-		else:
-			self.deleteHomeAssistantDBEntries()
+		self.deleteHomeAssistantDBEntries()
 
 		# Loop through the incoming json payload to grab data that we need
 		for item in data:
@@ -189,6 +187,15 @@ class HomeAssistant(AliceSkill):
 
 		if session.slotValue('switchNames'):
 			uid = session.slotRawValue('switchNames')
+			if self.getConfig('DebugMode'):
+				self.logDebug(f'********** SWITCHING EVENT *************')
+				self.logDebug(f'')
+				self.logDebug(f'I was requested to >> {self._action} the device called {uid} ')
+				debugSwitchId = self.getDatabaseEntityID(uid=uid)
+				try:
+					self.logDebug(f'debugSwitchId = {debugSwitchId["entityName"]}')
+				except Exception as e:
+					self.logDebug(f' a error occured switching the switch : {e}')
 
 			tempSwitchId = self.getDatabaseEntityID(uid=uid)
 			self._entity = tempSwitchId['entityName']
@@ -331,7 +338,7 @@ class HomeAssistant(AliceSkill):
 
 			if self.getConfig('DebugMode'):
 				self.logDebug(f'')
-				self.logDebug(f'i\'m updating the sensor {sensorName} with state {state}')
+				self.logDebug(f'i\'m updating the sensor {sensorName} with state {state} - entity name is {entity} of class {haClass}')
 
 			# Locate sensor in the database and update it's value
 			if self.getDatabaseEntityID(uid=sensorName):
@@ -382,10 +389,7 @@ class HomeAssistant(AliceSkill):
 
 		locationID = self.LocationManager.getLocation(location='StoreRoom')
 		locationID = locationID.id
-		if self._versionB1 in constants.VERSION:
-			values = {'typeID': 3, 'uid': uID, 'locationID': locationID, 'name': self.name, 'display': "{'x': '10', 'y': '10', 'rotation': 0, 'width': 45, 'height': 45}"}
-		else:
-			values = {'typeID': 3, 'uid': uID, 'locationID': locationID, 'display': "{'x': '10', 'y': '10', 'rotation': 0, 'width': 45, 'height': 45}", 'skillName': self.name}
+		values = {'typeID': 3, 'uid': uID, 'locationID': locationID, 'name': uID, 'display': "{'x': '10', 'y': '10', 'rotation': 0, 'width': 45, 'height': 45}", 'skillName': self.name}
 		self.DatabaseManager.insert(tableName=self.DeviceManager.DB_DEVICE, values=values, callerName=self.DeviceManager.name)
 
 
@@ -416,18 +420,6 @@ class HomeAssistant(AliceSkill):
 		self.DatabaseManager.delete(
 			tableName=self.DeviceManager.DB_DEVICE,
 			query='DELETE FROM :__table__ WHERE skillName = "HomeAssistant" ',
-			callerName=self.DeviceManager.name
-		)
-
-	#1.0.0-b1 compatibility
-	def deleteAliceHADatabaseEntriesB1(self):
-		""""
-		 Deletes values from Alice's devices table if name value is HomeAssistant and user on b1
-
-		"""
-		self.DatabaseManager.delete(
-			tableName=self.DeviceManager.DB_DEVICE,
-			query='DELETE FROM :__table__ WHERE name = "HomeAssistant" ',
 			callerName=self.DeviceManager.name
 		)
 
@@ -676,7 +668,7 @@ class HomeAssistant(AliceSkill):
 			if self.getConfig('DebugMode'):
 				self.logDebug(f'*************** Send to Telemetry code ***************')
 				self.logDebug(f'')
-				self.logDebug(f'The {teleType} reading for the {siteId} is {item[1]} ')  # uncomment me to see incoming temperature payload
+				self.logDebug(f'The {teleType} reading for the {siteId} is {item[1]} ')
 				self.logDebug(f'')
 			try:
 				if 'TEMPERATURE' in teleType:
@@ -729,7 +721,7 @@ class HomeAssistant(AliceSkill):
 			return False
 		else:
 			try:
-				header, url = self.retrieveAuthHeader('na', 'na')
+				header, url = self.retrieveAuthHeader(' ', ' ')
 				response = get(self.getConfig('HAIpAddress'), headers=header)
 
 				if self.getConfig('DebugMode'):
@@ -737,7 +729,7 @@ class HomeAssistant(AliceSkill):
 					self.logDebug(f'')
 					self.logDebug(f'{response.text} - onBooted connection code')
 					self.logDebug(f' The header is {header} ')
-					self.logDebug(f'The Url is {url} (note: nana on the end is ignored in this instance)')
+					self.logDebug(f'The Url is {url} ')
 					self.logDebug(f'')
 
 				if '{"message": "API running."}' in response.text:
@@ -860,9 +852,7 @@ class HomeAssistant(AliceSkill):
 
 
 	def telemetryEvents(self, kwargs):
-		if self._versionB1 in constants.VERSION:
-			self.logDebug(f'Sorry but Telemetry High/Low reports only available on version 1.0.0-b2 or greater')
-			return
+
 		trigger = kwargs['trigger']
 		value = kwargs['value']
 		threshold = kwargs['threshold']
@@ -875,7 +865,7 @@ class HomeAssistant(AliceSkill):
 
 		if not 'freezing' in self._triggerType:
 			self.say(
-				text=f'ATTENTION. Your {self._triggerType} readings have exceeded the {trigger} limit of {threshold} with a reading of {value}',
+				text=self.randomTalk(text='sayTelemetryAlert', replace=[self._triggerType, trigger, threshold, value, area]),
 				siteId=self.getAliceConfig('deviceName')
 			)
 		else:
