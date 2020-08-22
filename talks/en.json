@@ -128,5 +128,29 @@
 		"short": [
 			"Attention. It's now starting to freeze in the {0} "
 		]
+	},
+	"sayIpError": {
+		"default": [
+			"Sorry but i don\\'t have a listing for (0}"
+		],
+		"short": [
+			"Sorry but i don\\'t have a listing for (0} "
+		]
+	},
+	"sayIpError2": {
+		"default": [
+			"Sorry but Home assistant didn\\'t provide me an address for (0}"
+		],
+		"short": [
+			"Sorry but Home assistant didn\\'t provide me an address for (0} "
+		]
+	},
+	"sayIpAddress": {
+		"default": [
+			"The I P address for that device is (0}"
+		],
+		"short": [
+			"I P Address is (0} "
+		]
 	}
 }

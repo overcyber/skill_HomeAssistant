@@ -12,39 +12,7 @@
                 {
                     "value": "bedroom light",
                     "synonyms": [
-                        "bathroom lights",
-                        "people",
-                        "light controllers",
-                        "lounge lights",
-                        "weather",
-                        "default_view",
-                        "outside lights",
-                        "climate control",
-                        "media items",
-                        "kitchen lights",
-                        "all main lights",
-                        "bedroom lights",
-                        "random items",
-                        "spare",
-                        "sink light",
-                        "entrance light",
-                        "pillow light",
-                        "ute power",
-                        "main light",
-                        "fridge fan",
-                        "diesel heater on",
-                        "rain water pump",
-                        "240 power",
-                        "couch light",
-                        "diesel heater off",
-                        "awning light",
-                        "hvac",
-                        "toilet light",
-                        "mirror light",
-                        "window light",
-                        "laptop charger",
-                        "round lights",
-                        "external light"
+
                     ]
                 }
             ]
@@ -181,6 +149,26 @@
                 "what can you turn on and off",
                 "what switches can you turn on or off",
                 "what are the switches you can turn on"
+            ]
+        },
+        {
+            "name": "GetIpOfDevice",
+            "description": "Returns the IP address of selected device",
+            "enabledByDefault": true,
+            "utterances": [
+                "what's the ip address of the {bedroom light:=>switchNames}",
+                "whats the ip of the {garage light:=>switchNames}",
+                "tell me the ip address of the {garage light:=>switchNames} please",
+                "tell me the ip of the {kitchen lights:=>switchNames}"
+            ],
+            "slots": [
+                {
+                    "name": "switchNames",
+                    "description": null,
+                    "required": false,
+                    "type": "switchNames",
+                    "missingQuestion": ""
+                }
             ]
         }
     ]
