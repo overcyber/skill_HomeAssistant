@@ -1,7 +1,7 @@
 import threading
 import json
 import requests
-import urllib
+
 
 from datetime import datetime
 from dateutil import tz
@@ -635,7 +635,8 @@ class HomeAssistant(AliceSkill):
 					newPayload['GAS'] = sensor['deviceState']
 				if 'dewpoint' in sensor["deviceType"]:
 					newPayload['DEWPOINT'] = sensor['deviceState']
-
+				if 'illuminance' in sensor["deviceType"]:
+					newPayload['ILLUMINANCE'] = sensor['deviceState']
 
 				if newPayload:
 					try:
