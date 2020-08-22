@@ -2,6 +2,7 @@ import threading
 import json
 import requests
 
+
 from datetime import datetime
 from dateutil import tz
 import pytz
@@ -11,6 +12,7 @@ from core.dialog.model.DialogSession import DialogSession
 from core.util.Decorators import IntentHandler
 from requests import get
 from core.util.model.TelemetryType import TelemetryType
+from core.util.TelemetryManager import TelemetryManager
 
 
 class HomeAssistant(AliceSkill):
@@ -51,8 +53,11 @@ class HomeAssistant(AliceSkill):
 		self._setup: bool = False
 		self._sunState = tuple
 		self._triggerType = ""
+		self._telemetryLogs = list()
+		self._IpList = list()
 
 		super().__init__(databaseSchema=self.DATABASE)
+
 
 
 	############################### INTENT HANDLERS #############################
@@ -74,6 +79,12 @@ class HomeAssistant(AliceSkill):
 
 	# Used for picking required data from incoming JSON (used in two places)
 	def sortThroughJson(self, item):
+		if 'IPAddress' in item["attributes"]:
+			ipaddress: str = item["attributes"]["IPAddress"]
+			deviceName: str = item["attributes"]["friendly_name"]
+			editedDeviceName: str = deviceName.replace(' status', '').lower()
+			iplist = [editedDeviceName, ipaddress]
+			self._IpList.append(iplist)
 
 		if 'device_class' in item["attributes"]:
 			sensorType: str = item["attributes"]["device_class"]
@@ -85,6 +96,7 @@ class HomeAssistant(AliceSkill):
 			dbSensorList = [sensorFriendlyName, sensorEntity, sensorValue, sensorType]
 			self._dbSensorList.append(dbSensorList)
 		try:
+
 			if 'DewPoint' in item["attributes"]["friendly_name"]:
 				sensorType: str = 'dewpoint'
 				sensorFriendlyName: str = item["attributes"]["friendly_name"]
@@ -226,7 +238,7 @@ class HomeAssistant(AliceSkill):
 			# get info from HomeAssitant
 			header, url = self.retrieveAuthHeader(urlPath='states/', urlAction=entityName["entityName"])
 			stateResponce = requests.get(url=url, headers=header)
-			# print(stateResponce.text) disable me at line 215-ish
+
 			data = stateResponce.json()
 
 			entityID = data['entity_id']
@@ -307,6 +319,41 @@ class HomeAssistant(AliceSkill):
 			if result:
 				stateType = 'The sun will go down on'
 				self.saysunState(session=session, state=stateType, result=result, hours=hours, minutes=minutes)
+
+
+	@IntentHandler('GetIpOfDevice')
+	def returnIpAddressOfDevice(self, session: DialogSession):
+		tableRowvalue = session.slotRawValue('switchNames')
+		requestedRow = self.rowOfRequestedDevice(friendlyName=tableRowvalue)
+		ipOfDevice: str = ''
+		if requestedRow:
+			for item in requestedRow:
+				ipOfDevice = item['ipAddress']
+
+		else:
+			self.endDialog(
+				sessionId=session.sessionId,
+				text=self.randomTalk(text='sayIpError', replace=[session.slotRawValue("switchNames")]),
+				siteId=session.siteId
+			)
+			self.logWarning(f'Getting device IP failed: I may not have that data available from HA  - {session.slotRawValue("switchNames")}')
+			return
+
+		if ipOfDevice:
+
+			self.endDialog(
+				sessionId=session.sessionId,
+				text=self.randomTalk(text='sayIpAddress', replace=[ipOfDevice]),
+				siteId=session.siteId
+			)
+
+		else:
+			self.endDialog(
+				sessionId=session.sessionId,
+				text=self.randomTalk(text='sayIpError2', replace=[session.slotRawValue("switchNames")]),
+				siteId=session.siteId
+			)
+			self.logWarning(f'Device name not available, HA may not of supplied that device IP')
 
 
 	##################### POST AND GET HANDLERS ##############################
@@ -588,12 +635,8 @@ class HomeAssistant(AliceSkill):
 					newPayload['GAS'] = sensor['deviceState']
 				if 'dewpoint' in sensor["deviceType"]:
 					newPayload['DEWPOINT'] = sensor['deviceState']
-
-				if self.getConfig('DebugMode'):
-					self.logDebug(f'*************** OnFiveMinute Timer code ***********')
-					self.logDebug(f'')
-					self.logDebug(f'upDateDBStates Method = "deviceType" is {sensor["deviceType"]} ')
-					self.logDebug(f'')
+				if 'illuminance' in sensor["deviceType"]:
+					newPayload['ILLUMINANCE'] = sensor['deviceState']
 
 				if newPayload:
 					try:
@@ -658,6 +701,10 @@ class HomeAssistant(AliceSkill):
 		for sensorItem in finalSensorList:
 			self.addEntityToDatabase(entityName=sensorItem[1], friendlyName=sensorItem[0], uID=sensorItem[0], deviceState=sensorItem[2], deviceGroup='sensor', deviceType=sensorItem[3])
 
+		# Process Sensor entities
+		for ipItem in self._IpList:
+			self.updateDeviceIPInfo(ip=ipItem[1], uid=ipItem[0])
+
 
 	def sendToTelemetry(self, newPayload: dict, siteId: str):
 
@@ -711,6 +758,7 @@ class HomeAssistant(AliceSkill):
 
 
 	def onBooted(self) -> bool:
+
 
 		if 'http://localhost:8123/api/' in self.getConfig("HAIpAddress"):
 			self.logWarning(f'You need to update the HAIpAddress in Homeassistant Skill ==> settings')
@@ -873,3 +921,27 @@ class HomeAssistant(AliceSkill):
 				text=self.randomTalk(text='sayTelemetryFreezeAlert', replace=[area, value]),
 				siteId=self.getAliceConfig('deviceName')
 			)
+
+
+	###############  Telemetry Logging Data  #################
+	# work in progress
+
+	def getTelemetryLogs(self):
+		telemetryDblogs = TelemetryManager()
+		self._telemetryLogs = telemetryDblogs.databaseFetch(
+			tableName='telemetry',
+			query='SELECT * FROM :__table__ ORDER BY timestamp DESC LIMIT 200',
+			method='all'
+		)
+
+		self.seperateTelemetryLogs()
+
+
+	def seperateTelemetryLogs(self):
+		temperatureLogData = list()
+		for sensor in self._telemetryLogs:
+			if 'temperature' in sensor['type']:
+				temperatureLogs = [sensor['type'], sensor['value'], sensor['siteId'], sensor['timestamp']]
+				temperatureLogData.append(temperatureLogs)
+
+		print(f'temperature data = {temperatureLogData} ')
