@@ -34,7 +34,7 @@ It will also tell you how long until sunset, sunrise, dusk and dawn.
 - Make sure you're running the latest version of Home Assistant ( minimum is version 0107.5)
 - Make sure you also have installed the Telemetry skill
 - This skill uses HA friendly names to trigger commands. So if your friendly name, for example are "gardenlights"
-then i suggest you fine tune that in HA a little to read "garden lights" ( two words with no strange charactors).
+then i suggest you fine tune that in HA a little to read "garden lights" ( two words with no strange characters).
  That way "turn off the garden lights" is more natural than " turn off gardenlights" which only sounds natural
   when drunk :)
 For now it also assumes your temperature sensors are called something like "inside temperature", "office temperature"
@@ -43,9 +43,11 @@ Alice " whats the BME280 temperature ", which is not very natural either :)
 
 
 **SetUp**
-In Home Assistant:
+
+**---- In Home Assistant: ----**
+
 1. Create a long life token from your user profile screen. (Copy it and store it safe for now, you'll only get one chance to copy it)
-2. Add the following to your configuration.yaml file
+2. Add the following to your Home Assistant configuration.yaml file
   - api:
      - *your HomeassistantIP:port*/api/
  
@@ -58,24 +60,34 @@ NOTE the /api/ not just /api
 while in there check if you have in your yaml
   - default_config:
 
-if not, add
+if not either add that or add
 
   - :sun
 
+(That will give you sun events in Alice if you want that feature)
 
-**In Alice:**
+- Now restart Home Assistant and carry on with the below Alice setup
+
+
+**SETUP steps for Alice**
+
+**---- In Alice: ----**
 
 1. Go to the Alice web ui
 2. Click into Skills
-3. Go to the HomeAssistant skill and click on -> Settings
-4. In "HAaccessToken" field add your copied long life token
-5. In "HAIpAddress" field add your HomeAssistant IP address (make sure you append /api/ to the address)
-    - Example 192.168.4.1:8123/api/
-6. SIDE NOTE: For now all switches captured by Alice from HA will get installed in one location / room 
+3. Install the HomeAssistant skill
+4. Once installed, Go to the HomeAssistant skill and click on -> Settings
+5. In "HAaccessToken" field, add your copied long life token
+6. In "HAIpAddress" field, add your HomeAssistant IP address (make sure you append /api/ to the address)
+    - Example http://192.168.4.1:8123/api/
+7. Restart Alice 
+
+SIDE NOTE: For now all switches captured by Alice from HA will get installed in one location / room 
 -  You will have to later go to "My Home" in the web Ui and move each switch to a appropriate room not critical
 for now but, to keep a tidy house keeps Alice happy :)
 
-7.Restart Alice and ask her to :
+Once alice restarts you can then ask her :
+
 - "Hey Snips/Alice"
 - "setup home assistant skill" 
 
