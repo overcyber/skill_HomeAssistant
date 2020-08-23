@@ -20,11 +20,11 @@
 	"saynumberOfDevices": {
 			"default": [
 				"I found {0} new devices which i've added to my Database. To hear the list ask me. What home assistant devices do you know ? ",
-				"I now have {} devices stored in my memory banks. To hear the list ask me. What can you turn on or off ? "
+				"I now have {0} devices stored in my memory banks. To hear the list ask me. What can you turn on or off ? "
 			],
 			"short": [
-				"You have {} new devices connected"
-				]
+				"You have {0} new devices connected"
+			]
 		},
 	"sayConnectionOffline": {
 			"default": [
@@ -113,17 +113,17 @@
 	},
 	"sayTelemetryAlert": {
 		"default": [
-			"ATTENTION, ATTENTION. Your {o} readings for the (4} have exceeded the set {1} limit of {2} with a reading of (3}",
+			"ATTENTION, ATTENTION. Your {0} readings for the {4} have exceeded the set {1} limit of {2} with a reading of {3}",
 			"Alert request. Your {4} {0} readings are at {3}",
 			"Just to let you know the {0} readings for the {4} are above {2}"
 		],
 		"short": [
-			"Attention. Your {0) readings around the {4} are {3}"
+			"Attention. Your {0} readings around the {4} are {3}"
 		]
 	},
 	"sayTelemetryFreezeAlert": {
 		"default": [
-			"ATTENTION, ATTENTION. It's starting to freeze in the (0}. temperature is currently (1}"
+			"ATTENTION, ATTENTION. It's starting to freeze in the {0}. temperature is currently {1}"
 		],
 		"short": [
 			"Attention. It's now starting to freeze in the {0} "
@@ -131,26 +131,26 @@
 	},
 	"sayIpError": {
 		"default": [
-			"Sorry but i don\\'t have a listing for (0}"
+			"Sorry but i don\\'t have a listing for {0}"
 		],
 		"short": [
-			"Sorry but i don\\'t have a listing for (0} "
+			"Sorry but i don\\'t have a listing for {0} "
 		]
 	},
 	"sayIpError2": {
 		"default": [
-			"Sorry but Home assistant didn\\'t provide me an address for (0}"
+			"Sorry but Home assistant didn\\'t provide me an address for {0}"
 		],
 		"short": [
-			"Sorry but Home assistant didn\\'t provide me an address for (0} "
+			"Sorry but Home assistant didn\\'t provide me an address for {0} "
 		]
 	},
 	"sayIpAddress": {
 		"default": [
-			"The I P address for that device is (0}"
+			"The I P address for that device is {0}"
 		],
 		"short": [
-			"I P Address is (0} "
+			"I P Address is {0} "
 		]
 	}
 }
