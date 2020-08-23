@@ -346,6 +346,7 @@ class HomeAssistant(AliceSkill):
 				text=self.randomTalk(text='sayIpAddress', replace=[ipOfDevice]),
 				siteId=session.siteId
 			)
+			self.logInfo(f'You can view the {session.slotRawValue("switchNames")} at ->> http://{ipOfDevice}')
 
 		else:
 			self.endDialog(
