@@ -133,3 +133,5 @@ Some examples of what to say
 - when is sunset
 - what state is the sun
 - how long until dusk
+
+- whats the ip of the kitchen light

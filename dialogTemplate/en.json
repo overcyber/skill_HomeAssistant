@@ -12,7 +12,6 @@
                 {
                     "value": "bedroom light",
                     "synonyms": [
-
                     ]
                 }
             ]
@@ -44,7 +43,7 @@
                     "value": "sun",
                     "synonyms": [
                         "position",
-                        "dawm",
+                        "dawn",
                         "rising",
                         "setting",
                         "dusk"

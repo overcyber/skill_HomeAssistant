@@ -1,6 +1,6 @@
 {
     "name": "HomeAssistant",
-    "version": "0.1.3",
+    "version": "0.1.4",
     "icon": "fad fa-house",
     "category": "household",
     "author": "Lazza",
