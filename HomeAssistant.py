@@ -687,28 +687,25 @@ class HomeAssistant(AliceSkill):
 	def processHADataRetrieval(self):
 		# extra method to reduce complexity value of addHomeAssistantDevices()
 		# clean up any duplicates in the list
-		duplicateList = set(tuple(x) for x in self._switchAndGroupList)
-		finalList = [list(x) for x in duplicateList]
+		# duplicateList = set(tuple(x) for x in self._switchAndGroupList)
+		duplicateList = dict((x[0], x) for x in self._switchAndGroupList).values()
 
-		duplicateGroupList = set(tuple(x) for x in self._grouplist)
-		finalGroupList = [list(x) for x in duplicateGroupList]
+		duplicateGroupList = dict((x[0], x) for x in self._grouplist).values()
 
-		duplicateSensorList = set(tuple(x) for x in self._dbSensorList)
-		finalSensorList = [list(x) for x in duplicateSensorList]
+		duplicateSensorList = dict((x[0], x) for x in self._dbSensorList).values()
 
 		# process group entities
-		for group, value in finalGroupList:
+		for group, value in duplicateGroupList:
 			self.addEntityToDatabase(entityName=group, friendlyName=value, uID=value, deviceGroup='group')
 
 		# process Switch entities
-		for switchItem in finalList:
+		for switchItem in duplicateList:
 			self.addEntityToDatabase(entityName=switchItem[0], friendlyName=switchItem[1], deviceState=switchItem[2], uID=switchItem[1], deviceGroup='switch')
 
 			self.AddToAliceDB(switchItem[1])
-		# friendlyNameList.append(switchItem[1])
 
 		# Process Sensor entities
-		for sensorItem in finalSensorList:
+		for sensorItem in duplicateSensorList:
 			self.addEntityToDatabase(entityName=sensorItem[1], friendlyName=sensorItem[0], uID=sensorItem[0], deviceState=sensorItem[2], deviceGroup='sensor', deviceType=sensorItem[3])
 
 		# Process Sensor entities
