@@ -150,7 +150,7 @@
 			"The I P address for that device is {0}"
 		],
 		"short": [
-			"I P Address is {0} "
+			"{0}"
 		]
 	},
 	"nextSunEvent": {
@@ -158,7 +158,7 @@
 			"The next {0} will be on "
 		],
 		"short": [
-			"The next {0} will be on "
+			""
 		]
 	}
 }
