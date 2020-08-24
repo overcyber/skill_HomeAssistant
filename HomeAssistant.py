@@ -145,11 +145,10 @@ class HomeAssistant(AliceSkill):
 		data = get(url, headers=header).json()
 
 		if self.getConfig('DebugMode'):
-			self.logDebug(f'********* COPY THE FOLLOWING JSON PAYLOAD **********')
+			self.logDebug(f'********* INCOMING JSON PAYLOAD **********')
 			self.logDebug(f'')
 			self.logDebug(f'{data}')
 			self.logDebug(f'')
-			self.logInfo(f' You\'ll probably need to be in manual start mode to copy the above debug message ')
 			self.logDebug(f'')
 
 		# delete and existing values in DB so we can update with a fresh list of Devices
@@ -204,6 +203,7 @@ class HomeAssistant(AliceSkill):
 				self.logDebug(f'')
 				self.logDebug(f'I was requested to >> {self._action} the device called {uid} ')
 				debugSwitchId = self.getDatabaseEntityID(uid=uid)
+
 				try:
 					self.logDebug(f'debugSwitchId = {debugSwitchId["entityName"]}')
 				except Exception as e:
@@ -293,7 +293,7 @@ class HomeAssistant(AliceSkill):
 			result, hours, minutes = self.standard_date(dateObj)
 
 			if result:
-				stateType = 'Next dusk will be on'
+				stateType = self.randomTalk(text='nextSunEvent', replace=[request])
 				self.saysunState(session=session, state=stateType, result=result, hours=hours, minutes=minutes)
 
 		elif 'sunrise' in request:
@@ -301,7 +301,7 @@ class HomeAssistant(AliceSkill):
 			result, hours, minutes = self.standard_date(dateObj)
 
 			if result:
-				stateType = 'The next sunrise will be on'
+				stateType = self.randomTalk(text='nextSunEvent', replace=[request])
 				self.saysunState(session=session, state=stateType, result=result, hours=hours, minutes=minutes)
 
 		elif 'dawn' in request:
@@ -309,7 +309,7 @@ class HomeAssistant(AliceSkill):
 			result, hours, minutes = self.standard_date(dateObj)
 
 			if result:
-				stateType = 'The next dawn will be on'
+				stateType = self.randomTalk(text='nextSunEvent', replace=[request])
 				self.saysunState(session=session, state=stateType, result=result, hours=hours, minutes=minutes)
 
 		elif 'sunset' in request:
@@ -317,7 +317,7 @@ class HomeAssistant(AliceSkill):
 			result, hours, minutes = self.standard_date(dateObj)
 
 			if result:
-				stateType = 'The sun will go down on'
+				stateType = self.randomTalk(text='nextSunEvent', replace=[request])
 				self.saysunState(session=session, state=stateType, result=result, hours=hours, minutes=minutes)
 
 
@@ -372,24 +372,28 @@ class HomeAssistant(AliceSkill):
 				self.sortThroughJson(item=item)
 
 		for switchItem, uid, state in self._switchAndGroupList:
-			if self.getConfig('DebugMode'):
-				self.logDebug(f'********* updateDBStates code **********')
-				self.logDebug(f'')
-				self.logDebug(f'I\'m updating {switchItem} with state {state}')
-				self.logDebug(f'')
 
 			# Locate entity in HA database and update it's state
 			if self.getDatabaseEntityID(uid=uid):
+				if self.getConfig('DebugMode'):
+					self.logDebug(f'********* updateDBStates code **********')
+					self.logDebug(f'')
+					self.logDebug(f'I\'m updating the switch >> {switchItem} << with state >> {state} ')
+					self.logDebug(f'')
+
 				self.updateSwitchValueInDB(key=switchItem, value=state, uid=uid)
 
 		for sensorName, entity, state, haClass in self._dbSensorList:
 
-			if self.getConfig('DebugMode'):
-				self.logDebug(f'')
-				self.logDebug(f'i\'m updating the sensor {sensorName} with state {state} - entity name is {entity} of class {haClass}')
-
 			# Locate sensor in the database and update it's value
 			if self.getDatabaseEntityID(uid=sensorName):
+				if self.getConfig('DebugMode'):
+					self.logDebug(f'')
+					self.logDebug(f'I\'m updating the sensor >> {sensorName} << with the state of "{state}" ')
+					self.logDebug(f'HA class is "{haClass}" ')
+					self.logDebug(f'The entity ID is "{entity}"')
+					self.logDebug('')
+
 				self.updateSwitchValueInDB(key=entity, value=state, uid=sensorName)
 
 
@@ -661,6 +665,11 @@ class HomeAssistant(AliceSkill):
 		for mylist in friendlylist:
 			if mylist[0] not in duplicate:
 				self._newSynonymList.append(mylist[0])
+				if self.getConfig('DebugMode'):
+					self.logDebug('********* ADDING THE SYNONYM **********')
+					self.logDebug('')
+					self.logDebug(f'{mylist[0]}')
+					self.logDebug('')
 			duplicate = mylist
 
 		data = json.loads(file.read_text())
@@ -684,8 +693,8 @@ class HomeAssistant(AliceSkill):
 		duplicateGroupList = set(tuple(x) for x in self._grouplist)
 		finalGroupList = [list(x) for x in duplicateGroupList]
 
-		duplicateSenorList = set(tuple(x) for x in self._dbSensorList)
-		finalSensorList = [list(x) for x in duplicateSenorList]
+		duplicateSensorList = set(tuple(x) for x in self._dbSensorList)
+		finalSensorList = [list(x) for x in duplicateSensorList]
 
 		# process group entities
 		for group, value in finalGroupList:
@@ -714,7 +723,7 @@ class HomeAssistant(AliceSkill):
 			teleType = teleType.upper()
 
 			if self.getConfig('DebugMode'):
-				self.logDebug(f'*************** Send to Telemetry code ***************')
+				self.logDebug(f'*************** Adding to Telemetry DataBase ***************')
 				self.logDebug(f'')
 				self.logDebug(f'The {teleType} reading for the {siteId} is {item[1]} ')
 				self.logDebug(f'')
@@ -842,7 +851,7 @@ class HomeAssistant(AliceSkill):
 		return timeDifferenceResult, hours, minutes
 
 
-	def saysunState(self, session, state: str, result, hours, minutes):
+	def saysunState(self, session, state, result, hours, minutes):
 		self.endDialog(
 			sessionId=session.sessionId,
 			text=self.randomTalk(text='saySunState', replace=[state, result, hours, minutes]),
