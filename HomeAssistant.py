@@ -439,9 +439,7 @@ class HomeAssistant(AliceSkill):
 		"""Add devices to Alices Devicemanager-Devices table.
 		If location not known, create and store devices in a StoreRoom"""
 
-		locationID = self.LocationManager.getLocation(location='StoreRoom')
-		locationID = locationID.id
-		values = {'typeID': 3, 'uid': uID, 'locationID': locationID, 'name': uID, 'display': "{'x': '10', 'y': '10', 'rotation': 0, 'width': 45, 'height': 45}", 'skillName': self.name}
+		values = {'typeID': self.DeviceManager.getDeviceTypeByName("EspSwitch").id, 'uid': uID, 'locationID': self.LocationManager.getLocation(location='StoreRoom').id, 'name': uID, 'display': "{'x': '10', 'y': '10', 'rotation': 0, 'width': 45, 'height': 45}", 'skillName': self.name}
 		self.DatabaseManager.insert(tableName=self.DeviceManager.DB_DEVICE, values=values, callerName=self.DeviceManager.name)
 
 
@@ -687,7 +685,7 @@ class HomeAssistant(AliceSkill):
 	def processHADataRetrieval(self):
 		# extra method to reduce complexity value of addHomeAssistantDevices()
 		# clean up any duplicates in the list
-		# duplicateList = set(tuple(x) for x in self._switchAndGroupList)
+
 		duplicateList = dict((x[0], x) for x in self._switchAndGroupList).values()
 
 		duplicateGroupList = dict((x[0], x) for x in self._grouplist).values()
@@ -765,7 +763,6 @@ class HomeAssistant(AliceSkill):
 
 
 	def onBooted(self) -> bool:
-
 
 		if 'http://localhost:8123/api/' in self.getConfig("HAIpAddress"):
 			self.logWarning(f'You need to update the HAIpAddress in Homeassistant Skill ==> settings')
@@ -952,3 +949,4 @@ class HomeAssistant(AliceSkill):
 				temperatureLogData.append(temperatureLogs)
 
 		print(f'temperature data = {temperatureLogData} ')
+
