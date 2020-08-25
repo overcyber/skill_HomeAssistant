@@ -17,12 +17,6 @@
         "lang": [
             "en"
         ],
-        "skill": [
-			{
-				"name": "Telemetry",
-				"url": "http://skills.projectalice.ch/Telemetry"
-			}
-		],
         "asrArbitraryCapture": true
     }
 }
