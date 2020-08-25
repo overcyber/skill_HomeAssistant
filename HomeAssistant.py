@@ -474,6 +474,7 @@ class HomeAssistant(AliceSkill):
 		)
 
 
+	# noinspection SqlResolve
 	def deleteHomeAssistantDBEntries(self):
 		""" Deletes the entire database table from the Homeassistant Table"""
 		self.DatabaseManager.delete(
@@ -929,7 +930,7 @@ class HomeAssistant(AliceSkill):
 
 	###############  Telemetry Logging Data  #################
 	# work in progress
-
+	# noinspection SqlResolve
 	def getTelemetryLogs(self):
 		telemetryDblogs = TelemetryManager()
 		self._telemetryLogs = telemetryDblogs.databaseFetch(
