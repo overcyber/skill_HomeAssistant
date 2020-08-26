@@ -477,6 +477,7 @@ class HomeAssistant(AliceSkill):
 	# noinspection SqlResolve
 	def deleteHomeAssistantDBEntries(self):
 		""" Deletes the entire database table from the Homeassistant Table"""
+		# noinspection SqlWithoutWhere
 		self.DatabaseManager.delete(
 			tableName='HomeAssistant',
 			query='DELETE FROM :__table__ ',
