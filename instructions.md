@@ -2,10 +2,11 @@
 
 **---- In Home Assistant: ----**
 
-1. Create a long life token from your user profile screen. (Copy it and store it safely for now as you'll only get once chance to copy it)
+1. Create a long life token from your user profile screen. (Copy it and store it safely for now as you'll only
+ get once chance to copy it)
 2. Add the following to your Home Assistant configuration.yaml file
   - api:
-     - *your HomeassistantIP:port*/api/
+     - *http://your HomeassistantIP:port*/api/
  
 **Example:**
 
@@ -17,7 +18,7 @@ NOTE the /api/ not just /api
 while in there check if you have in your yaml
   - default_config:
 or
-  - :sun
+  - sun:
 
 (Add either of those to your Home Assistant configuration.yaml, if you'd like Alice to tell you about sun events)
 

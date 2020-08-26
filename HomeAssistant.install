@@ -1,6 +1,6 @@
 {
     "name": "HomeAssistant",
-    "version": "0.1.7",
+    "version": "0.1.8",
     "icon": "fad fa-house",
     "category": "household",
     "author": "Lazza",
@@ -17,6 +17,13 @@
         "lang": [
             "en"
         ],
-        "asrArbitraryCapture": true
+    "asrArbitraryCapture": true,
+        "skill": [
+            "Telemetry"
+        ],
+    "activeManager": [
+            "TelemetryManager"
+        ]
     }
 }
+
