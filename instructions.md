@@ -6,7 +6,7 @@
  get once chance to copy it)
 2. Add the following to your Home Assistant configuration.yaml file
   - api:
-     - *your HomeassistantIP:port*/api/
+     - *http://your HomeassistantIP:port*/api/
  
 **Example:**
 
