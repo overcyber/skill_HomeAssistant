@@ -10,7 +10,7 @@ Connect alice to your home assistant
 - Languages:
     en
 
-**What this does :**
+**What this does :** 
 
 This skill allows you to connect your exisiting Home Assistant (HA) to Alice so you can turn on or off switches
 It does this through using the RESTful API.
