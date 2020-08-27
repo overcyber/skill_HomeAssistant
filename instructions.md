@@ -81,6 +81,6 @@ Some examples of what to say
 - What can you turn on or off
 - When is sunrise
 - When is sunset
-- What state is the sun
+- What position is the sun
 - How long until dusk
 - Whats the ip of the kitchen light
