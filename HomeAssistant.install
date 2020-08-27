@@ -19,7 +19,8 @@
         ],
     "asrArbitraryCapture": true,
         "skill": [
-            "Telemetry"
+            "Telemetry",
+            "Tasmota"
         ],
     "activeManager": [
             "TelemetryManager"
