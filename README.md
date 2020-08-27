@@ -61,3 +61,5 @@ Alice " whats the BME280 temperature ", which is not very natural either :)
 - how long until dusk
 
 - whats the ip of the kitchen light
+
+Test
