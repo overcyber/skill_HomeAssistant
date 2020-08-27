@@ -57,7 +57,8 @@ Alice " whats the BME280 temperature ", which is not very natural either :)
 
 - when is sunrise
 - when is sunset
-- what state is the sun
+- what position is the sun
 - how long until dusk
 
 - whats the ip of the kitchen light
+

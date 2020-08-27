@@ -1,11 +1,11 @@
 {
     "name": "HomeAssistant",
-    "version": "0.1.8",
+    "version": "0.1.9",
     "icon": "fad fa-house",
     "category": "household",
     "author": "Lazza",
     "maintainers": [],
-    "desc": "Connect alice to your home assistant. You can then control any switches you have in Home Assistant . Refer readme for more info",
+    "desc": "Connect alice to your home assistant. You can then control any switches you have in Home Assistant . Refer readme and instrctions for more info",
     "aliceMinVersion": "1.0.0-b2",
     "systemRequirements": [
         ""
@@ -19,7 +19,8 @@
         ],
     "asrArbitraryCapture": true,
         "skill": [
-            "Telemetry"
+            "Telemetry",
+            "Tasmota"
         ],
     "activeManager": [
             "TelemetryManager"

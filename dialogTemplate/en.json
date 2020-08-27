@@ -10,7 +10,7 @@
             "useSynonyms": true,
             "values": [
                 {
-                    "value": "bedroom light",
+                    "value": "default switch",
                     "synonyms": [
                     ]
                 }
@@ -71,8 +71,12 @@
             "enabledByDefault": true,
             "utterances": [
                 "turn {on:=>OnOrOff} the {toilet light:=>switchNames}",
+                "turn the {toilet light:=>switchNames} {on:=>OnOrOff}",
+                "turn {bedroom light:=>switchNames} {off:=>OnOrOff}",
                 "turn {off:=>OnOrOff} the {bedroom light:=>switchNames}",
                 "switch {off:=>OnOrOff} the {bedroom light:=>switchNames}",
+                "switch the {bedroom light:=>switchNames} {off:=>OnOrOff}",
+                "switch {bedroom light:=>switchNames} {off:=>OnOrOff} please",
                 "{toggle:=>OnOrOff} the {kitchen lights:=>switchNames}",
                 "{open:=>OnOrOff} the {garage door:=>switchNames}",
                 "{close:=>OnOrOff} the {bedroom windows:=>switchNames}"
