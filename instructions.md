@@ -1,17 +1,18 @@
 <span style="color: #ff0000;"><strong>SetUp Steps </span><span style="color: #0000ff;">--- In Home Assistant: ---</strong></span>
 <ol>
-<li>Create a long life token from your user profile screen. (Copy it and store it <br />safely for now as you'll only get once chance to copy it)</li>
+<li>Create a long life token from your user profile screen. (Copy it and store it safely for now as you'll 
+only get once chance to copy it)</li>
 <li>Add the following to your Home Assistant configuration.yaml file</li>
 </ol>
 api;
 
 &nbsp;&nbsp;&nbsp; http://your-HomeassistantIP:port/api/
 
-<span style="color: #00ff00;">Example:</span><br />
+<span style="color: #00ff00;">Example:</span>
 
-api:<br>&nbsp;&nbsp;&nbsp; http://192.168.4.1:8123/api/<br />
+api:&nbsp;&nbsp;&nbsp; http://192.168.4.1:8123/api/
 
-<span style="color: #ffff00;">NOTE</span> the /api/ not just /api<br />
+<span style="color: #ffff00;">NOTE</span> the /api/ not just /api
 
 while in there check if you have in your Home Assistant yaml
 <ul>
@@ -31,7 +32,9 @@ Add either of those to your Home Assistant configuration.yaml, if you'd like Ali
 <li>Install the HomeAssistant skill</li>
 <li>Once installed, Go to the HomeAssistant skill and click on -&gt; Settings</li>
 <li>In "HAaccessToken" field, add your copied long life token</li>
-<li>In "HAIpAddress" field, add your HomeAssistant IP address - make sure you append /api/<br /> <span style="color: #ff6600;">Example</span> http://192.168.4.1:8123/api/</li>
+<li>In "HAIpAddress" field, add your HomeAssistant IP address - make sure you append /api/
+ 
+<span style="color: #ff6600;">Example</span> http://192.168.4.1:8123/api/</li>
 <li>Restart Alice</li>
 </ol>
 
@@ -57,7 +60,7 @@ You really only need to ask that once. By asking that she will
 </ol>
 Once setup is completed (takes 30 seconds or so) and <strong>you restart alice</strong> again for training.
 
-You should be able to ask <br />
+You should be able to ask 
 
 - "Hey Alice/Snips"
 - "Turn off / on the "entity Friendly name"
