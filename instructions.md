@@ -41,11 +41,12 @@ For now all switches captured by Alice from HA will get installed in one locatio
 and move each switch to a appropriate location. To keep a tidy house keeps Alice happy :)
 
 Once alice restarts you can then ask her :
-- "Hey Snips/Alice"
-- "Setup home assistant skill" 
+<ul>
+<li>"Hey Snips/Alice"</li>
+<li>"Setup home assistant skill" </li>
 or
-- "configure the home assistant skill"
-
+<li>"configure the home assistant skill"</li>
+</ul>
 You really only need to ask that once. By asking that she will
 
 <ol>
