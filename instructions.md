@@ -10,11 +10,13 @@ api;
 
 <span style="color: #00ff00;">Example:</span>
 
-api:&nbsp;&nbsp;&nbsp; http://192.168.4.1:8123/api/
+api:
+
+&nbsp;&nbsp;&nbsp; http://192.168.4.1:8123/api/
 
 <span style="color: #ffff00;">NOTE</span> the /api/ not just /api
 
-while in there check if you have in your Home Assistant yaml
+while in there, check if you have in your Home Assistant yaml
 <ul>
 <li>default_config:
 
@@ -34,7 +36,7 @@ Add either of those to your Home Assistant configuration.yaml, if you'd like Ali
 <li>In "HAaccessToken" field, add your copied long life token</li>
 <li>In "HAIpAddress" field, add your HomeAssistant IP address - make sure you append /api/
  
-<span style="color: #ff6600;">Example</span> http://192.168.4.1:8123/api/</li>
+<span style="color: #00ff00;">Example</span> http://192.168.4.1:8123/api/</li>
 <li>Restart Alice</li>
 </ol>
 
@@ -55,7 +57,7 @@ You really only need to ask that once. By asking that she will
 <ol>
 <li>Get the list of switch entities from Home assistant</li>
 <li>Write them to Alices new HomeAssistant Database</li>
-<li>Add those devices to Alice's Database ( so they show in My home and are Alice aknowledable)</li>
+<li>Add those devices to Alice's Database ( so they show in My home and are Alice acknowledable)</li>
 <li>Takes all the friendly names and automatically writes them to dialogTemplate file</li>
 </ol>
 Once setup is completed (takes 30 seconds or so) and <strong>you restart alice</strong> again for training.
@@ -74,8 +76,10 @@ You should be able to ask
 
 Some examples of what to say
 
-<em>For initial set up</em>
+<em>For initial set up</em> 
+
 - "Add my home assistant devices"
+or
 - "Configure the home assistant skill"
 
 <em>General usage</em>
@@ -94,3 +98,101 @@ Some examples of what to say
 <li>How long until dusk</li>
 <li>What's the ip of the kitchen light</li>
 </ul>
+
+<span style="color: #ff0000;">Configuration Tips</span> #####<span style="color: #0000ff;"></strong> Manually setting up sensors</span></strong> #####
+
+Currently the sensors from HA that will get captured are "<i>sensor.sensor_name"</i> and 
+<i>binary_sensor.sensor_name</i> devices 
+
+EG: "sensor.inside_temperature".
+
+To be captured however they must have a "device_class" attribute assigned to them.
+
+HA will tend to automatically do this for you in some cases. Especially if your running HASS.IO and the MQTT Addon and 
+Tasmota firmware on your devices. However you may find that currently not all sensors are being captured.
+
+<span style="color: #ff6600;">There's potentially at least two common reasons for this</span> 
+<ol>
+<li> Currently only sensors that have a function in the HA skill are concentrated on. This will change as the 
+skill progresses. Devices such as, temperature, humidity, gas, illuminance, pressure and dewpoint are used 
+and can be reported on by Alice.
+
+Sensors such as motion sensor's, battery sensors etc "might" also get captured, however they have no 
+function in Alice currently. Please see example configurations further down these instructions </li>
+
+<li> You've manually configured a MQTT device in the yaml but have not added a "device_class" attribute </li>
+</ol>
+
+
+If manually creating sensors in your home assistant configuration.yaml be sure to add a "device_class" such as 
+the below example and Alice should pick up on that the next time you ask Alice to
+"configure the home Assistant skill " and then re train her.
+
+<span style="color: #00ff00;">Example configuration.yaml entry</span>
+```
+
+sensor:
+
+     - platform: mqtt
+
+       name: "Inside Temperature"
+
+       state_topic: "your sensor state topic here"
+
+       unit_of_measurement: "°C"
+
+       device_class: temperature
+
+     - platform: mqtt
+
+       name: "inside Humidity"
+
+       state_topic: "your sensor state topic here"
+
+       unit_of_measurement: "%"
+
+       device_class: humidity
+
+     - platform: mqtt
+
+       name: "inside Pressure"
+
+       state_topic: "your sensor state topic here"
+
+       unit_of_measurement: "mb"
+```
+
+For available device classes, have a look here <a href="https://www.home-assistant.io/integrations/sensor/" target="_blank">Sensors</a>
+and here <a href="https://www.home-assistant.io/integrations/binary_sensor/"target="_blank">Binary sensors</a>
+
+<span style="color: #ffff00;">Note:</span> state_topic will of course be the topic of your mqtt device :)
+
+<span style="color: #ff6600;">Accessing sensor data that Alice captures but currently does nothing with</span>
+
+So lets say for example you know Alice is capturing your outside motion sensor and storing that data in the 
+HomeAsistant database. You want to use that value in your own skill to do something.
+
+You can access that value by importing the HomeAssistant Class, 
+create a instance of HomeAssistant and use the get.SensorValues() function:
+
+<span style="color: #00ff00;">Example:</span>
+
+```
+
+from skills.HomeAssistant import HomeAssistant
+
+   @staticmethod
+
+    def getHomeAssitantSensorData():
+	
+		haClass = HomeAssistant.HomeAssistant()
+	
+		knownSensors = haClass.getSensorValues
+	
+		if knownSensors:
+	
+			return knownSensors
+
+```
+
+You'll then want to iterate over the result to find the sensor data you're specifically after.
