@@ -21,7 +21,7 @@ You will be able to control an entity in HomeAssistant that is a existing switch
 
 It also captures sensor.<entityName> devices too but currently only utilises some sensor readings like temperature, 
 humidity etc. It does so by sending that data to Telemetry skill so you can ask Alice what's the inside 
-temperature for example. (still work in progress but the data is there)
+temperature for example.
 
 "group.*entityName*" are also captured with this skill so you can "turn off kitchen lights" or smiliar
 commands that control groups of switch.<entityName> devices. 
