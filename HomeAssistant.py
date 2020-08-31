@@ -2,7 +2,6 @@ import threading
 import json
 import requests
 
-
 from datetime import datetime
 from dateutil import tz
 import pytz
@@ -16,7 +15,6 @@ from core.util.TelemetryManager import TelemetryManager
 
 
 class HomeAssistant(AliceSkill):
-
 	"""
 	Author: Lazza
 	Description: Connect alice to your home assistant
@@ -41,7 +39,7 @@ class HomeAssistant(AliceSkill):
 	def __init__(self):
 
 		self._broadcastFlag = threading.Event()
-		self._newSynonymList = list()
+		self._newSlotValueList = list()
 		self._friendlyName = ""
 		self._deviceState = ""
 		self._entireSensorlist = list()
@@ -56,8 +54,8 @@ class HomeAssistant(AliceSkill):
 		self._telemetryLogs = list()
 		self._IpList = list()
 
-		super().__init__(databaseSchema=self.DATABASE)
 
+		super().__init__(databaseSchema=self.DATABASE)
 
 
 	############################### INTENT HANDLERS #############################
@@ -133,7 +131,6 @@ class HomeAssistant(AliceSkill):
 			pass
 
 
-
 	@IntentHandler('AddHomeAssistantDevices')
 	def addHomeAssistantDevices(self, session: DialogSession):
 		if not self.checkConnection():  # If not connected to HA, say so and stop
@@ -162,8 +159,8 @@ class HomeAssistant(AliceSkill):
 
 		# Split above and below into other methods to reduce complexity complaint from sonar
 		self.processHADataRetrieval()
-		# write friendly names to dialogTemplate as synonyms
-		self.addSynonyms()
+		# write friendly names to dialogTemplate as slotValues
+		self.addSlotValues()
 
 		self._setup = True
 		if self._switchAndGroupList:
@@ -439,7 +436,7 @@ class HomeAssistant(AliceSkill):
 		"""Add devices to Alices Devicemanager-Devices table.
 		If location not known, create and store devices in a StoreRoom"""
 
-		values = {'typeID': self.DeviceManager.getDeviceTypeByName("EspSwitch").id, 'uid': uID, 'locationID': self.LocationManager.getLocation(location='StoreRoom').id, 'name': uID, 'display': "{'x': '10', 'y': '10', 'rotation': 0, 'width': 45, 'height': 45}", 'skillName': self.name}
+		values = {'typeID': self.DeviceManager.getDeviceTypeByName("EspSwitch").id, 'uid': uID, 'locationID': self.LocationManager.getLocation(location='StoreRoom').id, 'name': uID, 'display': "{'x': '10', 'y': '10', 'rotation': 0, 'width': 45, 'height': 45}", 'skillName': 'HomeAssistant'}
 		self.DatabaseManager.insert(tableName=self.DeviceManager.DB_DEVICE, values=values, callerName=self.DeviceManager.name)
 
 
@@ -650,9 +647,9 @@ class HomeAssistant(AliceSkill):
 						self.logWarning(f'There was a error logging data for sensor {siteID} as : {e}')
 
 
-	# add friendlyNames to dialog template as a list of synonyms
-	def addSynonyms(self) -> bool:
-		"""Add synonyms to the existing dialogTemplate file for the skill"""
+	# add friendlyNames to dialog template as a list of slotValues
+	def addSlotValues(self) -> bool:
+		"""Add slotValues to the existing dialogTemplate file for the skill"""
 
 		file = self.getResource(f'dialogTemplate/{self.activeLanguage()}.json')
 		if not file:
@@ -662,25 +659,26 @@ class HomeAssistant(AliceSkill):
 		# using this duplicate var to capture things like sonoff 4 channel pro or multi button devices
 		duplicate = ''
 
-		for mylist in friendlylist:
-			if mylist[0] not in duplicate:
-				self._newSynonymList.append(mylist[0])
+		for valuesToStore in friendlylist:
+			if valuesToStore[0] not in duplicate:
+				dictValue = {'value': valuesToStore[0]}
+				self._newSlotValueList.append(dictValue)
+
 				if self.getConfig('DebugMode'):
-					self.logDebug('********* ADDING THE SYNONYM **********')
+					self.logDebug('********* ADDING THE SLOTVALUE **********')
 					self.logDebug('')
-					self.logDebug(f'{mylist[0]}')
+					self.logDebug(f'{valuesToStore[0]}')
 					self.logDebug('')
-			duplicate = mylist
+			duplicate = valuesToStore
 
 		data = json.loads(file.read_text())
 
 		if 'slotTypes' not in data:
 			return False
 
-		for i, friendlyname in enumerate(data['slotTypes'][0]['values']):
+		data['slotTypes'][0]['values'] = self._newSlotValueList
+		file.write_text(json.dumps(data, ensure_ascii=False, indent=4))
 
-			data['slotTypes'][i]['values'][i]['synonyms'] = self._newSynonymList
-			file.write_text(json.dumps(data, ensure_ascii=False, indent=4))
 		return True
 
 
@@ -951,4 +949,3 @@ class HomeAssistant(AliceSkill):
 				temperatureLogData.append(temperatureLogs)
 
 		print(f'temperature data = {temperatureLogData} ')
-

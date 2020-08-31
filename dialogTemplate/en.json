@@ -9,11 +9,7 @@
             "automaticallyExtensible": true,
             "useSynonyms": true,
             "values": [
-                {
-                    "value": "default switch",
-                    "synonyms": [
-                    ]
-                }
+
             ]
         },
         {
@@ -23,14 +19,21 @@
             "useSynonyms": true,
             "values": [
                 {
-                    "value": "on",
-                    "synonyms": [
-                        "off",
-                        "toggle",
-                        "open",
-                        "close"
-                    ]
+                    "value": "on"
+                },
+                {
+                    "value": "off"
+                },
+                {
+                    "value": "open"
+                },
+                {
+                    "value": "close"
+                },
+                {
+                    "value": "toggle"
                 }
+
             ]
         },
         {
@@ -40,14 +43,22 @@
             "useSynonyms": true,
             "values": [
                 {
-                    "value": "sun",
-                    "synonyms": [
-                        "position",
-                        "dawn",
-                        "rising",
-                        "setting",
-                        "dusk"
-                    ]
+                    "value": "sun"
+                },
+                {
+                    "value": "position"
+                },
+                {
+                    "value": "dawn"
+                },
+                {
+                    "value": "rising"
+                },
+                {
+                    "value": "setting"
+                },
+                {
+                    "value": "dusk"
                 }
             ]
         }
