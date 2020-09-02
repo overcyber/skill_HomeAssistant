@@ -141,7 +141,7 @@ class HomeAssistant(AliceSkill):
 		header, url = self.retrieveAuthHeader(urlPath='states')
 		data = get(url, headers=header).json()
 
-		if self.getConfig('DebugMode'):
+		if self.getConfig('debugMode'):
 			self.logDebug(f'********* INCOMING JSON PAYLOAD **********')
 			self.logDebug(f'')
 			self.logDebug(f'{data}')
@@ -195,7 +195,7 @@ class HomeAssistant(AliceSkill):
 
 		if session.slotValue('switchNames'):
 			uid = session.slotRawValue('switchNames')
-			if self.getConfig('DebugMode'):
+			if self.getConfig('debugMode'):
 				self.logDebug(f'********** SWITCHING EVENT *************')
 				self.logDebug(f'')
 				self.logDebug(f'I was requested to >> {self._action} the device called {uid} ')
@@ -264,7 +264,7 @@ class HomeAssistant(AliceSkill):
 		for item in data:
 
 			if isinstance(item, dict) and 'friendly_name' in item["attributes"] and 'Sun' in item["attributes"]['friendly_name']:
-				if self.getConfig('DebugMode'):
+				if self.getConfig('debugMode'):
 					self.logDebug(f'************* SUN DEBUG LOG ***********')
 					self.logDebug(f'')
 					self.logDebug(f'The sun JSON is ==> {item}')
@@ -372,7 +372,7 @@ class HomeAssistant(AliceSkill):
 
 			# Locate entity in HA database and update it's state
 			if self.getDatabaseEntityID(uid=uid):
-				if self.getConfig('DebugMode'):
+				if self.getConfig('debugMode'):
 					self.logDebug(f'********* updateDBStates code **********')
 					self.logDebug(f'')
 					self.logDebug(f'I\'m updating the switch >> {switchItem} << with state >> {state} ')
@@ -384,7 +384,7 @@ class HomeAssistant(AliceSkill):
 
 			# Locate sensor in the database and update it's value
 			if self.getDatabaseEntityID(uid=sensorName):
-				if self.getConfig('DebugMode'):
+				if self.getConfig('debugMode'):
 					self.logDebug(f'')
 					self.logDebug(f'I\'m updating the sensor >> {sensorName} << with the state of "{state}" ')
 					self.logDebug(f'HA class is "{haClass}" ')
@@ -405,12 +405,12 @@ class HomeAssistant(AliceSkill):
 		:returns: header and url
 		"""
 
-		header = {"Authorization": f'Bearer {self.getConfig("HAaccessToken")}', "content-type": "application/json", }
+		header = {"Authorization": f'Bearer {self.getConfig("haAccessToken")}', "content-type": "application/json", }
 
 		if urlAction:
-			url = f'{self.getConfig("HAIpAddress")}{urlPath}{urlAction}'
+			url = f'{self.getConfig("haIpAddress")}{urlPath}{urlAction}'
 		else:  # else is used for checking HA connection and boot up
-			url = f'{self.getConfig("HAIpAddress")}{urlPath}'
+			url = f'{self.getConfig("haIpAddress")}{urlPath}'
 
 		return header, url
 
@@ -418,7 +418,7 @@ class HomeAssistant(AliceSkill):
 	def checkConnection(self) -> bool:
 		try:
 			header, url = self.retrieveAuthHeader(' ', ' ')
-			response = get(self.getConfig('HAIpAddress'), headers=header)
+			response = get(self.getConfig('haIpAddress'), headers=header)
 			if '{"message": "API running."}' in response.text:
 				return True
 			else:
@@ -664,7 +664,7 @@ class HomeAssistant(AliceSkill):
 				dictValue = {'value': valuesToStore[0]}
 				self._newSlotValueList.append(dictValue)
 
-				if self.getConfig('DebugMode'):
+				if self.getConfig('debugMode'):
 					self.logDebug('********* ADDING THE SLOTVALUE **********')
 					self.logDebug('')
 					self.logDebug(f'{valuesToStore[0]}')
@@ -717,7 +717,7 @@ class HomeAssistant(AliceSkill):
 			teleType: str = item[0]
 			teleType = teleType.upper()
 
-			if self.getConfig('DebugMode'):
+			if self.getConfig('debugMode'):
 				self.logDebug(f'*************** Adding to Telemetry DataBase ***************')
 				self.logDebug(f'')
 				self.logDebug(f'The {teleType} reading for the {siteId} is {item[1]} ')
@@ -764,7 +764,7 @@ class HomeAssistant(AliceSkill):
 
 	def onBooted(self) -> bool:
 
-		if 'http://localhost:8123/api/' in self.getConfig("HAIpAddress"):
+		if 'http://localhost:8123/api/' in self.getConfig("haIpAddress"):
 			self.logWarning(f'You need to update the HAIpAddress in Homeassistant Skill ==> settings')
 			self.say(
 				text=self.randomTalk(text='sayConfigureMe'),
@@ -774,9 +774,9 @@ class HomeAssistant(AliceSkill):
 		else:
 			try:
 				header, url = self.retrieveAuthHeader(' ', ' ')
-				response = get(self.getConfig('HAIpAddress'), headers=header)
+				response = get(self.getConfig('haIpAddress'), headers=header)
 
-				if self.getConfig('DebugMode'):
+				if self.getConfig('debugMode'):
 					self.logDebug(f'*************** OnBooted code ***********')
 					self.logDebug(f'')
 					self.logDebug(f'{response.text} - onBooted connection code')

@@ -1,20 +1,23 @@
 {
-	"HAaccessToken": {
+	"haAccessToken": {
 		"defaultValue": "",
 		"dataType": "string",
-		"isSensitive": false,
+		"isSensitive": true,
+		"category": "system",
 		"description": "Adds a Access token for homeAssistant"
 	},
-	"HAIpAddress": {
+	"haIpAddress": {
 		"defaultValue": "http://localhost:8123/api/",
 		"dataType": "string",
 		"isSensitive": false,
+		"category": "system",
 		"description": "Adds your HA address"
 	},
-	"DebugMode": {
+	"debugMode": {
 		"defaultValue": false,
 		"dataType": "boolean",
 		"isSensitive": false,
-		"description": "allows debug mode to view whats going on"
+		"category": "system",
+		"description": "Allows debug mode to view whats going on"
 	}
 }
