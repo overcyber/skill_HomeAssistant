@@ -251,10 +251,19 @@
 			"we sure do. Try saying. Add home assistant dialog, to get more intents in this section",
 			"well done for stumbling across this intent. You earn a gold star and free membership to the class of. Observant people",
 			"Well fancy that. And here i thought no one would find this dummy intent. Well done",
-			"Check with the post offie. I think they are in the mail"
+			"Check with the post office. I think they are in the mail"
 		],
 		"short": [
 			"need is such a strong word"
+		]
+	},
+	"dummyIntent": {
+		"default": [
+			"we need more home assistant utterances"
+		],
+		"short": [
+			"we need more home assistant utterances",
+			""
 		]
 	}
 }
