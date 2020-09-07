@@ -60,6 +60,9 @@ Alice " whats the BME280 temperature ", which is not very natural either :)
 - what position is the sun
 - how long until dusk
 
+
 - whats the ip of the kitchen light
+
+- add home assistant dialogue (see instructions via the skill on this)
 
 
