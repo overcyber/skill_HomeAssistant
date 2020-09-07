@@ -222,9 +222,12 @@ Restart and she will go into training.
 Once trained now ask her " turn the tv on"
 She will then send a MQTT message on the topic "ProjectAlice/HomeAssistant" with a payload of "tv on"
 
-IN Home Assistant you can now perhaps use Node Red and a MQTT node into a switch node and listen to the topic of 
-"ProjectAlice/HomeAssistant" with the payload of "tv on" and trigger a appropriate Node Red flow to handle
-sending the RF code to the TV.
+In Home Assistant.... you can now use something like Node Red and a "MQTT node" that goes into a "switch node" 
+Configure the MQTT node to connect to Alices MQTT broker IP and listen to the topic of "ProjectAlice/HomeAssistant"
+ 
+Then when Alice sends a message on the topic "ProjectAlice/HomeAssistant" you should see the payload of "tv on"
+You can then send that payload to the switch node and finally to the appropriate flow to allow the RF code to 
+be triggered which should hopefully then .... turn the "tv on" :).
 
 Obviously this is just one simple example. Let your mind be creative and you could think up multiple things to do
 
