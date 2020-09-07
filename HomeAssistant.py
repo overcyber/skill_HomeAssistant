@@ -53,6 +53,16 @@ class HomeAssistant(AliceSkill):
 		self._triggerType = ""
 		self._telemetryLogs = list()
 		self._IpList = list()
+		# IntentCapture Vars
+		self._captureUtterances = ""
+		self._captureSlotValue = ""
+		self._captureSynonym = ""
+		self._utteranceID = 0
+		self._slotValueID = 0
+		self._utteranceList = list()
+		self._slotValueList = list()
+		self._data = dict()
+		self._finalsynonymList = list()
 
 
 		super().__init__(databaseSchema=self.DATABASE)
@@ -949,3 +959,266 @@ class HomeAssistant(AliceSkill):
 				temperatureLogData.append(temperatureLogs)
 
 		print(f'temperature data = {temperatureLogData} ')
+
+
+########################## INTENT CAPTURE CODE ###########################################
+
+
+	@IntentHandler('UserIntent')
+	def sendUserIntentToHA(self, session: DialogSession):
+
+		if "we need more home assistant utterances" in session.payload['input']:
+			self.endDialog(
+				sessionId=session.sessionId,
+				text=self.randomTalk(text='dummyUtterance'),
+				siteId=session.siteId,
+			)
+			return
+		userSlot = session.slotValue('HAintent')
+
+		self.MqttManager.publish(topic='ProjectAlice/HomeAssistant', payload=userSlot)
+		self.endDialog(
+			sessionId=session.sessionId,
+			text=self.randomTalk(text='homeAssistantSwitchDevice')
+		)
+
+	@IntentHandler('CreateIntent')
+	def createIntentRequest(self, session: DialogSession):
+		#test line
+		#self.addIntentToHADialog(text='turn the tv volume up', session=session)
+
+		self.continueDialog(
+			sessionId=session.sessionId,
+			text=self.randomTalk(text='sayYesICanCaptureIntent'),
+			intentFilter=['UserRandomAnswer'],
+			currentDialogState='requestingToMakeAIntent',
+			probabilityThreshold=0.1
+		)
+
+	def addIntentToHADialog(self, text: str, session):
+		""" Here we capture the Users Intent and just store it for later use"""
+
+		file = self.getResource(f'dialogTemplate/{self.activeLanguage()}.json')
+		if not file:
+			return False
+
+		# Read the original JSON dialogTemplate file before it gets modified
+		self._data = json.loads(file.read_text())
+
+		# enumerate over existing intents to find the userintent that we are after
+		for i, suggestedIntent in enumerate(self._data['intents']):
+			if "userintent" in suggestedIntent['name'].lower():
+				# get a list of exisiting utterances
+				self._utteranceList = suggestedIntent.get('utterances', list())
+
+				# check the utterance doesnt already exist
+				if not text in self._utteranceList:
+					# we need to add slot syntax to the Utterance so store needed values and move on
+					self._captureUtterances = text
+					self._utteranceID = i
+					self.askSlotValue(session=session)
+					return True
+				else:
+					self.say(
+						siteId=session.siteId,
+						text=self.randomTalk(text='utteranceExists'),					)
+					self.createIntentRequest(session)
+
+		return False
+
+
+	def askSlotValue(self, session):
+		self.continueDialog(
+			sessionId=session.sessionId,
+			text=self.randomTalk(text='askSlotValue'),
+			intentFilter=['UserRandomAnswer'],
+			currentDialogState='requestingSlotValue',
+			probabilityThreshold=0.1
+
+		)
+
+
+	@IntentHandler(intent='UserRandomAnswer', requiredState='requestingSynonymValue', isProtected=True)
+	@IntentHandler(intent='UserRandomAnswer', requiredState='requestingSlotValue', isProtected=True)
+	@IntentHandler(intent='UserRandomAnswer', requiredState='requestingToMakeAIntent', isProtected=True)
+	def listenForAvalue(self, session):
+		"""Process the users spoken input"""
+
+		triggerType = ""
+		incomingValue: str = session.payload['input']
+
+		if 'requestingToMakeAIntent' in session.currentState:
+			self._captureUtterances = incomingValue
+			self.addIntentToHADialog(text=self._captureUtterances, session=session)
+			return
+		elif 'requestingSlotValue' in session.currentState:
+			triggerType = "ConfirmSlotValue"
+			self._captureSlotValue = incomingValue
+
+		elif 'requestingSynonymValue' in session.currentState:
+			triggerType = "ConfirmSynonymValue"
+			self._captureSynonym = incomingValue
+
+		if not incomingValue.lower() in self._captureUtterances.lower() and not 'ConfirmSynonymValue' in triggerType:
+			self.continueDialog(
+				sessionId=session.sessionId,
+				text=self.randomTalk(text='keywordError', replace=[self._captureUtterances]),
+				intentFilter=['UserRandomAnswer'],
+				currentDialogState='requestingSlotValue',
+				probabilityThreshold=0.1
+			)
+			return
+
+		# verify what the user's value was, to confirm alice heard it properly
+		self.continueDialog(
+			sessionId=session.sessionId,
+			text=self.randomTalk(text='repeatIncomingValue', replace=[incomingValue]),
+			intentFilter=['AnswerYesOrNo'],
+			currentDialogState=triggerType,
+
+		)
+
+
+	@IntentHandler(intent='AnswerYesOrNo', requiredState='requestingShouldWeAddSynonyms', isProtected=True)
+	@IntentHandler(intent='AnswerYesOrNo', requiredState='ConfirmSlotValue', isProtected=True)
+	@IntentHandler(intent='AnswerYesOrNo', requiredState='ConfirmIntent', isProtected=True)
+	@IntentHandler(intent='AnswerYesOrNo', requiredState='ConfirmSynonymValue', isProtected=True)
+	def processYesOrNoResponse(self, session):
+		"""Sorts through the multiple yes or no responces and redirects accordingly"""
+
+		# if user replies with a Yes responce do this
+		if self.Commons.isYes(session):
+
+			if 'ConfirmIntent' in session.currentState:
+				self.addIntentToHADialog(session.payload['input'], session=session)
+
+			elif 'ConfirmSlotValue' in session.currentState:
+				self.addSlotValueToCapturedIntent(self._captureSlotValue, session=session)
+
+			elif 'requestingShouldWeAddSynonyms' in session.currentState:
+				self.askSynonymValue(session)
+
+			elif 'ConfirmSynonymValue' in session.currentState:
+				self.addSynonymToSlot(self._captureSynonym, session=session)
+
+		else:
+			pointer = 0
+			currentState = ""
+			text = ""
+			if 'ConfirmIntent' in session.currentState:
+				currentState = 'requestingToMakeAIntent'
+				text = 'intent'
+				pointer = 1
+			elif 'ConfirmSlotValue' in session.currentState:
+				currentState = 'requestingSlotValue'
+				text = 'slot'
+				pointer = 1
+			elif 'ConfirmSynonymValue' in session.currentState:
+				currentState = 'requestingSynonymValue'
+				text = 'Synonym'
+				pointer = 1
+
+			if pointer == 1:
+				self.continueDialog(
+					sessionId=session.sessionId,
+					text=self.randomTalk(text='userSaidNo', replace=[text]),
+					intentFilter=['UserRandomAnswer'],
+					currentDialogState=currentState
+				)
+
+			else:
+				# user is finished adding data so let's write it to file
+				self.rewriteJson(session=session)
+
+
+	def addSlotValueToCapturedIntent(self, text, session):
+		"""Adds slot values to the JSON file"""
+
+		for i, suggestedSlot in enumerate(self._data['slotTypes']):
+			if "haintent" in suggestedSlot['name'].lower():
+				# Get all the current slot values in dialogTemplate file
+				slotValue = suggestedSlot.get('values', list())
+
+				# if the slot value doesn't already exist then let's save it
+				if not text in slotValue:
+					# create a dictionary and append the new slot value to original list
+					dictValue = {'value': text, 'synonyms': []}
+					slotValue.append(dictValue)
+					# save it in self._data for later usage when we need to write to file
+					self._data['slotTypes'][i]['values'] = slotValue
+
+					# Now we know theres a slot name, let's add the correct syntax to the utterance, and save it for later writing
+					self._captureUtterances = self._captureUtterances.replace(self._captureSlotValue, "{" + self._captureSlotValue + ":=>HAintent}")
+					self._utteranceList.append(self._captureUtterances)
+					self._data['intents'][self._utteranceID]['utterances'] = self._utteranceList
+
+					# Now lets check if the user wants to also add synonyms for that slot
+					self.askToUseSynonyms(session=session, word='a')
+
+		return False
+
+
+	def addSynonymToSlot(self, text, session):
+		"""Add synonyms to the current slotValue"""
+
+		for i, haIntentSlot in enumerate(self._data['slotTypes']):
+			if "haintent" in haIntentSlot['name'].lower():
+
+				# get any current slot vales and store it in a list
+				synonymItem = haIntentSlot.get('values', list())
+
+				# let's retrieve the actual synonyms now from the various values
+				for x in synonymItem:
+					# Now find the right slot to use
+					if self._captureSlotValue in x['value'] and not text in synonymItem:
+
+						# retrieve current synonyms from the slot and append to a list
+						self._finalsynonymList = x.get('synonyms')
+						self._finalsynonymList.append(self._captureSynonym)
+
+						x['synonyms'] = self._finalsynonymList
+
+						#find the right index to fit the new slot
+						valueIndex = next((index for (index, d) in enumerate(synonymItem) if d["value"] == self._captureSlotValue), None)
+						# store the slot list until ready to write it
+						self._data['slotTypes'][i]['values'][valueIndex] = x
+
+				# Now about to ask if the user wants to add more synonyms.
+				self.askToUseSynonyms(session=session, word='another')
+
+		return False
+
+
+	def askToUseSynonyms(self, session, word: str = None):
+
+		self.continueDialog(
+			sessionId=session.sessionId,
+			text=self.randomTalk(text='addSyn', replace=[word]),
+			intentFilter=['AnswerYesOrNo'],
+			currentDialogState='requestingShouldWeAddSynonyms'
+		)
+
+
+	def askSynonymValue(self, session):
+		word = 'synonym'
+		self.continueDialog(
+			sessionId=session.sessionId,
+			text=self.randomTalk(text='addValue', replace=[word]),
+			intentFilter=['UserRandomAnswer'],
+			currentDialogState='requestingSynonymValue',
+			probabilityThreshold=0.1
+
+		)
+
+
+	def rewriteJson(self, session):
+		file = self.getResource(f'dialogTemplate/{self.activeLanguage()}.json')
+		if not file:
+			return False
+
+		file.write_text(json.dumps(self._data, ensure_ascii=False, indent=4))
+		self.endDialog(
+			sessionId=session.sessionId,
+			text=self.randomTalk(text='finishUp')
+		)
+

@@ -33,7 +33,6 @@
                 {
                     "value": "toggle"
                 }
-
             ]
         },
         {
@@ -60,6 +59,15 @@
                 {
                     "value": "dusk"
                 }
+            ]
+        },
+        {
+            "name": "HAintent",
+            "matchingStrictness": null,
+            "automaticallyExtensible": true,
+            "useSynonyms": true,
+            "values": [
+
             ]
         }
     ],
@@ -181,6 +189,34 @@
                     "description": null,
                     "required": false,
                     "type": "switchNames",
+                    "missingQuestion": ""
+                }
+            ]
+        },
+        {
+            "name": "CreateIntent",
+            "description": "User asking to add a intent",
+            "enabledByDefault": true,
+            "utterances": [
+                "Add a new Home Assistant intent",
+                "create home assistant utterance",
+                "add more home assistant dialogue",
+                "update home assistant dialogue"
+            ]
+        },
+        {
+            "name": "UserIntent",
+            "description": "User defined intent",
+            "enabledByDefault": false,
+            "utterances": [
+                "we need more home assistant utterances"
+                ],
+            "slots": [
+                {
+                    "name": "HAintent",
+                    "description": null,
+                    "required": false,
+                    "type": "HAintent",
                     "missingQuestion": ""
                 }
             ]
