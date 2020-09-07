@@ -196,3 +196,38 @@ from skills.HomeAssistant import HomeAssistant
 ```
 
 You'll then want to iterate over the result to find the sensor data you're specifically after.
+
+<span style="color: #ff0000;">Creating Extra intents on the fly</span> #####
+
+There are things in HA that dont get reported on by the API. Such as the RMpro for RF signals that you might use to 
+do certain things like turn on a tv, or tune tv stations rather than using your tv remote. In that situation and many
+ others Alice can create a "trigger" keyword that you use for what ever prupose you like.
+ 
+For the below explanation and example let's assume we have a Node Red flow in HA that sends a RF command to the TV
+when we send that flow a trigger of "turn on"
+
+In Alice via the HA skill you can create an intent on the fly and assign it the slot value "turn on"
+Ask Alice "add a home assistant intent"
+
+Then follow her prompts, she will ask you for the intent to use, in which case you could reply with
+"turn the tv on"
+She will then ask you to pick a slot value from that intent, so say "tv on" and then say yes when prompted
+
+She will then ask if you want to add synonyms. We could now say "television on" and say yes when prompted. 
+Then add another synonym when prompted if you like. Otherwise when you say "no" to adding another synonym
+She will then write to you dialogTemplate folder the appropriate utterances and slot details.
+
+Restart and she will go into training.
+
+Once trained now ask her " turn the tv on"
+She will then send a MQTT message on the topic "ProjectAlice/HomeAssistant" with a payload of "tv on"
+
+IN Home Assistant you can now perhaps use Node Red and a MQTT node into a switch node and listen to the topic of 
+"ProjectAlice/HomeAssistant" with the payload of "tv on" and trigger a appropriate Node Red flow to handle
+sending the RF code to the TV.
+
+Obviously this is just one simple example. Let your mind be creative and you could think up multiple things to do
+
+Basically Alice is just going to send a keyword that you can intercept and trigger a Node Red flow to do what ever
+you want it to.
+

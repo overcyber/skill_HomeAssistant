@@ -1,5 +1,5 @@
 {
-    "skill": "HomeAssistant",
+    "skill": "HAtest",
     "icon": "time",
     "description": "Connect Alice to your home assistant",
     "slotTypes": [
@@ -9,7 +9,9 @@
             "automaticallyExtensible": true,
             "useSynonyms": true,
             "values": [
-
+                {
+                    "value": "chicken"
+                }
             ]
         },
         {
@@ -33,7 +35,6 @@
                 {
                     "value": "toggle"
                 }
-
             ]
         },
         {
@@ -60,6 +61,15 @@
                 {
                     "value": "dusk"
                 }
+            ]
+        },
+        {
+            "name": "HAintent",
+            "matchingStrictness": null,
+            "automaticallyExtensible": true,
+            "useSynonyms": true,
+            "values": [
+
             ]
         }
     ],
@@ -181,6 +191,33 @@
                     "description": null,
                     "required": false,
                     "type": "switchNames",
+                    "missingQuestion": ""
+                }
+            ]
+        },
+        {
+            "name": "CreateIntent",
+            "description": "User asking to add a intent",
+            "enabledByDefault": true,
+            "utterances": [
+                "Add a new Home Assistant intent",
+                "create home assistant utterance",
+                "add home assistant dialog"
+            ]
+        },
+        {
+            "name": "UserIntent",
+            "description": "User defined intent",
+            "enabledByDefault": false,
+            "utterances": [
+                "we need more HAIntent utterances"
+                ],
+            "slots": [
+                {
+                    "name": "HAintent",
+                    "description": null,
+                    "required": false,
+                    "type": "HAintent",
                     "missingQuestion": ""
                 }
             ]
