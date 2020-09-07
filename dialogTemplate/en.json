@@ -1,5 +1,5 @@
 {
-    "skill": "HAtest",
+    "skill": "HomeAssistant",
     "icon": "time",
     "description": "Connect Alice to your home assistant",
     "slotTypes": [
@@ -9,9 +9,7 @@
             "automaticallyExtensible": true,
             "useSynonyms": true,
             "values": [
-                {
-                    "value": "chicken"
-                }
+
             ]
         },
         {
