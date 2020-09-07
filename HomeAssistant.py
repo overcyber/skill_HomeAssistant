@@ -1060,8 +1060,9 @@ class HomeAssistant(AliceSkill):
 			self._captureSynonym = incomingValue
 
 		if not incomingValue.lower() in self._captureUtterances.lower() and not 'ConfirmSynonymValue' in triggerType:
-			self.ask(
-				text=self.randomTalk(text='keywordError'),
+			self.continueDialog(
+				sessionId=session.sessionId,
+				text=self.randomTalk(text='keywordError', replace=[self._captureUtterances]),
 				intentFilter=['UserRandomAnswer'],
 				currentDialogState='requestingSlotValue',
 				probabilityThreshold=0.1

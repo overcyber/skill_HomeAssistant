@@ -189,8 +189,8 @@
 	},
 	"keywordError": {
 		"default": [
-			"That keyword was not part of the sentence you just gave me, try again",
-			"That keyword in not in the intent you just mentioned, try again"
+			"That keyword was not part of the sentence you just gave me, try again. As a reminder your utterance was. {0}",
+			"That keyword in not in the intent {0}, try again"
 		],
 		"short": [
 			"keyword not found try again"
