@@ -966,6 +966,14 @@ class HomeAssistant(AliceSkill):
 
 	@IntentHandler('UserIntent')
 	def sendUserIntentToHA(self, session: DialogSession):
+
+		if "we need more home assistant utterances" in session.payload['input']:
+			self.endDialog(
+				sessionId=session.sessionId,
+				text=self.randomTalk(text='dummyUtterance'),
+				siteId=session.siteId,
+			)
+			return
 		userSlot = session.slotValue('HAintent')
 
 		self.MqttManager.publish(topic='ProjectAlice/HomeAssistant', payload=userSlot)

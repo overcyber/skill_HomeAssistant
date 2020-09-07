@@ -204,10 +204,10 @@ do certain things like turn on a tv, or tune tv stations rather than using your 
  others Alice can create a "trigger" keyword that you use for what ever prupose you like.
  
 For the below explanation and example let's assume we have a Node Red flow in HA that sends a RF command to the TV
-when we send that flow a trigger of "turn on"
+when we send that flow a trigger of "tv on"
 
-In Alice via the HA skill you can create an intent on the fly and assign it the slot value "turn on"
-Ask Alice "add a home assistant intent"
+In Alice via the HA skill you can create an intent on the fly and assign it the slot value "tv on"
+Ask Alice -->> "update home assistant dialogue" or "add more home assistant dialogue"
 
 Then follow her prompts, she will ask you for the intent to use, in which case you could reply with
 "turn the tv on"

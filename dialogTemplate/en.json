@@ -202,7 +202,8 @@
             "utterances": [
                 "Add a new Home Assistant intent",
                 "create home assistant utterance",
-                "add home assistant dialog"
+                "add more home assistant dialogue",
+                "update home assistant dialogue"
             ]
         },
         {
@@ -210,7 +211,7 @@
             "description": "User defined intent",
             "enabledByDefault": false,
             "utterances": [
-                "we need more HAIntent utterances"
+                "we need more home assistant utterances"
                 ],
             "slots": [
                 {
