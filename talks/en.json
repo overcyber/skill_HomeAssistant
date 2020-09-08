@@ -235,7 +235,7 @@
 	},
 	"finishUp": {
 		"default": [
-			"All done, your now a verbal coder ",
+			"All done, you're now a verbal coder ",
 			"Great. I have enough information to process. Will add all that now",
 			"Awesome, I've just added that for you. You'll have to restart me so i can train myself now",
 			"Next time you restart me i'll teach myself how to use that info. Thanks for making me smarter"
