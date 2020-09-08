@@ -147,20 +147,28 @@ class HomeAssistant(AliceSkill):
 			self.sayConnectionOffline(session)
 			return
 
+		self.endDialog(
+			sessionId=session.sessionId,
+			text=self.randomTalk(text='addHomeAssistantDevices'),
+			siteId=session.siteId
+		)
+
 		# connect to the HomeAssistant API/States to retrieve entity names and values
 		header, url = self.retrieveAuthHeader(urlPath='states')
 		data = get(url, headers=header).json()
 
 		if self.getConfig('debugMode'):
-			self.logDebug(f'********* INCOMING JSON PAYLOAD **********')
+			self.logDebug(f'***************** INCOMING JSON PAYLOAD *****************')
 			self.logDebug(f'')
 			self.logDebug(f'{data}')
 			self.logDebug(f'')
 			self.logDebug(f'')
 
+
 		# delete and existing values in DB so we can update with a fresh list of Devices
 		self.deleteAliceHADatabaseEntries()
 		self.deleteHomeAssistantDBEntries()
+
 
 		# Loop through the incoming json payload to grab data that we need
 		for item in data:
@@ -174,13 +182,9 @@ class HomeAssistant(AliceSkill):
 
 		self._setup = True
 		if self._switchAndGroupList:
-			self.endDialog(
-				sessionId=session.sessionId,
-				text=self.randomTalk(text='addHomeAssistantDevices'),
-				siteId=session.siteId
-			)
+
 			self.ThreadManager.doLater(
-				interval=10,
+				interval=5,
 				func=self.sayNumberOfDeviceViaThread
 			)
 		else:
@@ -204,19 +208,19 @@ class HomeAssistant(AliceSkill):
 			self._action = "turn_off"
 
 		if session.slotValue('switchNames'):
-			uid = session.slotRawValue('switchNames')
+			deviceName = session.slotRawValue('switchNames')
 			if self.getConfig('debugMode'):
-				self.logDebug(f'********** SWITCHING EVENT *************')
+				self.logDebug(f'***************** SWITCHING EVENT *****************')
 				self.logDebug(f'')
-				self.logDebug(f'I was requested to >> {self._action} the device called {uid} ')
-				debugSwitchId = self.getDatabaseEntityID(uid=uid)
+				self.logDebug(f'I was requested to "{self._action}" the device called "{deviceName}" ')
+				debugSwitchId = self.getDatabaseEntityID(identity=deviceName)
 
 				try:
 					self.logDebug(f'debugSwitchId = {debugSwitchId["entityName"]}')
 				except Exception as e:
 					self.logDebug(f' a error occured switching the switch : {e}')
 
-			tempSwitchId = self.getDatabaseEntityID(uid=uid)
+			tempSwitchId = self.getDatabaseEntityID(identity=deviceName)
 			self._entity = tempSwitchId['entityName']
 
 		if self._action and self._entity:
@@ -240,7 +244,7 @@ class HomeAssistant(AliceSkill):
 			return
 
 		if 'DeviceState' in session.slots:
-			entityName = self.getDatabaseEntityID(uid=session.slotRawValue("DeviceState"))
+			entityName = self.getDatabaseEntityID(identity=session.slotRawValue("DeviceState"))
 
 			# get info from HomeAssitant
 			header, url = self.retrieveAuthHeader(urlPath='states/', urlAction=entityName["entityName"])
@@ -251,7 +255,7 @@ class HomeAssistant(AliceSkill):
 			entityID = data['entity_id']
 			entityState = data['state']
 			# add the device state to the database
-			self.updateSwitchValueInDB(key=entityID, value=entityState, uid=session.slotRawValue("DeviceState"))
+			self.updateSwitchValueInDB(key=entityID, value=entityState, name=session.slotRawValue("DeviceState"))
 			self.endDialog(
 				sessionId=session.sessionId,
 				text=self.randomTalk(text='getActiveDeviceState', replace=[session.slotRawValue("DeviceState"), entityState]),
@@ -275,7 +279,7 @@ class HomeAssistant(AliceSkill):
 
 			if isinstance(item, dict) and 'friendly_name' in item["attributes"] and 'Sun' in item["attributes"]['friendly_name']:
 				if self.getConfig('debugMode'):
-					self.logDebug(f'************* SUN DEBUG LOG ***********')
+					self.logDebug(f'***************** SUN DEBUG LOG *****************')
 					self.logDebug(f'')
 					self.logDebug(f'The sun JSON is ==> {item}')
 					self.logDebug(f'')
@@ -378,31 +382,35 @@ class HomeAssistant(AliceSkill):
 			if isinstance(item, dict):
 				self.sortThroughJson(item=item)
 
-		for switchItem, uid, state in self._switchAndGroupList:
+		if self.getConfig('debugMode'):
+			self.logDebug(f'***************** updateDBStates code *****************')
+
+		for switchItem, name, state in self._switchAndGroupList:
 
 			# Locate entity in HA database and update it's state
-			if self.getDatabaseEntityID(uid=uid):
+			if self.getDatabaseEntityID(identity=name):
 				if self.getConfig('debugMode'):
-					self.logDebug(f'********* updateDBStates code **********')
 					self.logDebug(f'')
-					self.logDebug(f'I\'m updating the switch >> {switchItem} << with state >> {state} ')
-					self.logDebug(f'')
+					self.logDebug(f'I\'m updating the "{switchItem}" with state "{state}" ')
 
-				self.updateSwitchValueInDB(key=switchItem, value=state, uid=uid)
+				self.updateSwitchValueInDB(key=switchItem, value=state, name=name)
+		#reset this object to prevent multiple list values
+		self._switchAndGroupList = list()
 
 		for sensorName, entity, state, haClass in self._dbSensorList:
 
 			# Locate sensor in the database and update it's value
-			if self.getDatabaseEntityID(uid=sensorName):
+			if self.getDatabaseEntityID(identity=sensorName):
 				if self.getConfig('debugMode'):
 					self.logDebug(f'')
-					self.logDebug(f'I\'m updating the sensor >> {sensorName} << with the state of "{state}" ')
+					self.logDebug(f'I\'m now updating the SENSOR "{sensorName}" with the state of "{state}" ')
 					self.logDebug(f'HA class is "{haClass}" ')
 					self.logDebug(f'The entity ID is "{entity}"')
-					self.logDebug('')
 
-				self.updateSwitchValueInDB(key=entity, value=state, uid=sensorName)
 
+				self.updateSwitchValueInDB(key=entity, value=state, name=sensorName)
+		#reset object value to prevent multiple items each update
+		self._dbSensorList = list()
 
 	def retrieveAuthHeader(self, urlPath: str, urlAction: str = None):
 		"""
@@ -442,11 +450,11 @@ class HomeAssistant(AliceSkill):
 	########################## DATABASE ITEMS ####################################
 
 
-	def AddToAliceDB(self, uID: str):
+	def AddToAliceDB(self, uID: str, friendlyName: str):
 		"""Add devices to Alices Devicemanager-Devices table.
 		If location not known, create and store devices in a StoreRoom"""
 
-		values = {'typeID': self.DeviceManager.getDeviceTypeByName("EspSwitch").id, 'uid': uID, 'locationID': self.LocationManager.getLocation(location='StoreRoom').id, 'name': uID, 'display': "{'x': '10', 'y': '10', 'rotation': 0, 'width': 45, 'height': 45}", 'skillName': 'HomeAssistant'}
+		values = {'typeID': self.DeviceManager.getDeviceTypeByName("EspSwitch").id, 'uid': uID, 'locationID': self.LocationManager.getLocation(location='StoreRoom').id, 'name': friendlyName, 'display': "{'x': '10', 'y': '10', 'rotation': 0, 'width': 45, 'height': 45}", 'skillName': 'HomeAssistant'}
 		self.DatabaseManager.insert(tableName=self.DeviceManager.DB_DEVICE, values=values, callerName=self.DeviceManager.name)
 
 
@@ -493,16 +501,16 @@ class HomeAssistant(AliceSkill):
 
 
 	# noinspection SqlResolve
-	def getDatabaseEntityID(self, uid):
-		"""Get entityName where uid is the same as requested"""
+	def getDatabaseEntityID(self, identity):
+		"""Get entityName where friendlyName is the same as requested"""
 
-		# returns SensorId for all listings of a uid
+		# returns SensorId for all listings of a friendlyName
 		return self.databaseFetch(
 			tableName='HomeAssistant',
-			query='SELECT entityName FROM :__table__ WHERE uID = :uid ',
+			query='SELECT entityName FROM :__table__ WHERE friendlyName = :identity',
 			method='one',
 			values={
-				'uid': uid
+				'identity': identity
 			}
 		)
 
@@ -562,36 +570,36 @@ class HomeAssistant(AliceSkill):
 
 
 	# noinspection SqlResolve
-	def updateSwitchValueInDB(self, key: str, value: str, uid: str = None):
+	def updateSwitchValueInDB(self, key: str, value: str, name: str = None):
 		"""Updates the state of the switch in the selected row of database
 		:params key = entityName
-		:params uid = entity unique ID
+		:params name = entity friendly name
 		:params value is the new state of the switch"""
 
 		self.DatabaseManager.update(
 			tableName='HomeAssistant',
 			callerName=self.name,
-			query='UPDATE :__table__ SET deviceState = :value WHERE uID = :uid and entityName = :key',
+			query='UPDATE :__table__ SET deviceState = :value WHERE friendlyName = :name and entityName = :key',
 			values={
 				'value': value,
 				'key'  : key,
-				'uid'  : uid
+				'name' : name
 			}
 		)
 
 
 	# Future enhancement
 	# noinspection SqlResolve
-	def updateDeviceIPInfo(self, ip: str, uid: str):
+	def updateDeviceIPInfo(self, ip: str, nameIdentity: str):
 		"""updates the device with it's Ip address"""
 
 		self.DatabaseManager.update(
 			tableName='HomeAssistant',
 			callerName=self.name,
-			query='UPDATE :__table__ SET ipAddress = :ip WHERE uID = :uid ',
+			query='UPDATE :__table__ SET ipAddress = :ip WHERE friendlyName = :nameIdentity ',
 			values={
 				'ip' : ip,
-				'uid': uid
+				'nameIdentity': nameIdentity
 			}
 		)
 
@@ -626,11 +634,12 @@ class HomeAssistant(AliceSkill):
 		self.updateDBStates()
 		sensorDBrows = self.getSensorValues()
 
+		debugtrigger = 0
 		for sensor in sensorDBrows:
 			if not 'unavailable' in sensor['deviceState'] and not 'unknown' in sensor['deviceState']:
 
 				newPayload = dict()
-				siteID: str = sensor["uID"]
+				siteID: str = sensor["friendlyName"]
 				siteIDlist = siteID.split()
 
 				siteID = siteIDlist[0]
@@ -652,6 +661,10 @@ class HomeAssistant(AliceSkill):
 
 				if newPayload:
 					try:
+						if self.getConfig('debugMode') and debugtrigger == 0:
+							self.logDebug("")
+							self.logDebug(f'*************** Now adding to the Telemetry DataBase ***************')
+							debugtrigger = 1
 						self.sendToTelemetry(newPayload=newPayload, siteId=siteID)
 					except Exception as e:
 						self.logWarning(f'There was a error logging data for sensor {siteID} as : {e}')
@@ -669,13 +682,15 @@ class HomeAssistant(AliceSkill):
 		# using this duplicate var to capture things like sonoff 4 channel pro or multi button devices
 		duplicate = ''
 
+		if self.getConfig('debugMode'):
+			self.logDebug('***************** ADDING THE SLOTVALUE *****************')
+
 		for valuesToStore in friendlylist:
 			if valuesToStore[0] not in duplicate:
 				dictValue = {'value': valuesToStore[0]}
 				self._newSlotValueList.append(dictValue)
 
 				if self.getConfig('debugMode'):
-					self.logDebug('********* ADDING THE SLOTVALUE **********')
 					self.logDebug('')
 					self.logDebug(f'{valuesToStore[0]}')
 					self.logDebug('')
@@ -704,34 +719,39 @@ class HomeAssistant(AliceSkill):
 
 		# process group entities
 		for group, value in duplicateGroupList:
-			self.addEntityToDatabase(entityName=group, friendlyName=value, uID=value, deviceGroup='group')
+			freeGroupUID = self.DeviceManager.getFreeUID()
+			self.addEntityToDatabase(entityName=group, friendlyName=value, uID=freeGroupUID, deviceGroup='group')
 
 		# process Switch entities
 		for switchItem in duplicateList:
-			self.addEntityToDatabase(entityName=switchItem[0], friendlyName=switchItem[1], deviceState=switchItem[2], uID=switchItem[1], deviceGroup='switch')
+			freeUID = self.DeviceManager.getFreeUID()
+			self.addEntityToDatabase(entityName=switchItem[0], friendlyName=switchItem[1], deviceState=switchItem[2], uID=freeUID, deviceGroup='switch')
 
-			self.AddToAliceDB(switchItem[1])
+			self.AddToAliceDB(uID=freeUID, friendlyName=switchItem[1])
 
 		# Process Sensor entities
 		for sensorItem in duplicateSensorList:
-			self.addEntityToDatabase(entityName=sensorItem[1], friendlyName=sensorItem[0], uID=sensorItem[0], deviceState=sensorItem[2], deviceGroup='sensor', deviceType=sensorItem[3])
+			freeSensorId = self.DeviceManager.getFreeUID()
+			self.addEntityToDatabase(entityName=sensorItem[1], friendlyName=sensorItem[0], uID=freeSensorId, deviceState=sensorItem[2], deviceGroup='sensor', deviceType=sensorItem[3])
 
 		# Process Sensor entities
-		for ipItem in self._IpList:
-			self.updateDeviceIPInfo(ip=ipItem[1], uid=ipItem[0])
+		for deviceDetails in self._IpList:
+
+			self.updateDeviceIPInfo(ip=deviceDetails[1], nameIdentity=deviceDetails[0])
 
 
 	def sendToTelemetry(self, newPayload: dict, siteId: str):
+		#create location if it doesnt exist
+		self.LocationManager.getLocation(location=siteId)
 
 		for item in newPayload.items():
 			teleType: str = item[0]
 			teleType = teleType.upper()
 
 			if self.getConfig('debugMode'):
-				self.logDebug(f'*************** Adding to Telemetry DataBase ***************')
 				self.logDebug(f'')
 				self.logDebug(f'The {teleType} reading for the {siteId} is {item[1]} ')
-				self.logDebug(f'')
+
 			try:
 				if 'TEMPERATURE' in teleType:
 					self.TelemetryManager.storeData(ttype=TelemetryType.TEMPERATURE, value=item[1], service=self.name, siteId=siteId)
@@ -787,7 +807,7 @@ class HomeAssistant(AliceSkill):
 				response = get(self.getConfig('haIpAddress'), headers=header)
 
 				if self.getConfig('debugMode'):
-					self.logDebug(f'*************** OnBooted code ***********')
+					self.logDebug(f'***************** OnBooted code *****************')
 					self.logDebug(f'')
 					self.logDebug(f'{response.text} - onBooted connection code')
 					self.logDebug(f' The header is {header} ')
