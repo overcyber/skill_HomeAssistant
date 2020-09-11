@@ -13,7 +13,6 @@ from requests import get
 from core.util.model.TelemetryType import TelemetryType
 from core.util.TelemetryManager import TelemetryManager
 
-
 class HomeAssistant(AliceSkill):
 	"""
 	Author: Lazza
@@ -63,7 +62,6 @@ class HomeAssistant(AliceSkill):
 		self._slotValueList = list()
 		self._data = dict()
 		self._finalsynonymList = list()
-
 
 		super().__init__(databaseSchema=self.DATABASE)
 
@@ -158,17 +156,15 @@ class HomeAssistant(AliceSkill):
 		data = get(url, headers=header).json()
 
 		if self.getConfig('debugMode'):
-			self.logDebug(f'***************** INCOMING JSON PAYLOAD *****************')
+			self.logDebug(f'!-!-!-!-!-!-!-! **INCOMING JSON PAYLOAD** !-!-!-!-!-!-!-!')
 			self.logDebug(f'')
 			self.logDebug(f'{data}')
 			self.logDebug(f'')
 			self.logDebug(f'')
 
-
 		# delete and existing values in DB so we can update with a fresh list of Devices
 		self.deleteAliceHADatabaseEntries()
 		self.deleteHomeAssistantDBEntries()
-
 
 		# Loop through the incoming json payload to grab data that we need
 		for item in data:
@@ -210,7 +206,7 @@ class HomeAssistant(AliceSkill):
 		if session.slotValue('switchNames'):
 			deviceName = session.slotRawValue('switchNames')
 			if self.getConfig('debugMode'):
-				self.logDebug(f'***************** SWITCHING EVENT *****************')
+				self.logDebug(f'!-!-!-!-!-!-!-! **SWITCHING EVENT** !-!-!-!-!-!-!-!')
 				self.logDebug(f'')
 				self.logDebug(f'I was requested to "{self._action}" the device called "{deviceName}" ')
 				debugSwitchId = self.getDatabaseEntityID(identity=deviceName)
@@ -279,7 +275,7 @@ class HomeAssistant(AliceSkill):
 
 			if isinstance(item, dict) and 'friendly_name' in item["attributes"] and 'Sun' in item["attributes"]['friendly_name']:
 				if self.getConfig('debugMode'):
-					self.logDebug(f'***************** SUN DEBUG LOG *****************')
+					self.logDebug(f'!-!-!-!-!-!-!-! **SUN DEBUG LOG** !-!-!-!-!-!-!-!')
 					self.logDebug(f'')
 					self.logDebug(f'The sun JSON is ==> {item}')
 					self.logDebug(f'')
@@ -367,9 +363,29 @@ class HomeAssistant(AliceSkill):
 			)
 			self.logWarning(f'Device name not available, HA may not of supplied that device IP')
 
+	# device was asked to switch from Myhome
+	def deviceClicked(self, uid):
+		if not self.checkConnection():
+			return
+
+		switchId = self.getHeatbeatDeviceRow(uid=uid)
+
+		tempID = switchId['entityName']
+		tempValue = switchId['deviceState']
+
+		if "on" in tempValue or "open" in tempValue:
+			self._action = 'turn_off'
+		elif "off" in tempValue or "close" in tempValue:
+			self._action = 'turn_on'
+
+		header, url = self.retrieveAuthHeader(urlPath='services/switch/', urlAction=self._action)
+
+		jsonData = {"entity_id": tempID}
+		requests.request("POST", url=url, headers=header, json=jsonData)
+		self.updateDBStates()
+
 
 	##################### POST AND GET HANDLERS ##############################
-
 
 	def updateDBStates(self):
 		"""Update entity states from a 5 min timer"""
@@ -383,34 +399,41 @@ class HomeAssistant(AliceSkill):
 				self.sortThroughJson(item=item)
 
 		if self.getConfig('debugMode'):
-			self.logDebug(f'***************** updateDBStates code *****************')
+			self.logDebug(f'!-!-!-!-!-!-!-! **updateDBStates code** !-!-!-!-!-!-!-!')
+
+		deviceID = self.listOfHeartbeatDevices()
+		for device in deviceID:
+			self.DeviceManager.onDeviceHeartbeat(device['uID'])
 
 		for switchItem, name, state in self._switchAndGroupList:
 
 			# Locate entity in HA database and update it's state
 			if self.getDatabaseEntityID(identity=name):
+
 				if self.getConfig('debugMode'):
 					self.logDebug(f'')
 					self.logDebug(f'I\'m updating the "{switchItem}" with state "{state}" ')
 
 				self.updateSwitchValueInDB(key=switchItem, value=state, name=name)
-		#reset this object to prevent multiple list values
+		# reset this object to prevent multiple list values
 		self._switchAndGroupList = list()
 
 		for sensorName, entity, state, haClass in self._dbSensorList:
 
 			# Locate sensor in the database and update it's value
+
 			if self.getDatabaseEntityID(identity=sensorName):
+
 				if self.getConfig('debugMode'):
 					self.logDebug(f'')
 					self.logDebug(f'I\'m now updating the SENSOR "{sensorName}" with the state of "{state}" ')
 					self.logDebug(f'HA class is "{haClass}" ')
 					self.logDebug(f'The entity ID is "{entity}"')
 
-
 				self.updateSwitchValueInDB(key=entity, value=state, name=sensorName)
-		#reset object value to prevent multiple items each update
+		# reset object value to prevent multiple items each update
 		self._dbSensorList = list()
+
 
 	def retrieveAuthHeader(self, urlPath: str, urlAction: str = None):
 		"""
@@ -450,15 +473,15 @@ class HomeAssistant(AliceSkill):
 	########################## DATABASE ITEMS ####################################
 
 
-	def AddToAliceDB(self, uID: str, friendlyName: str):
+	def AddToAliceDB(self, uID: str, friendlyName: str, deviceType: int):
 		"""Add devices to Alices Devicemanager-Devices table.
 		If location not known, create and store devices in a StoreRoom"""
 
-		values = {'typeID': self.DeviceManager.getDeviceTypeByName("EspSwitch").id, 'uid': uID, 'locationID': self.LocationManager.getLocation(location='StoreRoom').id, 'name': friendlyName, 'display': "{'x': '10', 'y': '10', 'rotation': 0, 'width': 45, 'height': 45}", 'skillName': 'HomeAssistant'}
+		values = {'typeID': deviceType, 'uid': uID, 'locationID': self.LocationManager.getLocation(location='StoreRoom').id, 'name': friendlyName, 'display': "{'x': '10', 'y': '10', 'rotation': 0, 'width': 45, 'height': 45}", 'skillName': 'HomeAssistant'}
 		self.DatabaseManager.insert(tableName=self.DeviceManager.DB_DEVICE, values=values, callerName=self.DeviceManager.name)
 
 
-	def addEntityToDatabase(self, entityName: str, friendlyName: str, deviceState: str = None, ipAddress: str = None, deviceGroup: str = None, deviceType: str = None, uID: str = None):
+	def addEntityToHADatabase(self, entityName: str, friendlyName: str, deviceState: str = None, ipAddress: str = None, deviceGroup: str = None, deviceType: str = None, uID: str = None):
 		# adds sensor data to the HomeAssistant database
 		# noinspection SqlResolve
 		self.databaseInsert(
@@ -507,10 +530,26 @@ class HomeAssistant(AliceSkill):
 		# returns SensorId for all listings of a friendlyName
 		return self.databaseFetch(
 			tableName='HomeAssistant',
-			query='SELECT entityName FROM :__table__ WHERE friendlyName = :identity',
+			query='SELECT entityName, uID FROM :__table__ WHERE friendlyName = :identity',
 			method='one',
 			values={
 				'identity': identity
+			}
+		)
+
+
+	# noinspection SqlResolve
+	def getHeatbeatDeviceRow(self, uid):
+		""" returns the state of a heartbeat compatible  device
+
+		:params uid = Device identification
+		"""
+
+		return self.databaseFetch(
+			tableName='HomeAssistant',
+			query='SELECT entityName, deviceState FROM :__table__ WHERE uID = :uid ',
+			values={
+				'uid': uid
 			}
 		)
 
@@ -543,6 +582,26 @@ class HomeAssistant(AliceSkill):
 			method='all'
 		)
 
+
+	# noinspection SqlResolve
+	def listOfHAuid(self):
+		"""Returns a list of known uID's from HA database"""
+
+		return self.databaseFetch(
+			tableName='HomeAssistant',
+			query='SELECT uID FROM :__table__',
+			method='all'
+		)
+
+
+	# noinspection SqlResolve
+	def listOfHeartbeatDevices(self):
+		"""Returns a list of known uID's from HA database that require a heartbeat"""
+		return self.databaseFetch(
+			tableName='HomeAssistant',
+			query='SELECT * FROM :__table__ WHERE deviceGroup == "switch" or deviceType == "temperature" ',
+			method='all'
+		)
 
 	# noinspection SqlResolve
 	def getSensorValues(self):
@@ -598,7 +657,7 @@ class HomeAssistant(AliceSkill):
 			callerName=self.name,
 			query='UPDATE :__table__ SET ipAddress = :ip WHERE friendlyName = :nameIdentity ',
 			values={
-				'ip' : ip,
+				'ip'          : ip,
 				'nameIdentity': nameIdentity
 			}
 		)
@@ -646,28 +705,35 @@ class HomeAssistant(AliceSkill):
 				# clean up siteID and make it all lowercase so less errors when using text widget
 				siteID.replace(" ", "").lower()
 
-				if 'temperature' in sensor["deviceType"]:
-					newPayload['TEMPERATURE'] = sensor['deviceState']
-				if 'humidity' in sensor["deviceType"]:
-					newPayload['HUMIDITY'] = sensor['deviceState']
-				if 'pressure' in sensor["deviceType"]:
-					newPayload['PRESSURE'] = sensor['deviceState']
-				if 'gas' in sensor["deviceType"]:
-					newPayload['GAS'] = sensor['deviceState']
-				if 'dewpoint' in sensor["deviceType"]:
-					newPayload['DEWPOINT'] = sensor['deviceState']
-				if 'illuminance' in sensor["deviceType"]:
-					newPayload['ILLUMINANCE'] = sensor['deviceState']
+				self.onFiveMinuteCodeComplexityReducer(sensor=sensor, newPayload=newPayload)
 
 				if newPayload:
 					try:
 						if self.getConfig('debugMode') and debugtrigger == 0:
 							self.logDebug("")
-							self.logDebug(f'*************** Now adding to the Telemetry DataBase ***************')
+							self.logDebug(f'!-!-!-!-!-!-!-! **Now adding to the Telemetry DataBase** !-!-!-!-!-!-!-!')
 							debugtrigger = 1
 						self.sendToTelemetry(newPayload=newPayload, siteId=siteID)
 					except Exception as e:
 						self.logWarning(f'There was a error logging data for sensor {siteID} as : {e}')
+
+
+	@staticmethod
+	def onFiveMinuteCodeComplexityReducer(sensor, newPayload):
+		if 'temperature' in sensor["deviceType"]:
+			newPayload['TEMPERATURE'] = sensor['deviceState']
+		if 'humidity' in sensor["deviceType"]:
+			newPayload['HUMIDITY'] = sensor['deviceState']
+		if 'pressure' in sensor["deviceType"]:
+			newPayload['PRESSURE'] = sensor['deviceState']
+		if 'gas' in sensor["deviceType"] and isinstance(sensor['deviceState'], int) or isinstance(sensor['deviceState'], float):
+			newPayload['GAS'] = sensor['deviceState']
+		if 'dewpoint' in sensor["deviceType"]:
+			newPayload['DEWPOINT'] = sensor['deviceState']
+		if 'illuminance' in sensor["deviceType"]:
+			newPayload['ILLUMINANCE'] = sensor['deviceState']
+
+		return newPayload
 
 
 	# add friendlyNames to dialog template as a list of slotValues
@@ -683,7 +749,7 @@ class HomeAssistant(AliceSkill):
 		duplicate = ''
 
 		if self.getConfig('debugMode'):
-			self.logDebug('***************** ADDING THE SLOTVALUE *****************')
+			self.logDebug('!-!-!-!-!-!-!-! **ADDING THE SLOTVALUE** !-!-!-!-!-!-!-!')
 
 		for valuesToStore in friendlylist:
 			if valuesToStore[0] not in duplicate:
@@ -717,22 +783,28 @@ class HomeAssistant(AliceSkill):
 
 		duplicateSensorList = dict((x[0], x) for x in self._dbSensorList).values()
 
+		switchTypeID = self.DeviceManager.getDeviceTypeByName("HaSwitch").id
+
 		# process group entities
 		for group, value in duplicateGroupList:
 			freeGroupUID = self.DeviceManager.getFreeUID()
-			self.addEntityToDatabase(entityName=group, friendlyName=value, uID=freeGroupUID, deviceGroup='group')
+			self.addEntityToHADatabase(entityName=group, friendlyName=value, uID=freeGroupUID, deviceGroup='group')
 
 		# process Switch entities
 		for switchItem in duplicateList:
 			freeUID = self.DeviceManager.getFreeUID()
-			self.addEntityToDatabase(entityName=switchItem[0], friendlyName=switchItem[1], deviceState=switchItem[2], uID=freeUID, deviceGroup='switch')
+			self.addEntityToHADatabase(entityName=switchItem[0], friendlyName=switchItem[1], deviceState=switchItem[2], uID=freeUID, deviceGroup='switch')
 
-			self.AddToAliceDB(uID=freeUID, friendlyName=switchItem[1])
+			self.AddToAliceDB(uID=freeUID, friendlyName=switchItem[1], deviceType=switchTypeID)
 
 		# Process Sensor entities
 		for sensorItem in duplicateSensorList:
 			freeSensorId = self.DeviceManager.getFreeUID()
-			self.addEntityToDatabase(entityName=sensorItem[1], friendlyName=sensorItem[0], uID=freeSensorId, deviceState=sensorItem[2], deviceGroup='sensor', deviceType=sensorItem[3])
+			if 'temperature' in sensorItem[3]:
+
+				self.AddToAliceDB(uID=freeSensorId, friendlyName=sensorItem[0], deviceType=self.DeviceManager.getDeviceTypeByName("HaSensor").id)
+
+			self.addEntityToHADatabase(entityName=sensorItem[1], friendlyName=sensorItem[0], uID=freeSensorId, deviceState=sensorItem[2], deviceGroup='sensor', deviceType=sensorItem[3])
 
 		# Process Sensor entities
 		for deviceDetails in self._IpList:
@@ -741,7 +813,7 @@ class HomeAssistant(AliceSkill):
 
 
 	def sendToTelemetry(self, newPayload: dict, siteId: str):
-		#create location if it doesnt exist
+		# create location if it doesnt exist
 		self.LocationManager.getLocation(location=siteId)
 
 		for item in newPayload.items():
@@ -761,7 +833,7 @@ class HomeAssistant(AliceSkill):
 					self.TelemetryManager.storeData(ttype=TelemetryType.DEWPOINT, value=item[1], service=self.name, siteId=siteId)
 				elif 'PRESSURE' in teleType:
 					self.TelemetryManager.storeData(ttype=TelemetryType.PRESSURE, value=item[1], service=self.name, siteId=siteId)
-				elif 'GAS' in teleType:
+				elif 'GAS' in teleType :
 					self.TelemetryManager.storeData(ttype=TelemetryType.GAS, value=item[1], service=self.name, siteId=siteId)
 				elif 'AIR_QUALITY' in teleType:
 					self.TelemetryManager.storeData(ttype=TelemetryType.AIR_QUALITY, value=item[1], service=self.name, siteId=siteId)
@@ -807,7 +879,7 @@ class HomeAssistant(AliceSkill):
 				response = get(self.getConfig('haIpAddress'), headers=header)
 
 				if self.getConfig('debugMode'):
-					self.logDebug(f'***************** OnBooted code *****************')
+					self.logDebug(f'!-!-!-!-!-!-!-! **OnBooted code** !-!-!-!-!-!-!-!')
 					self.logDebug(f'')
 					self.logDebug(f'{response.text} - onBooted connection code')
 					self.logDebug(f' The header is {header} ')
@@ -816,6 +888,11 @@ class HomeAssistant(AliceSkill):
 
 				if '{"message": "API running."}' in response.text:
 					self.logInfo(f'HomeAssistant Connected')
+					uidList = self.listOfHeartbeatDevices()
+
+					if uidList:
+						for uid in uidList:
+							self.DeviceManager.deviceConnecting(uid=uid['uID'])
 					return True
 
 				else:
@@ -981,7 +1058,7 @@ class HomeAssistant(AliceSkill):
 		print(f'temperature data = {temperatureLogData} ')
 
 
-########################## INTENT CAPTURE CODE ###########################################
+	########################## INTENT CAPTURE CODE ###########################################
 
 
 	@IntentHandler('UserIntent')
@@ -1002,10 +1079,11 @@ class HomeAssistant(AliceSkill):
 			text=self.randomTalk(text='homeAssistantSwitchDevice')
 		)
 
+
 	@IntentHandler('CreateIntent')
 	def createIntentRequest(self, session: DialogSession):
-		#test line
-		#self.addIntentToHADialog(text='turn the tv volume up', session=session)
+		# test line
+		# self.addIntentToHADialog(text='turn the tv volume up', session=session)
 
 		self.continueDialog(
 			sessionId=session.sessionId,
@@ -1014,6 +1092,7 @@ class HomeAssistant(AliceSkill):
 			currentDialogState='requestingToMakeAIntent',
 			probabilityThreshold=0.1
 		)
+
 
 	def addIntentToHADialog(self, text: str, session):
 		""" Here we capture the Users Intent and just store it for later use"""
@@ -1041,7 +1120,7 @@ class HomeAssistant(AliceSkill):
 				else:
 					self.say(
 						siteId=session.siteId,
-						text=self.randomTalk(text='utteranceExists'),					)
+						text=self.randomTalk(text='utteranceExists'), )
 					self.createIntentRequest(session)
 
 		return False
@@ -1143,7 +1222,8 @@ class HomeAssistant(AliceSkill):
 					sessionId=session.sessionId,
 					text=self.randomTalk(text='userSaidNo', replace=[text]),
 					intentFilter=['UserRandomAnswer'],
-					currentDialogState=currentState
+					currentDialogState=currentState,
+					probabilityThreshold=0.1
 				)
 
 			else:
@@ -1198,7 +1278,7 @@ class HomeAssistant(AliceSkill):
 
 						x['synonyms'] = self._finalsynonymList
 
-						#find the right index to fit the new slot
+						# find the right index to fit the new slot
 						valueIndex = next((index for (index, d) in enumerate(synonymItem) if d["value"] == self._captureSlotValue), None)
 						# store the slot list until ready to write it
 						self._data['slotTypes'][i]['values'][valueIndex] = x
@@ -1226,8 +1306,7 @@ class HomeAssistant(AliceSkill):
 			text=self.randomTalk(text='addValue', replace=[word]),
 			intentFilter=['UserRandomAnswer'],
 			currentDialogState='requestingSynonymValue',
-			probabilityThreshold=0.1
-
+			probabilityThreshold=0.0
 		)
 
 
@@ -1241,4 +1320,3 @@ class HomeAssistant(AliceSkill):
 			sessionId=session.sessionId,
 			text=self.randomTalk(text='finishUp')
 		)
-
