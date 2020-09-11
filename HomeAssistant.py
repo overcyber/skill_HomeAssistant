@@ -401,12 +401,15 @@ class HomeAssistant(AliceSkill):
 		if self.getConfig('debugMode'):
 			self.logDebug(f'!-!-!-!-!-!-!-! **updateDBStates code** !-!-!-!-!-!-!-!')
 
+		deviceID = self.listOfHeartbeatDevices()
+		for device in deviceID:
+			self.DeviceManager.onDeviceHeartbeat(device['uID'])
+
 		for switchItem, name, state in self._switchAndGroupList:
 
 			# Locate entity in HA database and update it's state
-			deviceID = self.getDatabaseEntityID(identity=name)
-			if deviceID:
-				self.DeviceManager.onDeviceHeartbeat(deviceID['uID'])
+			if self.getDatabaseEntityID(identity=name):
+
 				if self.getConfig('debugMode'):
 					self.logDebug(f'')
 					self.logDebug(f'I\'m updating the "{switchItem}" with state "{state}" ')
@@ -418,7 +421,9 @@ class HomeAssistant(AliceSkill):
 		for sensorName, entity, state, haClass in self._dbSensorList:
 
 			# Locate sensor in the database and update it's value
+
 			if self.getDatabaseEntityID(identity=sensorName):
+
 				if self.getConfig('debugMode'):
 					self.logDebug(f'')
 					self.logDebug(f'I\'m now updating the SENSOR "{sensorName}" with the state of "{state}" ')
@@ -721,7 +726,7 @@ class HomeAssistant(AliceSkill):
 			newPayload['HUMIDITY'] = sensor['deviceState']
 		if 'pressure' in sensor["deviceType"]:
 			newPayload['PRESSURE'] = sensor['deviceState']
-		if 'gas' in sensor["deviceType"]:
+		if 'gas' in sensor["deviceType"] and isinstance(sensor['deviceState'], int) or isinstance(sensor['deviceState'], float):
 			newPayload['GAS'] = sensor['deviceState']
 		if 'dewpoint' in sensor["deviceType"]:
 			newPayload['DEWPOINT'] = sensor['deviceState']
@@ -828,7 +833,7 @@ class HomeAssistant(AliceSkill):
 					self.TelemetryManager.storeData(ttype=TelemetryType.DEWPOINT, value=item[1], service=self.name, siteId=siteId)
 				elif 'PRESSURE' in teleType:
 					self.TelemetryManager.storeData(ttype=TelemetryType.PRESSURE, value=item[1], service=self.name, siteId=siteId)
-				elif 'GAS' in teleType and isinstance(item[1], int) or isinstance(item[1], float):
+				elif 'GAS' in teleType :
 					self.TelemetryManager.storeData(ttype=TelemetryType.GAS, value=item[1], service=self.name, siteId=siteId)
 				elif 'AIR_QUALITY' in teleType:
 					self.TelemetryManager.storeData(ttype=TelemetryType.AIR_QUALITY, value=item[1], service=self.name, siteId=siteId)

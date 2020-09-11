@@ -4,16 +4,17 @@ from core.device.model.Device import Device
 from core.device.model.DeviceType import DeviceType
 from skills.HomeAssistant.HomeAssistant import HomeAssistant
 
+
 class HaSwitch(DeviceType):
 
 	def __init__(self, data: sqlite3.Row):
 		super().__init__(data, devSettings=self.DEV_SETTINGS, locSettings=self.LOC_SETTINGS, heartbeatRate=500)
-
+		self._HaDeviceTopic = 'projectalice/devices/ha/switch'
+		self._haClass = HomeAssistant()
 
 	def getDeviceIcon(self, device: Device) -> str:
 
-		haClass = HomeAssistant()
-		deviceState = haClass.getHeatbeatDeviceRow(uid=device.uid)
+		deviceState = self._haClass.getHeatbeatDeviceRow(uid=device.uid)
 
 		if not device.id:
 			return 'HaSwitch.png'
@@ -27,7 +28,10 @@ class HaSwitch(DeviceType):
 
 
 	def toggle(self, device: Device):
-		print(f'you just clicked on {device.uid}')
-		haClass = HomeAssistant()
-		haClass.deviceClicked(device.uid)
+		self.logInfo(f'You just clicked on {device.uid}')
+		#devicestate = self._haClass.getHeatbeatDeviceRow(uid=device.uid)
+		self._haClass.deviceClicked(device.uid)
 
+
+	def updateIcon(self, device: Device):
+		self.getDeviceIcon(device)
