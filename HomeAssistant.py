@@ -257,7 +257,9 @@ class HomeAssistant(AliceSkill):
 			entityID = data['entity_id']
 			entityState = data['state']
 			# add the device state to the database
-			self.updateSwitchValueInDB(key=entityID, value=entityState, name=session.slotRawValue("DeviceState"))
+			device = self.DeviceManager.getDeviceByUID(uid=entityID)
+			device.setCustomValue('state', entityState)
+
 			self.endDialog(
 				sessionId=session.sessionId,
 				text=self.randomTalk(text='getActiveDeviceState', replace=[session.slotRawValue("DeviceState"), entityState]),
