@@ -13,6 +13,7 @@ from requests import get
 from core.util.model.TelemetryType import TelemetryType
 from core.util.TelemetryManager import TelemetryManager
 
+
 class HomeAssistant(AliceSkill):
 	"""
 	Author: Lazza
@@ -31,8 +32,7 @@ class HomeAssistant(AliceSkill):
 		]
 	}
 
-
-	# todo Add Ipaddress's
+	# todo remove entityName column and just use uid column
 	# todo add further sensor support ?
 
 	def __init__(self):
@@ -47,11 +47,11 @@ class HomeAssistant(AliceSkill):
 		self._grouplist = list()
 		self._action = ""
 		self._entity = ""
-		self._setup: bool = False
 		self._sunState = tuple
 		self._triggerType = ""
 		self._telemetryLogs = list()
 		self._IpList = list()
+
 		# IntentCapture Vars
 		self._captureUtterances = ""
 		self._captureSlotValue = ""
@@ -98,8 +98,9 @@ class HomeAssistant(AliceSkill):
 			sensorFriendlyName = sensorFriendlyName.lower()
 			sensorEntity: str = item["entity_id"]
 			sensorValue: str = item["state"]
+			# sensorUID: str = item["context"]["id"]
 
-			dbSensorList = [sensorFriendlyName, sensorEntity, sensorValue, sensorType]
+			dbSensorList = [sensorFriendlyName, sensorEntity, sensorValue, sensorType, sensorEntity]
 			self._dbSensorList.append(dbSensorList)
 		try:
 
@@ -109,8 +110,9 @@ class HomeAssistant(AliceSkill):
 				sensorFriendlyName = sensorFriendlyName.lower()
 				sensorEntity: str = item["entity_id"]
 				sensorValue: str = item["state"]
+				# sensorUID: str = item["context"]["id"]
 
-				dbSensorList = [sensorFriendlyName, sensorEntity, sensorValue, sensorType]
+				dbSensorList = [sensorFriendlyName, sensorEntity, sensorValue, sensorType, sensorEntity]
 				self._dbSensorList.append(dbSensorList)
 			if 'Gas' in item["attributes"]["friendly_name"]:
 				sensorType: str = 'gas'
@@ -118,20 +120,25 @@ class HomeAssistant(AliceSkill):
 				sensorFriendlyName = sensorFriendlyName.lower()
 				sensorEntity: str = item["entity_id"]
 				sensorValue = item["state"]
+				# sensorUID: str = item["context"]["id"]
 
-				dbSensorList = [sensorFriendlyName, sensorEntity, sensorValue, sensorType]
+				dbSensorList = [sensorFriendlyName, sensorEntity, sensorValue, sensorType, sensorEntity]
 				self._dbSensorList.append(dbSensorList)
 
 			if 'switch.' in item["entity_id"] or 'group.' in item["entity_id"] and item["entity_id"] not in self._switchAndGroupList:
 				if 'switch.' in item["entity_id"]:
 					switchFriendlyname: str = item["attributes"]["friendly_name"]
 					switchFriendlyname = switchFriendlyname.lower()
-					switchList = [item["entity_id"], switchFriendlyname, item['state']]
+					# switchUID: str = item["context"]["id"]
+
+					switchList = [item["entity_id"], switchFriendlyname, item['state'], item["entity_id"]]
 					self._switchAndGroupList.append(switchList)
 				else:
 					groupFriendlyname: str = item["attributes"]["friendly_name"]
 					groupFriendlyname = groupFriendlyname.lower()
-					groupList = [item["entity_id"], groupFriendlyname]
+					# groupUID: str = item["context"]["id"]
+					groupList = [item["entity_id"], groupFriendlyname, item["entity_id"]]
+
 					self._grouplist.append(groupList)
 
 
@@ -176,7 +183,6 @@ class HomeAssistant(AliceSkill):
 		# write friendly names to dialogTemplate as slotValues
 		self.addSlotValues()
 
-		self._setup = True
 		if self._switchAndGroupList:
 
 			self.ThreadManager.doLater(
@@ -363,32 +369,29 @@ class HomeAssistant(AliceSkill):
 			)
 			self.logWarning(f'Device name not available, HA may not of supplied that device IP')
 
+
 	# device was asked to switch from Myhome
-	def deviceClicked(self, uid):
+	def deviceClicked(self, uid: str, customValue: dict = None):
 		if not self.checkConnection():
 			return
+		entityRow = self.getHeatbeatDeviceRow(uid=uid)
 
-		switchId = self.getHeatbeatDeviceRow(uid=uid)
-
-		tempID = switchId['entityName']
-		tempValue = switchId['deviceState']
-
-		if "on" in tempValue or "open" in tempValue:
-			self._action = 'turn_off'
-		elif "off" in tempValue or "close" in tempValue:
+		if "on" in customValue or "open" in customValue:
 			self._action = 'turn_on'
+		elif "off" in customValue or "close" in customValue:
+			self._action = 'turn_off'
 
 		header, url = self.retrieveAuthHeader(urlPath='services/switch/', urlAction=self._action)
 
-		jsonData = {"entity_id": tempID}
+		jsonData = {"entity_id": entityRow['entityName']}
 		requests.request("POST", url=url, headers=header, json=jsonData)
-		self.updateDBStates()
 
 
 	##################### POST AND GET HANDLERS ##############################
 
 	def updateDBStates(self):
 		"""Update entity states from a 5 min timer"""
+
 		header, url = self.retrieveAuthHeader(urlPath='states')
 		data = get(url, headers=header).json()
 
@@ -401,36 +404,36 @@ class HomeAssistant(AliceSkill):
 		if self.getConfig('debugMode'):
 			self.logDebug(f'!-!-!-!-!-!-!-! **updateDBStates code** !-!-!-!-!-!-!-!')
 
+		# send heartbeat
 		deviceID = self.listOfHeartbeatDevices()
 		for device in deviceID:
 			self.DeviceManager.onDeviceHeartbeat(device['uID'])
 
-		for switchItem, name, state in self._switchAndGroupList:
+		# add updated states of switches to device.customValue
+		for entityName, name, state, uid in self._switchAndGroupList:
+			device = self.DeviceManager.getDeviceByUID(uid=uid)
 
-			# Locate entity in HA database and update it's state
-			if self.getDatabaseEntityID(identity=name):
-
+			if name in device.name:
 				if self.getConfig('debugMode'):
 					self.logDebug(f'')
-					self.logDebug(f'I\'m updating the "{switchItem}" with state "{state}" ')
+					self.logDebug(f'I\'m updating the "{entityName}" with state "{state}" ')
 
-				self.updateSwitchValueInDB(key=switchItem, value=state, name=name)
+				device.setCustomValue('state', state)
+
 		# reset this object to prevent multiple list values
 		self._switchAndGroupList = list()
 
-		for sensorName, entity, state, haClass in self._dbSensorList:
-
+		for sensorName, entity, state, haClass, uid in self._dbSensorList:
 			# Locate sensor in the database and update it's value
+			# if self.getDatabaseEntityID(identity=sensorName):
 
-			if self.getDatabaseEntityID(identity=sensorName):
+			if self.getConfig('debugMode'):
+				self.logDebug(f'')
+				self.logDebug(f'I\'m now updating the SENSOR "{sensorName}" with the state of "{state}" ')
+				self.logDebug(f'HA class is "{haClass}" ')
+				self.logDebug(f'The entity ID is "{entity}"')
 
-				if self.getConfig('debugMode'):
-					self.logDebug(f'')
-					self.logDebug(f'I\'m now updating the SENSOR "{sensorName}" with the state of "{state}" ')
-					self.logDebug(f'HA class is "{haClass}" ')
-					self.logDebug(f'The entity ID is "{entity}"')
-
-				self.updateSwitchValueInDB(key=entity, value=state, name=sensorName)
+			self.updateSwitchValueInDB(key=entity, value=state, name=sensorName)
 		# reset object value to prevent multiple items each update
 		self._dbSensorList = list()
 
@@ -475,14 +478,17 @@ class HomeAssistant(AliceSkill):
 
 	def AddToAliceDB(self, uID: str, friendlyName: str, deviceType: int):
 		"""Add devices to Alices Devicemanager-Devices table.
-		If location not known, create and store devices in a StoreRoom"""
+		create and store devices in a StoreRoom"""
 
 		values = {'typeID': deviceType, 'uid': uID, 'locationID': self.LocationManager.getLocation(location='StoreRoom').id, 'name': friendlyName, 'display': "{'x': '10', 'y': '10', 'rotation': 0, 'width': 45, 'height': 45}", 'skillName': 'HomeAssistant'}
 		self.DatabaseManager.insert(tableName=self.DeviceManager.DB_DEVICE, values=values, callerName=self.DeviceManager.name)
 
 
 	def addEntityToHADatabase(self, entityName: str, friendlyName: str, deviceState: str = None, ipAddress: str = None, deviceGroup: str = None, deviceType: str = None, uID: str = None):
-		# adds sensor data to the HomeAssistant database
+		"""
+		Adds device details to the Home Assistant databse
+		"""
+
 		# noinspection SqlResolve
 		self.databaseInsert(
 			tableName='HomeAssistant',
@@ -503,7 +509,6 @@ class HomeAssistant(AliceSkill):
 	def deleteAliceHADatabaseEntries(self):
 		""""
 		 Deletes values from Alice's devices table if name value is HomeAssistant
-
 		"""
 		self.DatabaseManager.delete(
 			tableName=self.DeviceManager.DB_DEVICE,
@@ -514,7 +519,9 @@ class HomeAssistant(AliceSkill):
 
 	# noinspection SqlResolve
 	def deleteHomeAssistantDBEntries(self):
-		""" Deletes the entire database table from the Homeassistant Table"""
+		"""
+		Deletes the entire database table from the Homeassistant Table
+		"""
 		# noinspection SqlWithoutWhere
 		self.DatabaseManager.delete(
 			tableName='HomeAssistant',
@@ -525,7 +532,9 @@ class HomeAssistant(AliceSkill):
 
 	# noinspection SqlResolve
 	def getDatabaseEntityID(self, identity):
-		"""Get entityName where friendlyName is the same as requested"""
+		"""
+		Get entityName and uID where friendlyName is the same as requested
+		"""
 
 		# returns SensorId for all listings of a friendlyName
 		return self.databaseFetch(
@@ -540,7 +549,8 @@ class HomeAssistant(AliceSkill):
 
 	# noinspection SqlResolve
 	def getHeatbeatDeviceRow(self, uid):
-		""" returns the state of a heartbeat compatible  device
+		"""
+		returns the state of a heartbeat compatible  device
 
 		:params uid = Device identification
 		"""
@@ -555,26 +565,10 @@ class HomeAssistant(AliceSkill):
 
 
 	# noinspection SqlResolve
-	def getSwitchValueFromDB(self, uid, key):
-		""" returns the state of the entityName
-
-		:params uid = Device identification
-		:params key = the entities name IE - switch.kitchen_light"""
-
-		return self.databaseFetch(
-			tableName='HomeAssistant',
-			query='SELECT entityName FROM :__table__ WHERE uID = :uid and entityName = :key ',
-			method='one',
-			values={
-				'uid': uid,
-				'key': key
-			}
-		)
-
-
-	# noinspection SqlResolve
 	def listOfFriendlyNames(self):
-		"""Returns a list of known friendly names that are switchable devices"""
+		"""
+		Returns a list of known friendly names that are switchable devices
+		"""
 
 		return self.databaseFetch(
 			tableName='HomeAssistant',
@@ -584,28 +578,22 @@ class HomeAssistant(AliceSkill):
 
 
 	# noinspection SqlResolve
-	def listOfHAuid(self):
-		"""Returns a list of known uID's from HA database"""
-
-		return self.databaseFetch(
-			tableName='HomeAssistant',
-			query='SELECT uID FROM :__table__',
-			method='all'
-		)
-
-
-	# noinspection SqlResolve
 	def listOfHeartbeatDevices(self):
-		"""Returns a list of known uID's from HA database that require a heartbeat"""
+		"""
+		Returns a list of known uID's from HA database that require a heartbeat
+		"""
 		return self.databaseFetch(
 			tableName='HomeAssistant',
 			query='SELECT * FROM :__table__ WHERE deviceGroup == "switch" or deviceType == "temperature" ',
 			method='all'
 		)
 
+
 	# noinspection SqlResolve
 	def getSensorValues(self):
-		"""Returns a list of known sensors"""
+		"""
+		Returns a list of known sensors
+		"""
 
 		return self.databaseFetch(
 			tableName='HomeAssistant',
@@ -616,9 +604,11 @@ class HomeAssistant(AliceSkill):
 
 	# noinspection SqlResolve
 	def rowOfRequestedDevice(self, friendlyName: str):
-		"""Returns the row for the selected friendlyname
+		"""
+		Returns the row for the selected friendlyname
 
-		:params friendlyName is for example kitchen light"""
+		:params friendlyName is for example kitchen light
+		"""
 
 		return self.databaseFetch(
 			tableName='HomeAssistant',
@@ -630,10 +620,12 @@ class HomeAssistant(AliceSkill):
 
 	# noinspection SqlResolve
 	def updateSwitchValueInDB(self, key: str, value: str, name: str = None):
-		"""Updates the state of the switch in the selected row of database
+		"""
+		Updates the state of the switch in the selected row of database
 		:params key = entityName
 		:params name = entity friendly name
-		:params value is the new state of the switch"""
+		:params value is the new state of the switch
+		"""
 
 		self.DatabaseManager.update(
 			tableName='HomeAssistant',
@@ -647,10 +639,11 @@ class HomeAssistant(AliceSkill):
 		)
 
 
-	# Future enhancement
 	# noinspection SqlResolve
 	def updateDeviceIPInfo(self, ip: str, nameIdentity: str):
-		"""updates the device with it's Ip address"""
+		"""
+		updates the device with it's Ip address
+		"""
 
 		self.DatabaseManager.update(
 			tableName='HomeAssistant',
@@ -705,6 +698,7 @@ class HomeAssistant(AliceSkill):
 				# clean up siteID and make it all lowercase so less errors when using text widget
 				siteID.replace(" ", "").lower()
 
+				# shuts pycharm up
 				self.onFiveMinuteCodeComplexityReducer(sensor=sensor, newPayload=newPayload)
 
 				if newPayload:
@@ -738,7 +732,9 @@ class HomeAssistant(AliceSkill):
 
 	# add friendlyNames to dialog template as a list of slotValues
 	def addSlotValues(self) -> bool:
-		"""Add slotValues to the existing dialogTemplate file for the skill"""
+		"""
+		Add slotValues to the existing dialogTemplate file for the skill
+		"""
 
 		file = self.getResource(f'dialogTemplate/{self.activeLanguage()}.json')
 		if not file:
@@ -786,25 +782,22 @@ class HomeAssistant(AliceSkill):
 		switchTypeID = self.DeviceManager.getDeviceTypeByName("HaSwitch").id
 
 		# process group entities
-		for group, value in duplicateGroupList:
-			freeGroupUID = self.DeviceManager.getFreeUID()
-			self.addEntityToHADatabase(entityName=group, friendlyName=value, uID=freeGroupUID, deviceGroup='group')
+		for groupItem in duplicateGroupList:
+			self.addEntityToHADatabase(entityName=groupItem[0], friendlyName=groupItem[1], uID=groupItem[2], deviceGroup='group')
 
 		# process Switch entities
 		for switchItem in duplicateList:
-			freeUID = self.DeviceManager.getFreeUID()
-			self.addEntityToHADatabase(entityName=switchItem[0], friendlyName=switchItem[1], deviceState=switchItem[2], uID=freeUID, deviceGroup='switch')
+			self.addEntityToHADatabase(entityName=switchItem[0], friendlyName=switchItem[1], deviceState=switchItem[2], uID=switchItem[3], deviceGroup='switch')
 
-			self.AddToAliceDB(uID=freeUID, friendlyName=switchItem[1], deviceType=switchTypeID)
+			self.AddToAliceDB(uID=switchItem[3], friendlyName=switchItem[1], deviceType=switchTypeID)
 
 		# Process Sensor entities
 		for sensorItem in duplicateSensorList:
-			freeSensorId = self.DeviceManager.getFreeUID()
 			if 'temperature' in sensorItem[3]:
 
-				self.AddToAliceDB(uID=freeSensorId, friendlyName=sensorItem[0], deviceType=self.DeviceManager.getDeviceTypeByName("HaSensor").id)
+				self.AddToAliceDB(uID=sensorItem[4], friendlyName=sensorItem[0], deviceType=self.DeviceManager.getDeviceTypeByName("HaSensor").id)
 
-			self.addEntityToHADatabase(entityName=sensorItem[1], friendlyName=sensorItem[0], uID=freeSensorId, deviceState=sensorItem[2], deviceGroup='sensor', deviceType=sensorItem[3])
+			self.addEntityToHADatabase(entityName=sensorItem[1], friendlyName=sensorItem[0], uID=sensorItem[4], deviceState=sensorItem[2], deviceGroup='sensor', deviceType=sensorItem[3])
 
 		# Process Sensor entities
 		for deviceDetails in self._IpList:
@@ -833,7 +826,7 @@ class HomeAssistant(AliceSkill):
 					self.TelemetryManager.storeData(ttype=TelemetryType.DEWPOINT, value=item[1], service=self.name, siteId=siteId)
 				elif 'PRESSURE' in teleType:
 					self.TelemetryManager.storeData(ttype=TelemetryType.PRESSURE, value=item[1], service=self.name, siteId=siteId)
-				elif 'GAS' in teleType :
+				elif 'GAS' in teleType:
 					self.TelemetryManager.storeData(ttype=TelemetryType.GAS, value=item[1], service=self.name, siteId=siteId)
 				elif 'AIR_QUALITY' in teleType:
 					self.TelemetryManager.storeData(ttype=TelemetryType.AIR_QUALITY, value=item[1], service=self.name, siteId=siteId)
@@ -891,17 +884,20 @@ class HomeAssistant(AliceSkill):
 					uidList = self.listOfHeartbeatDevices()
 
 					if uidList:
+						self.logInfo(f'Sending Heartbeat connection requests')
+
 						for uid in uidList:
 							self.DeviceManager.deviceConnecting(uid=uid['uID'])
+					# on boot update states to get My home states upto date
+					self.updateDBStates()
 					return True
 
 				else:
 					self.logWarning(f'Issue connecting to HomeAssistant : {response.text}')
-
 					return False
 
 			except Exception as e:
-				self.logWarning(f'HomeAssistant failed to start. Double check your settings in the skill {e}')
+				self.logWarning(f'HomeAssistant failed to start. Exception was : {e}')
 				return False
 
 
@@ -912,7 +908,9 @@ class HomeAssistant(AliceSkill):
 
 	@staticmethod
 	def makeDateObjFromString(sunState: str):
-		"""Takes HA's UTC string and turns it to a datetime object"""
+		"""
+		Takes HA's UTC string and turns it to a datetime object
+		"""
 
 		utcDatetime = datetime.strptime(sunState, "%Y-%m-%dT%H:%M:%S%z")
 		utcDatetimeTimestamp = float(utcDatetime.strftime("%s"))
