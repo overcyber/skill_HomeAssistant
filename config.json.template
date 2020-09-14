@@ -3,21 +3,18 @@
 		"defaultValue": "",
 		"dataType": "string",
 		"isSensitive": true,
-		"category": "system",
 		"description": "Adds a Access token for homeAssistant"
 	},
 	"haIpAddress": {
 		"defaultValue": "http://localhost:8123/api/",
 		"dataType": "string",
 		"isSensitive": false,
-		"category": "system",
 		"description": "Adds your HA address"
 	},
 	"debugMode": {
 		"defaultValue": false,
 		"dataType": "boolean",
 		"isSensitive": false,
-		"category": "system",
 		"description": "Allows debug mode to view whats going on"
 	}
 }
