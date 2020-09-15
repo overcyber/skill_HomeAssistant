@@ -373,7 +373,7 @@ class HomeAssistant(AliceSkill):
 
 
 	# device was asked to switch from Myhome
-	def deviceClicked(self, uid: str, customValue: dict = None):
+	def deviceClicked(self, uid: str, customValue: dict):
 		if not self.checkConnection():
 			return
 		entityRow = self.getHeatbeatDeviceRow(uid=uid)
