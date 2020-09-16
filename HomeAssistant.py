@@ -808,8 +808,9 @@ class HomeAssistant(AliceSkill):
 
 
 	def sendToTelemetry(self, newPayload: dict, siteId: str):
-		# create location if it doesnt exist
-		self.LocationManager.getLocation(location=siteId)
+		# create location if it doesnt exist and get the id
+
+		locationID = self.LocationManager.getLocation(location=siteId).id
 
 		for item in newPayload.items():
 			teleType: str = item[0]
@@ -819,41 +820,42 @@ class HomeAssistant(AliceSkill):
 				self.logDebug(f'')
 				self.logDebug(f'The {teleType} reading for the {siteId} is {item[1]} ')
 
+
 			try:
 				if 'TEMPERATURE' in teleType:
-					self.TelemetryManager.storeData(ttype=TelemetryType.TEMPERATURE, value=item[1], service=self.name, siteId=siteId)
+					self.TelemetryManager.storeData(ttype=TelemetryType.TEMPERATURE, value=item[1], service=self.name, siteId=siteId, locationID=locationID)
 				elif 'HUMIDITY' in teleType:
-					self.TelemetryManager.storeData(ttype=TelemetryType.HUMIDITY, value=item[1], service=self.name, siteId=siteId)
+					self.TelemetryManager.storeData(ttype=TelemetryType.HUMIDITY, value=item[1], service=self.name, siteId=siteId, locationID=locationID)
 				elif 'DEWPOINT' in teleType:
-					self.TelemetryManager.storeData(ttype=TelemetryType.DEWPOINT, value=item[1], service=self.name, siteId=siteId)
+					self.TelemetryManager.storeData(ttype=TelemetryType.DEWPOINT, value=item[1], service=self.name, siteId=siteId, locationID=locationID)
 				elif 'PRESSURE' in teleType:
-					self.TelemetryManager.storeData(ttype=TelemetryType.PRESSURE, value=item[1], service=self.name, siteId=siteId)
+					self.TelemetryManager.storeData(ttype=TelemetryType.PRESSURE, value=item[1], service=self.name, siteId=siteId, locationID=locationID)
 				elif 'GAS' in teleType:
-					self.TelemetryManager.storeData(ttype=TelemetryType.GAS, value=item[1], service=self.name, siteId=siteId)
+					self.TelemetryManager.storeData(ttype=TelemetryType.GAS, value=item[1], service=self.name, siteId=siteId, locationID=locationID)
 				elif 'AIR_QUALITY' in teleType:
-					self.TelemetryManager.storeData(ttype=TelemetryType.AIR_QUALITY, value=item[1], service=self.name, siteId=siteId)
+					self.TelemetryManager.storeData(ttype=TelemetryType.AIR_QUALITY, value=item[1], service=self.name, siteId=siteId, locationID=locationID)
 				elif 'UV_INDEX' in teleType:
-					self.TelemetryManager.storeData(ttype=TelemetryType.UV_INDEX, value=item[1], service=self.name, siteId=siteId)
+					self.TelemetryManager.storeData(ttype=TelemetryType.UV_INDEX, value=item[1], service=self.name, siteId=siteId, locationID=locationID)
 				elif 'NOISE' in teleType:
-					self.TelemetryManager.storeData(ttype=TelemetryType.NOISE, value=item[1], service=self.name, siteId=siteId)
+					self.TelemetryManager.storeData(ttype=TelemetryType.NOISE, value=item[1], service=self.name, siteId=siteId, locationID=locationID)
 				elif 'CO2' in teleType:
-					self.TelemetryManager.storeData(ttype=TelemetryType.CO2, value=item[1], service=self.name, siteId=siteId)
+					self.TelemetryManager.storeData(ttype=TelemetryType.CO2, value=item[1], service=self.name, siteId=siteId, locationID=locationID)
 				elif 'RAIN' in teleType:
-					self.TelemetryManager.storeData(ttype=TelemetryType.RAIN, value=item[1], service=self.name, siteId=siteId)
+					self.TelemetryManager.storeData(ttype=TelemetryType.RAIN, value=item[1], service=self.name, siteId=siteId, locationID=locationID)
 				elif 'SUM_RAIN_1' in teleType:
-					self.TelemetryManager.storeData(ttype=TelemetryType.SUM_RAIN_1, value=item[1], service=self.name, siteId=siteId)
+					self.TelemetryManager.storeData(ttype=TelemetryType.SUM_RAIN_1, value=item[1], service=self.name, siteId=siteId, locationID=locationID)
 				elif 'SUM_RAIN_24' in teleType:
-					self.TelemetryManager.storeData(ttype=TelemetryType.SUM_RAIN_24, value=item[1], service=self.name, siteId=siteId)
+					self.TelemetryManager.storeData(ttype=TelemetryType.SUM_RAIN_24, value=item[1], service=self.name, siteId=siteId, locationID=locationID)
 				elif 'WIND_STRENGTH' in teleType:
-					self.TelemetryManager.storeData(ttype=TelemetryType.WIND_STRENGTH, value=item[1], service=self.name, siteId=siteId)
+					self.TelemetryManager.storeData(ttype=TelemetryType.WIND_STRENGTH, value=item[1], service=self.name, siteId=siteId, locationID=locationID)
 				elif 'WIND_ANGLE' in teleType:
-					self.TelemetryManager.storeData(ttype=TelemetryType.WIND_ANGLE, value=item[1], service=self.name, siteId=siteId)
+					self.TelemetryManager.storeData(ttype=TelemetryType.WIND_ANGLE, value=item[1], service=self.name, siteId=siteId, locationID=locationID)
 				elif 'GUST_STREGTH' in teleType:
-					self.TelemetryManager.storeData(ttype=TelemetryType.GUST_STRENGTH, value=item[1], service=self.name, siteId=siteId)
+					self.TelemetryManager.storeData(ttype=TelemetryType.GUST_STRENGTH, value=item[1], service=self.name, siteId=siteId, locationID=locationID)
 				elif 'GUST_ANGLE' in teleType:
-					self.TelemetryManager.storeData(ttype=TelemetryType.GUST_ANGLE, value=item[1], service=self.name, siteId=siteId)
+					self.TelemetryManager.storeData(ttype=TelemetryType.GUST_ANGLE, value=item[1], service=self.name, siteId=siteId, locationID=locationID)
 				elif 'Illuminance' in teleType:
-					self.TelemetryManager.storeData(ttype=TelemetryType.LIGHT, value=item[1], service=self.name, siteId=siteId)
+					self.TelemetryManager.storeData(ttype=TelemetryType.LIGHT, value=item[1], service=self.name, siteId=siteId, locationID=locationID)
 
 			except Exception as e:
 				self.logInfo(f'An exception occured adding {teleType} reading: {e}')
