@@ -809,7 +809,6 @@ class HomeAssistant(AliceSkill):
 
 	def sendToTelemetry(self, newPayload: dict, siteId: str):
 		# create location if it doesnt exist and get the id
-
 		locationID = self.LocationManager.getLocation(location=siteId).id
 
 		for item in newPayload.items():
