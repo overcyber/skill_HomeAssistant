@@ -592,6 +592,17 @@ class HomeAssistant(AliceSkill):
 
 
 	# noinspection SqlResolve
+	def getHADeviceType(self, uID: str):
+		"""
+		Returns the device type for a requested UID
+		"""
+		return self.databaseFetch(
+			tableName='HomeAssistant',
+			query='SELECT deviceType FROM :__table__ WHERE uID == :uID ',
+			values={'uID': uID}
+		)
+
+	# noinspection SqlResolve
 	def getSensorValues(self):
 		"""
 		Returns a list of known sensors
@@ -805,6 +816,7 @@ class HomeAssistant(AliceSkill):
 		for deviceDetails in self._IpList:
 
 			self.updateDeviceIPInfo(ip=deviceDetails[1], nameIdentity=deviceDetails[0])
+
 
 
 	def sendToTelemetry(self, newPayload: dict, siteId: str):
