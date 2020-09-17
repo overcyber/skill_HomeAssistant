@@ -8,7 +8,7 @@ from core.commons import constants
 class HaSwitch(DeviceType):
 
 	def __init__(self, data: sqlite3.Row):
-		super().__init__(data, devSettings=self.DEV_SETTINGS, locSettings=self.LOC_SETTINGS, heartbeatRate=500)
+		super().__init__(data, devSettings=self.DEV_SETTINGS, locSettings=self.LOC_SETTINGS, heartbeatRate=500, internalOnly=True)
 
 	def getDeviceIcon(self, device: Device) -> str:
 
