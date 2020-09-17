@@ -12,8 +12,8 @@ class HaSwitch(DeviceType):
 
 	def getDeviceIcon(self, device: Device) -> str:
 
-		if not device.id:
-			return 'HaSwitch.png'
+		#if not device.id:
+		#	return 'HaSwitch.png'
 		if not device.connected or not device.getCustomValue('state'):
 			return 'switch_offline.png'
 

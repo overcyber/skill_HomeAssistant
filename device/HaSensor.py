@@ -26,8 +26,8 @@ class HaSensor(DeviceType):
 		}
 
 	def getDeviceIcon(self, device: Device) -> str:
-		if not device.uid:
-			return 'HaSensor.png'
+		#if not device.uid:
+		#	return 'HaSensor.png'
 		if not device.connected:
 			return 'hot.png'
 		return 'connectedTemp.png'
