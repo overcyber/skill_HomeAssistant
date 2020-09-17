@@ -406,8 +406,6 @@ class HomeAssistant(AliceSkill):
 		if self.getConfig('debugMode'):
 			self.logDebug(f'!-!-!-!-!-!-!-! **updateDBStates code** !-!-!-!-!-!-!-!')
 
-		# send heartbeat
-		#deviceID = self.listOfHeartbeatDevices()
 
 		# add updated states of switches to device.customValue
 		for entityName, name, state, uid in self._switchAndGroupList:
@@ -419,7 +417,7 @@ class HomeAssistant(AliceSkill):
 					self.logDebug(f'I\'m updating the "{entityName}" with state "{state}" ')
 
 				device.setCustomValue('state', state)
-				if not 'unavailable' in state:
+				if not 'unavailable' in state and not 'NULL' in state:
 					self.DeviceManager.onDeviceHeartbeat(uid=uid)
 
 
@@ -428,7 +426,6 @@ class HomeAssistant(AliceSkill):
 
 		for sensorName, entity, state, haClass, uid in self._dbSensorList:
 			# Locate sensor in the database and update it's value
-			# if self.getDatabaseEntityID(identity=sensorName):
 
 			if self.getConfig('debugMode'):
 				self.logDebug(f'')
@@ -437,6 +434,9 @@ class HomeAssistant(AliceSkill):
 				self.logDebug(f'The entity ID is "{entity}"')
 
 			self.updateSwitchValueInDB(key=entity, value=state, name=sensorName)
+
+			if not 'unavailable' in state and not 'NULL' in state and 'temperature' in haClass:
+				self.DeviceManager.onDeviceHeartbeat(uid=uid)
 		# reset object value to prevent multiple items each update
 		self._dbSensorList = list()
 

@@ -1,7 +1,7 @@
 {
     "name": "HomeAssistant",
-    "version": "2.0.3",
-    "icon": "fa-house-user",
+    "version": "2.0.4",
+    "icon": "fas fa-house-user",
     "category": "household",
     "author": "Lazza",
     "maintainers": [],
