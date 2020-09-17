@@ -407,9 +407,7 @@ class HomeAssistant(AliceSkill):
 			self.logDebug(f'!-!-!-!-!-!-!-! **updateDBStates code** !-!-!-!-!-!-!-!')
 
 		# send heartbeat
-		deviceID = self.listOfHeartbeatDevices()
-		for device in deviceID:
-			self.DeviceManager.onDeviceHeartbeat(device['uID'])
+		#deviceID = self.listOfHeartbeatDevices()
 
 		# add updated states of switches to device.customValue
 		for entityName, name, state, uid in self._switchAndGroupList:
@@ -421,6 +419,9 @@ class HomeAssistant(AliceSkill):
 					self.logDebug(f'I\'m updating the "{entityName}" with state "{state}" ')
 
 				device.setCustomValue('state', state)
+				if not 'unavailable' in state:
+					self.DeviceManager.onDeviceHeartbeat(uid=uid)
+
 
 		# reset this object to prevent multiple list values
 		self._switchAndGroupList = list()
