@@ -472,7 +472,7 @@ class HomeAssistant(AliceSkill):
 				self.logWarning(f'It seems HomeAssistant is currently not connected ')
 				return False
 		except Exception as e:
-			self.logWarning(f'HomeAssistant connection failed with an error: {e}')
+			self.logWarning(f'Detected a error in HA skill, did you just add a new HA device but not run "Configure home assistant skill" yet?: {e}')
 			return False
 
 
