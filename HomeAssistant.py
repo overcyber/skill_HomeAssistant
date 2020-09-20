@@ -448,9 +448,10 @@ class HomeAssistant(AliceSkill):
 			self.logDebug(f'!-!-!-!-!-!-!-! **updateDBStates code** !-!-!-!-!-!-!-!')
 
 		#save duplicating below code, append Lightlist to switch list
-		for entityName, name, state, uid in self._lightList:
-			tempAddition = [entityName, name, state, uid]
-			self._switchAndGroupList.append(tempAddition)
+		if self._lightList:
+			for entityName, name, state, uid in self._lightList:
+				tempAddition = [entityName, name, state, uid]
+				self._switchAndGroupList.append(tempAddition)
 
 
 		# add updated states of switches to device.customValue
