@@ -26,12 +26,15 @@ temperature for example.
 "group.*entityName*" are also captured with this skill so you can "turn off kitchen lights" or smiliar
 commands that control groups of switch.<entityName> devices. 
 
+"light.*entityName* devices are captured " so you can change the colour of your lights or change the
+brightess levels (if your device supports this feature)
+
 Device states get updated every 5 minutes or when you ask " whats the state of the *device name*"
 It will also tell you how long until sunset, sunrise, dusk and dawn.
 
 *Pre Req's* -
 - Alice version 1.0.0-B2 onwards 
-- Make sure you're running the latest version of Home Assistant ( minimum is version 0107.5)
+- Make sure you're running the latest version of Home Assistant ( minimum tested version is 0107.5)
 - Make sure you don't uninstall the Telemetry skill (it will self install if not already)
 - This skill uses HA friendly names to trigger commands. So if your friendly name, for example are "gardenlights"
 then i suggest you fine tune that in HA a little to read "garden lights" ( two words with no strange characters).
@@ -65,4 +68,6 @@ Alice " whats the BME280 temperature ", which is not very natural either :)
 
 - add home assistant dialogue (see instructions via the skill on this)
 
-
+- change bedroom light to red
+- dim the kitchen light to 10 percent
+- set the pool light brightness to 100 percent

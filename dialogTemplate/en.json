@@ -69,6 +69,20 @@
             "values": [
 
             ]
+        },
+        {
+            "name": "LightControllers",
+            "matchingStrictness": null,
+            "automaticallyExtensible": true,
+            "useSynonyms": true,
+            "values": [
+                {
+                    "value": "workbench light",
+                    "synonyms": [
+
+                    ]
+                }
+            ]
         }
     ],
     "intents": [
@@ -220,6 +234,50 @@
                     "missingQuestion": ""
                 }
             ]
+        },
+        {
+        	"name": "LightControl",
+        	"description": "Control light entities",
+        	"enabledByDefault": true,
+        	"utterances": [
+        		"set the {workbench light:=>LightControllers} to {red:=>AliceColour}",
+                "change the color of the {workbench light:=>LightControllers} to {blue:=>AliceColour}",
+                "dim the {workbench light:=>LightControllers} to {10 percent:=>dimmer}",
+                "set the color of the {workbench light:=>LightControllers} to {Almond:=>AliceColour}",
+                "Change the brightness of the {workbench light:=>LightControllers} to {10 percent:=>dimmer} ",
+                "lower the {workbench light:LightControllers} levels to {10 percent:=>dimmer} please",
+                "set brightness levels of the {workbench light:=>LightControllers} to {10 percent:=>dimmer}",
+                "raise the {workbench light:=>LightControllers} by {30 percent:=>dimmer}",
+                "increase {workbench light:=>LightControllers} brightness to {70 percent:=>dimmer}",
+                "decrease {workbench light:=>LightControllers} brightness to {10 percent:=>dimmer}",
+                "dim the {workbench light:=>LightControllers} to {10 percent:=>dimmer}",
+                "make the {workbench light:=>LightControllers} {cyan:=>AliceColour}",
+                "change {workbench light:=>LightControllers} to {green:=>AliceColour}",
+                "set colour of {workbench light:=>LightControllers} to a {purple:=>AliceColour}"
+            ],
+        	"slots": [
+        		{
+        			"name": "LightControllers",
+        			"description": null,
+        			"required": true,
+        			"type": "LightControllers",
+        			"missingQuestion": ""
+        		},
+                {
+                    "name": "AliceColour",
+                    "description": null,
+                    "required": false,
+                    "type": "Alice/Colors",
+                    "missingQuestion": ""
+                },
+                {
+                    "name": "dimmer",
+                    "description": null,
+                    "required": false,
+                    "type": "snips/percentage",
+                    "missingQuestion": ""
+                }
+        	]
         }
     ]
 }

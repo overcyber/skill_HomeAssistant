@@ -45,6 +45,7 @@ class HomeAssistant(AliceSkill):
 		self._switchAndGroupList = list()
 		self._dbSensorList = list()
 		self._grouplist = list()
+		self._lightList = list()
 		self._action = ""
 		self._entity = ""
 		self._sunState = tuple
@@ -67,6 +68,37 @@ class HomeAssistant(AliceSkill):
 
 
 	############################### INTENT HANDLERS #############################
+
+	@IntentHandler('LightControl')
+	def controlLightEntities(self, session: DialogSession):
+		eventKey = ""
+		eventValue = ""
+		textResponce = ""
+		if 'LightControllers' in session.slots:
+			if 'AliceColour' in session.slots:
+				eventKey = "color_name"
+				eventValue = session.slotRawValue("AliceColour")
+				textResponce = "changeColour"
+			elif 'dimmer' in session.slots:
+				eventKey = "brightness_pct"
+				eventValue = session.slotValue("dimmer")
+				textResponce = "changeBrightness"
+
+			trigger = 'turn_on'
+
+			entityRow = self.getDatabaseEntityID(identity=session.slotValue('LightControllers'))
+			entity = entityRow['entityName']
+
+			header, url = self.retrieveAuthHeader(urlPath='services/light/', urlAction=trigger)
+			jsonData = {"entity_id": f'{entity}', f'{eventKey}':f'{eventValue}' }
+			requests.request("POST", url=url, headers=header, json=jsonData)
+
+			self.endDialog(
+				sessionId=session.sessionId,
+				text=self.randomTalk(text=textResponce, replace=[eventValue]),
+				siteId=session.siteId
+			)
+
 
 	# Alice speaks what Devices she knows about
 	@IntentHandler('WhatHomeAssistantDevices')
@@ -124,6 +156,14 @@ class HomeAssistant(AliceSkill):
 
 				dbSensorList = [sensorFriendlyName, sensorEntity, sensorValue, sensorType, sensorEntity]
 				self._dbSensorList.append(dbSensorList)
+
+			if 'light.' in item["entity_id"]:
+				lightFriendlyname: str = item["attributes"]["friendly_name"]
+				lightFriendlyname = lightFriendlyname.lower()
+				# switchUID: str = item["context"]["id"]
+
+				lightList = [item["entity_id"], lightFriendlyname, item['state'], item["entity_id"]]
+				self._lightList.append(lightList)
 
 			if 'switch.' in item["entity_id"] or 'group.' in item["entity_id"] and item["entity_id"] not in self._switchAndGroupList:
 				if 'switch.' in item["entity_id"]:
@@ -398,6 +438,7 @@ class HomeAssistant(AliceSkill):
 		data = get(url, headers=header).json()
 
 		# Loop through the incoming json payload to grab data that we need
+		self._lightList = list()
 		for item in data:
 
 			if isinstance(item, dict):
@@ -405,6 +446,11 @@ class HomeAssistant(AliceSkill):
 
 		if self.getConfig('debugMode'):
 			self.logDebug(f'!-!-!-!-!-!-!-! **updateDBStates code** !-!-!-!-!-!-!-!')
+
+		#save duplicating below code, append Lightlist to switch list
+		for entityName, name, state, uid in self._lightList:
+			tempAddition = [entityName, name, state, uid]
+			self._switchAndGroupList.append(tempAddition)
 
 
 		# add updated states of switches to device.customValue
@@ -420,8 +466,7 @@ class HomeAssistant(AliceSkill):
 				if not 'unavailable' in state and not 'NULL' in state:
 					self.DeviceManager.onDeviceHeartbeat(uid=uid)
 
-
-		# reset this object to prevent multiple list values
+		# reset object value to prevent multiple items each update
 		self._switchAndGroupList = list()
 
 		for sensorName, entity, state, haClass, uid in self._dbSensorList:
@@ -593,6 +638,19 @@ class HomeAssistant(AliceSkill):
 
 
 	# noinspection SqlResolve
+	def deviceGroup(self, friendlyName: str):
+		"""
+		Returns the deviceGroup for the selected friendlyname
+		"""
+		return self.databaseFetch(
+			tableName='HomeAssistant',
+			query='SELECT deviceGroup FROM :__table__ WHERE friendlyName = :friendlyName ',
+			values={
+				'friendlyName': friendlyName
+			}
+		)
+
+	# noinspection SqlResolve
 	def getHADeviceType(self, uID: str):
 		"""
 		Returns the device type for a requested UID
@@ -761,10 +819,18 @@ class HomeAssistant(AliceSkill):
 		if self.getConfig('debugMode'):
 			self.logDebug('!-!-!-!-!-!-!-! **ADDING THE SLOTVALUE** !-!-!-!-!-!-!-!')
 
+		lightValueList = list()
+
 		for valuesToStore in friendlylist:
 			if valuesToStore[0] not in duplicate:
+
 				dictValue = {'value': valuesToStore[0]}
-				self._newSlotValueList.append(dictValue)
+				row = self.deviceGroup(valuesToStore[0])
+
+				if 'switch' in row['deviceGroup']:
+					self._newSlotValueList.append(dictValue)
+				elif 'light' in row['deviceGroup']:
+					lightValueList.append(dictValue)
 
 				if self.getConfig('debugMode'):
 					self.logDebug('')
@@ -777,7 +843,14 @@ class HomeAssistant(AliceSkill):
 		if 'slotTypes' not in data:
 			return False
 
-		data['slotTypes'][0]['values'] = self._newSlotValueList
+		for i, suggestedSlot in enumerate(data['slotTypes']):
+			if "switchnames" in suggestedSlot['name'].lower():
+				# create a dictionary and append the new slot value to original list
+				data['slotTypes'][i]['values'] = self._newSlotValueList
+			if "lightcontrollers" in suggestedSlot['name'].lower():
+				# create a dictionary and append the new slot value to original list
+				data['slotTypes'][i]['values'] = lightValueList
+
 		file.write_text(json.dumps(data, ensure_ascii=False, indent=4))
 
 		return True
@@ -793,11 +866,21 @@ class HomeAssistant(AliceSkill):
 
 		duplicateSensorList = dict((x[0], x) for x in self._dbSensorList).values()
 
+		duplicateLightList = dict((x[0], x) for x in self._lightList).values()
+
 		switchTypeID = self.DeviceManager.getDeviceTypeByName("HaSwitch").id
+
+		lightTypeID = self.DeviceManager.getDeviceTypeByName("HALight").id
 
 		# process group entities
 		for groupItem in duplicateGroupList:
 			self.addEntityToHADatabase(entityName=groupItem[0], friendlyName=groupItem[1], uID=groupItem[2], deviceGroup='group')
+
+		# process Switch entities
+		for lightItem in duplicateLightList:
+			self.addEntityToHADatabase(entityName=lightItem[0], friendlyName=lightItem[1], deviceState=lightItem[2], uID=lightItem[3], deviceGroup='light')
+
+			self.AddToAliceDB(uID=lightItem[3], friendlyName=lightItem[1], deviceType=lightTypeID)
 
 		# process Switch entities
 		for switchItem in duplicateList:
@@ -1088,6 +1171,7 @@ class HomeAssistant(AliceSkill):
 		userSlot = session.slotValue('HAintent')
 
 		self.MqttManager.publish(topic='ProjectAlice/HomeAssistant', payload=userSlot)
+
 		self.endDialog(
 			sessionId=session.sessionId,
 			text=self.randomTalk(text='homeAssistantSwitchDevice')

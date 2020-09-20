@@ -265,5 +265,31 @@
 			"we need more home assistant utterances",
 			""
 		]
+	},
+	"changeColour": {
+		"default": [
+			"good choice. I like {0}",
+			"Done",
+			"ok",
+			"Shall i order some {0} paint as well ? we could paint the walls to match",
+			"great, love a touch of {0} to brighten the day "
+
+		],
+		"short": [
+			"ok",
+			"done"
+		]
+	},
+	"changeBrightness": {
+		"default": [
+			"It's a good level {0} percent. Will set that for you now",
+			"Certainly, and i hope your day is brighter than {0} percent",
+			"Changing to {0} percent as we speak",
+			"Arrrr me matey. will do dat quicker than it takes ya to wonder why me just went all pirate on ya. Answer is. Cause i can "
+		],
+		"short": [
+			"ok",
+			"done"
+		]
 	}
 }
