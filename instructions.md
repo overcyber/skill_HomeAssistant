@@ -97,6 +97,8 @@ or
 <li>What position is the sun</li>
 <li>How long until dusk</li>
 <li>What's the ip of the kitchen light</li>
+<li>Change the bedroom light to blue</li>
+<li>set the kitchen light to 50 percent brightness</li>
 </ul>
 
 <span style="color: #ff0000;">Configuration Tips</span> #####<span style="color: #0000ff;"></strong> Manually setting up sensors</span></strong> #####
