@@ -176,7 +176,7 @@
         {
             "name": "WhatHomeAssistantDevices",
             "description": "Get a list of Home assistant devices",
-            "enabledByDefault": true,
+            "enabledByDefault": false,
             "utterances": [
                 "What home assistant devices do you know",
                 "what home assistant devices can you control",
@@ -221,7 +221,7 @@
         {
             "name": "UserIntent",
             "description": "User defined intent",
-            "enabledByDefault": false,
+            "enabledByDefault": true,
             "utterances": [
                 "we need more home assistant utterances"
                 ],
