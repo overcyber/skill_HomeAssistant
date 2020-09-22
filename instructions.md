@@ -236,3 +236,19 @@ Obviously this is just one simple example. Let your mind be creative and you cou
 Basically Alice is just going to send a keyword that you can intercept and trigger a Node Red flow to do what ever
 you want it to.
 
+<span style="color: #ff0000;"><strong>Ignore device discovery</strong></span> 
+
+Let's say you want to use the Phillips Hue skill for example rather than HA skill to control those devices. You can skip adding those devices 
+to the HA skill by adding a custom attribute to that device in Home assistant and Alice will skip adding it.
+
+To do that:
+
+- Go to Home Assistant.
+- Go to the "configuration" menu
+- Click into "customizations"
+- Select the device you want to ignore from the drop down list
+- Choose "pick a attribute to override" and select "other"
+- For attribute name type in "AliceIgnore" (case sensitive)
+- For attribute value type in "True" 
+
+In the future if you want to allow Alice to add that device, change True to False and then re configure alice with a " configure home assistant skill"

@@ -32,6 +32,7 @@ class HomeAssistant(AliceSkill):
 		]
 	}
 
+
 	# todo remove entityName column and just use uid column
 	# todo add further sensor support ?
 
@@ -90,7 +91,7 @@ class HomeAssistant(AliceSkill):
 			entity = entityRow['entityName']
 
 			header, url = self.retrieveAuthHeader(urlPath='services/light/', urlAction=trigger)
-			jsonData = {"entity_id": f'{entity}', f'{eventKey}':f'{eventValue}' }
+			jsonData = {"entity_id": f'{entity}', f'{eventKey}': f'{eventValue}'}
 			requests.request("POST", url=url, headers=header, json=jsonData)
 
 			self.endDialog(
@@ -114,76 +115,74 @@ class HomeAssistant(AliceSkill):
 			siteId=session.siteId
 		)
 
+	def skipAddingSelectedDevice(self, item) -> bool:
+		try:
+			aliceIgnore: str = item['attributes']['AliceIgnore']
+			if 'true' in aliceIgnore.lower():
+				if self.getConfig('debugMode'):
+					self.logDebug(f"Skipping the device {item['attributes']['friendly_name']}. AliceIgnore set to {item['attributes']['AliceIgnore']} ")
+					self.logDebug("")
+				return True
+			else:
+				return False
+		except:
+			pass
 
 	# Used for picking required data from incoming JSON (used in two places)
 	def sortThroughJson(self, item):
-		if 'IPAddress' in item["attributes"]:
-			ipaddress: str = item["attributes"]["IPAddress"]
-			deviceName: str = item["attributes"]["friendly_name"]
-			editedDeviceName: str = deviceName.replace(' status', '').lower()
-			iplist = [editedDeviceName, ipaddress]
-			self._IpList.append(iplist)
 
-		if 'device_class' in item["attributes"]:
-			sensorType: str = item["attributes"]["device_class"]
-			sensorFriendlyName: str = item["attributes"]["friendly_name"]
-			sensorFriendlyName = sensorFriendlyName.lower()
-			sensorEntity: str = item["entity_id"]
-			sensorValue: str = item["state"]
-			# sensorUID: str = item["context"]["id"]
+		if not self.skipAddingSelectedDevice(item):
 
-			dbSensorList = [sensorFriendlyName, sensorEntity, sensorValue, sensorType, sensorEntity]
-			self._dbSensorList.append(dbSensorList)
-		try:
+			if 'IPAddress' in item["attributes"]:
+				ipaddress: str = item["attributes"]["IPAddress"]
+				deviceName: str = item["attributes"]["friendly_name"]
+				editedDeviceName: str = deviceName.replace(' status', '').lower()
+				iplist = [editedDeviceName, ipaddress]
+				self._IpList.append(iplist)
 
-			if 'DewPoint' in item["attributes"]["friendly_name"]:
-				sensorType: str = 'dewpoint'
-				sensorFriendlyName: str = item["attributes"]["friendly_name"]
-				sensorFriendlyName = sensorFriendlyName.lower()
-				sensorEntity: str = item["entity_id"]
-				sensorValue: str = item["state"]
-				# sensorUID: str = item["context"]["id"]
+			if 'device_class' in item["attributes"]:
+				dbSensorList = [self.getFriendyNameAttributes(item=item), item["entity_id"], item["state"], item["attributes"]["device_class"], item["entity_id"]]
 
-				dbSensorList = [sensorFriendlyName, sensorEntity, sensorValue, sensorType, sensorEntity]
 				self._dbSensorList.append(dbSensorList)
-			if 'Gas' in item["attributes"]["friendly_name"]:
-				sensorType: str = 'gas'
-				sensorFriendlyName: str = item["attributes"]["friendly_name"]
-				sensorFriendlyName = sensorFriendlyName.lower()
-				sensorEntity: str = item["entity_id"]
-				sensorValue = item["state"]
-				# sensorUID: str = item["context"]["id"]
+			try:
 
-				dbSensorList = [sensorFriendlyName, sensorEntity, sensorValue, sensorType, sensorEntity]
-				self._dbSensorList.append(dbSensorList)
+				if 'DewPoint' in item["attributes"]["friendly_name"]:
+					sensorType: str = 'dewpoint'
+					dbSensorList = [self.getFriendyNameAttributes(item=item), item["entity_id"], item["state"], sensorType, item["entity_id"]]
 
-			if 'light.' in item["entity_id"]:
-				lightFriendlyname: str = item["attributes"]["friendly_name"]
-				lightFriendlyname = lightFriendlyname.lower()
-				# switchUID: str = item["context"]["id"]
+					self._dbSensorList.append(dbSensorList)
 
-				lightList = [item["entity_id"], lightFriendlyname, item['state'], item["entity_id"]]
-				self._lightList.append(lightList)
+				if 'Gas' in item["attributes"]["friendly_name"]:
+					sensorType: str = 'gas'
+					dbSensorList = [self.getFriendyNameAttributes(item=item), item["entity_id"], item["state"], sensorType, item["entity_id"]]
 
-			if 'switch.' in item["entity_id"] or 'group.' in item["entity_id"] and item["entity_id"] not in self._switchAndGroupList:
-				if 'switch.' in item["entity_id"]:
-					switchFriendlyname: str = item["attributes"]["friendly_name"]
-					switchFriendlyname = switchFriendlyname.lower()
-					# switchUID: str = item["context"]["id"]
+					self._dbSensorList.append(dbSensorList)
 
-					switchList = [item["entity_id"], switchFriendlyname, item['state'], item["entity_id"]]
-					self._switchAndGroupList.append(switchList)
-				else:
-					groupFriendlyname: str = item["attributes"]["friendly_name"]
-					groupFriendlyname = groupFriendlyname.lower()
-					# groupUID: str = item["context"]["id"]
-					groupList = [item["entity_id"], groupFriendlyname, item["entity_id"]]
+				if 'light.' in item["entity_id"]:
+					lightList = [item["entity_id"], self.getFriendyNameAttributes(item=item), item['state'], item["entity_id"]]
 
-					self._grouplist.append(groupList)
+					self._lightList.append(lightList)
+
+				if 'switch.' in item["entity_id"] or 'group.' in item["entity_id"] and item["entity_id"] not in self._switchAndGroupList:
+					if 'switch.' in item["entity_id"]:
+						switchList = [item["entity_id"], self.getFriendyNameAttributes(item=item), item['state'], item["entity_id"]]
+
+						self._switchAndGroupList.append(switchList)
+
+					else:
+						groupList = [item["entity_id"], self.getFriendyNameAttributes(item=item), item["entity_id"]]
+
+						self._grouplist.append(groupList)
 
 
-		except Exception:
-			pass
+			except Exception:
+				pass
+
+	@staticmethod
+	def getFriendyNameAttributes(item):
+		friendlyName: str = item["attributes"]["friendly_name"]
+		friendlyName = friendlyName.lower()
+		return friendlyName
 
 
 	@IntentHandler('AddHomeAssistantDevices')
@@ -447,25 +446,28 @@ class HomeAssistant(AliceSkill):
 		if self.getConfig('debugMode'):
 			self.logDebug(f'!-!-!-!-!-!-!-! **updateDBStates code** !-!-!-!-!-!-!-!')
 
-		#save duplicating below code, append Lightlist to switch list
+		# save duplicating below code, append Lightlist to switch list
 		if self._lightList:
 			for entityName, name, state, uid in self._lightList:
 				tempAddition = [entityName, name, state, uid]
 				self._switchAndGroupList.append(tempAddition)
 
-
 		# add updated states of switches to device.customValue
 		for entityName, name, state, uid in self._switchAndGroupList:
 			device = self.DeviceManager.getDeviceByUID(uid=uid)
+			try:
+				if name in device.name:
+					if self.getConfig('debugMode'):
+						self.logDebug(f'')
+						self.logDebug(f'I\'m updating the "{entityName}" with state "{state}" ')
 
-			if name in device.name:
-				if self.getConfig('debugMode'):
-					self.logDebug(f'')
-					self.logDebug(f'I\'m updating the "{entityName}" with state "{state}" ')
+					device.setCustomValue('state', state)
+					if not 'unavailable' in state and not 'NULL' in state:
+						self.DeviceManager.onDeviceHeartbeat(uid=uid)
+			except Exception as e:
+				self.logWarning(f'A device is missing. Please try asking Alice to "Configure home assistant skill" : {e}')
+				return
 
-				device.setCustomValue('state', state)
-				if not 'unavailable' in state and not 'NULL' in state:
-					self.DeviceManager.onDeviceHeartbeat(uid=uid)
 
 		# reset object value to prevent multiple items each update
 		self._switchAndGroupList = list()
@@ -633,7 +635,7 @@ class HomeAssistant(AliceSkill):
 		"""
 		return self.databaseFetch(
 			tableName='HomeAssistant',
-			query='SELECT * FROM :__table__ WHERE deviceGroup == "switch" or deviceType == "temperature" ',
+			query='SELECT * FROM :__table__ WHERE deviceGroup == "switch" or deviceGroup == "light" or deviceType == "temperature" ',
 			method='all'
 		)
 
@@ -651,6 +653,7 @@ class HomeAssistant(AliceSkill):
 			}
 		)
 
+
 	# noinspection SqlResolve
 	def getHADeviceType(self, uID: str):
 		"""
@@ -661,6 +664,7 @@ class HomeAssistant(AliceSkill):
 			query='SELECT deviceType FROM :__table__ WHERE uID == :uID ',
 			values={'uID': uID}
 		)
+
 
 	# noinspection SqlResolve
 	def getSensorValues(self):
@@ -903,7 +907,6 @@ class HomeAssistant(AliceSkill):
 			self.updateDeviceIPInfo(ip=deviceDetails[1], nameIdentity=deviceDetails[0])
 
 
-
 	def sendToTelemetry(self, newPayload: dict, siteId: str):
 		# create location if it doesnt exist and get the id
 		locationID = self.LocationManager.getLocation(location=siteId).id
@@ -915,7 +918,6 @@ class HomeAssistant(AliceSkill):
 			if self.getConfig('debugMode'):
 				self.logDebug(f'')
 				self.logDebug(f'The {teleType} reading for the {siteId} is {item[1]} ')
-
 
 			try:
 				if 'TEMPERATURE' in teleType:
@@ -997,7 +999,7 @@ class HomeAssistant(AliceSkill):
 					return False
 
 			except Exception as e:
-				self.logWarning(f'HomeAssistant failed to start. Exception was : {e}')
+				self.logWarning(f'HomeAssistant encounted a issue on boot up. Exception was : {e}')
 				return False
 
 
