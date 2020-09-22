@@ -115,53 +115,68 @@ class HomeAssistant(AliceSkill):
 			siteId=session.siteId
 		)
 
+	def skipAddingSelectedDevice(self, item) -> bool:
+		try:
+			aliceIgnore: str = item['attributes']['AliceIgnore']
+			if 'true' in aliceIgnore.lower():
+				if self.getConfig('debugMode'):
+					self.logDebug(f"Skipping the device {item['attributes']['friendly_name']}. AliceIgnore set to {item['attributes']['AliceIgnore']} ")
+					self.logDebug("")
+				return True
+			else:
+				return False
+		except:
+			pass
 
 	# Used for picking required data from incoming JSON (used in two places)
 	def sortThroughJson(self, item):
-		if 'IPAddress' in item["attributes"]:
-			ipaddress: str = item["attributes"]["IPAddress"]
-			deviceName: str = item["attributes"]["friendly_name"]
-			editedDeviceName: str = deviceName.replace(' status', '').lower()
-			iplist = [editedDeviceName, ipaddress]
-			self._IpList.append(iplist)
 
-		if 'device_class' in item["attributes"]:
-			dbSensorList = [self.getFriendyNameAttributes(item=item), item["entity_id"], item["state"], item["attributes"]["device_class"], item["entity_id"]]
+		if not self.skipAddingSelectedDevice(item):
 
-			self._dbSensorList.append(dbSensorList)
-		try:
+			if 'IPAddress' in item["attributes"]:
+				ipaddress: str = item["attributes"]["IPAddress"]
+				deviceName: str = item["attributes"]["friendly_name"]
+				editedDeviceName: str = deviceName.replace(' status', '').lower()
+				iplist = [editedDeviceName, ipaddress]
+				self._IpList.append(iplist)
 
-			if 'DewPoint' in item["attributes"]["friendly_name"]:
-				sensorType: str = 'dewpoint'
-				dbSensorList = [self.getFriendyNameAttributes(item=item), item["entity_id"], item["state"], sensorType, item["entity_id"]]
+			if 'device_class' in item["attributes"]:
+				dbSensorList = [self.getFriendyNameAttributes(item=item), item["entity_id"], item["state"], item["attributes"]["device_class"], item["entity_id"]]
 
 				self._dbSensorList.append(dbSensorList)
+			try:
 
-			if 'Gas' in item["attributes"]["friendly_name"]:
-				sensorType: str = 'gas'
-				dbSensorList = [self.getFriendyNameAttributes(item=item), item["entity_id"], item["state"], sensorType, item["entity_id"]]
+				if 'DewPoint' in item["attributes"]["friendly_name"]:
+					sensorType: str = 'dewpoint'
+					dbSensorList = [self.getFriendyNameAttributes(item=item), item["entity_id"], item["state"], sensorType, item["entity_id"]]
 
-				self._dbSensorList.append(dbSensorList)
+					self._dbSensorList.append(dbSensorList)
 
-			if 'light.' in item["entity_id"]:
-				lightList = [item["entity_id"], self.getFriendyNameAttributes(item=item), item['state'], item["entity_id"]]
+				if 'Gas' in item["attributes"]["friendly_name"]:
+					sensorType: str = 'gas'
+					dbSensorList = [self.getFriendyNameAttributes(item=item), item["entity_id"], item["state"], sensorType, item["entity_id"]]
 
-				self._lightList.append(lightList)
+					self._dbSensorList.append(dbSensorList)
 
-			if 'switch.' in item["entity_id"] or 'group.' in item["entity_id"] and item["entity_id"] not in self._switchAndGroupList:
-				if 'switch.' in item["entity_id"]:
-					switchList = [item["entity_id"], self.getFriendyNameAttributes(item=item), item['state'], item["entity_id"]]
+				if 'light.' in item["entity_id"]:
+					lightList = [item["entity_id"], self.getFriendyNameAttributes(item=item), item['state'], item["entity_id"]]
 
-					self._switchAndGroupList.append(switchList)
+					self._lightList.append(lightList)
 
-				else:
-					groupList = [item["entity_id"], self.getFriendyNameAttributes(item=item), item["entity_id"]]
+				if 'switch.' in item["entity_id"] or 'group.' in item["entity_id"] and item["entity_id"] not in self._switchAndGroupList:
+					if 'switch.' in item["entity_id"]:
+						switchList = [item["entity_id"], self.getFriendyNameAttributes(item=item), item['state'], item["entity_id"]]
 
-					self._grouplist.append(groupList)
+						self._switchAndGroupList.append(switchList)
+
+					else:
+						groupList = [item["entity_id"], self.getFriendyNameAttributes(item=item), item["entity_id"]]
+
+						self._grouplist.append(groupList)
 
 
-		except Exception:
-			pass
+			except Exception:
+				pass
 
 	@staticmethod
 	def getFriendyNameAttributes(item):
