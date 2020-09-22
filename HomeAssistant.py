@@ -2,10 +2,12 @@ import threading
 import json
 import requests
 
+
 from datetime import datetime
 from dateutil import tz
 import pytz
 
+#from pathlib import Path
 from core.base.model.AliceSkill import AliceSkill
 from core.dialog.model.DialogSession import DialogSession
 from core.util.Decorators import IntentHandler
@@ -126,7 +128,7 @@ class HomeAssistant(AliceSkill):
 			else:
 				return False
 		except:
-			pass
+			return False
 
 	# Used for picking required data from incoming JSON (used in two places)
 	def sortThroughJson(self, item):
@@ -958,6 +960,30 @@ class HomeAssistant(AliceSkill):
 			except Exception as e:
 				self.logInfo(f'An exception occured adding {teleType} reading: {e}')
 
+	#def onStart(self):
+	#	if self.getConfig('enableBackup'):
+	#		self.ThreadManager.doLater(
+	#			interval=3,
+	#			func=self.runBackup
+	#		)
+
+	#def runBackup(self):
+	#	MAIN_BACKUP_DIR = Path(f'{str(Path.home())}/ProjectAlice/BackUp')
+	#	print(f' backup dir = {MAIN_BACKUP_DIR}')
+
+	#	if not MAIN_BACKUP_DIR.exists():
+	#		MAIN_BACKUP_DIR.mkdir()
+
+	#	customizeFile = Path(f'{MAIN_BACKUP_DIR}/custom.json')
+
+	#	file2add = list()
+	#	for device in self.DeviceManager.getDevicesForSkill('HomeAssistant'):
+	#		dictFile = {f'{device.uid}' : f'{device.display}' }
+	#		file2add.append(dictFile)
+	#	print(f'dict file is {file2add} customfile is {customizeFile}')
+
+	#	customizeFile.write_text(json.dumps(file2add, ensure_ascii=False, indent=4))
+	#	print(f'all written bro')
 
 	def onBooted(self) -> bool:
 
