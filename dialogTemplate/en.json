@@ -250,7 +250,6 @@
                 "raise the {workbench light:=>LightControllers} by {30 percent:=>dimmer}",
                 "increase {workbench light:=>LightControllers} brightness to {70 percent:=>dimmer}",
                 "decrease {workbench light:=>LightControllers} brightness to {10 percent:=>dimmer}",
-                "dim the {workbench light:=>LightControllers} to {10 percent:=>dimmer}",
                 "make the {workbench light:=>LightControllers} {cyan:=>AliceColour}",
                 "change {workbench light:=>LightControllers} to {green:=>AliceColour}",
                 "set colour of {workbench light:=>LightControllers} to a {purple:=>AliceColour}"

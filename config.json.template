@@ -16,5 +16,11 @@
 		"dataType": "boolean",
 		"isSensitive": false,
 		"description": "Allows debug mode to view whats going on"
+	},
+	"enableBackup": {
+		"defaultValue": true,
+		"dataType": "boolean",
+		"isSensitive": false,
+		"description": "Allows backup of dialogTemplate and my home positions"
 	}
 }
