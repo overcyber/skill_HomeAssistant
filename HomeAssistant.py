@@ -437,9 +437,8 @@ class HomeAssistant(AliceSkill):
 
 	##################### POST AND GET HANDLERS ##############################
 
-	def updateDBStates(self):
-		"""Update entity states from a 5 min timer"""
 
+	def getUpdatedDetails(self):
 		header, url = self.retrieveAuthHeader(urlPath='states')
 		data = get(url, headers=header).json()
 
@@ -452,6 +451,13 @@ class HomeAssistant(AliceSkill):
 
 		if self.getConfig('debugMode'):
 			self.logDebug(f'!-!-!-!-!-!-!-! **updateDBStates code** !-!-!-!-!-!-!-!')
+
+
+	def updateDBStates(self):
+		"""Update entity states from a 5 min timer"""
+
+		# use getUpdatedDetails method to reduce complexity of updateDBStates and keep sonar quiet
+		self.getUpdatedDetails()
 
 		# save duplicating below code, append Lightlist to switch list
 		if self._lightList:
