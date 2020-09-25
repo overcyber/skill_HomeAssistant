@@ -1,13 +1,13 @@
 import threading
 import json
 import requests
-
+import subprocess
 
 from datetime import datetime
 from dateutil import tz
 import pytz
 
-#from pathlib import Path
+from pathlib import Path
 from core.base.model.AliceSkill import AliceSkill
 from core.dialog.model.DialogSession import DialogSession
 from core.util.Decorators import IntentHandler
@@ -55,6 +55,7 @@ class HomeAssistant(AliceSkill):
 		self._triggerType = ""
 		self._telemetryLogs = list()
 		self._IpList = list()
+		self._reconfigured = False
 
 		# IntentCapture Vars
 		self._captureUtterances = ""
@@ -78,10 +79,10 @@ class HomeAssistant(AliceSkill):
 		eventValue = ""
 		textResponce = ""
 		if 'LightControllers' in session.slots:
-			if 'AliceColour' in session.slots:
-				eventKey = "color_name"
-				eventValue = session.slotRawValue("AliceColour")
-				textResponce = "changeColour"
+			if 'AliceColor' in session.slots:
+				eventKey = "Color_name"
+				eventValue = session.slotRawValue("AliceColor")
+				textResponce = "changeColor"
 			elif 'dimmer' in session.slots:
 				eventKey = "brightness_pct"
 				eventValue = session.slotValue("dimmer")
@@ -117,6 +118,7 @@ class HomeAssistant(AliceSkill):
 			siteId=session.siteId
 		)
 
+
 	def skipAddingSelectedDevice(self, item) -> bool:
 		try:
 			aliceIgnore: str = item['attributes']['AliceIgnore']
@@ -129,6 +131,7 @@ class HomeAssistant(AliceSkill):
 				return False
 		except:
 			return False
+
 
 	# Used for picking required data from incoming JSON (used in two places)
 	def sortThroughJson(self, item):
@@ -180,6 +183,7 @@ class HomeAssistant(AliceSkill):
 			except Exception:
 				pass
 
+
 	@staticmethod
 	def getFriendyNameAttributes(item):
 		friendlyName: str = item["attributes"]["friendly_name"]
@@ -223,7 +227,8 @@ class HomeAssistant(AliceSkill):
 		self.processHADataRetrieval()
 		# write friendly names to dialogTemplate as slotValues
 		self.addSlotValues()
-
+		#restore previously saved my home locations and dialog template file
+		self.restoreBackUpFiles()
 		if self._switchAndGroupList:
 
 			self.ThreadManager.doLater(
@@ -470,7 +475,6 @@ class HomeAssistant(AliceSkill):
 				self.logWarning(f'A device is missing. Please try asking Alice to "Configure home assistant skill" : {e}')
 				return
 
-
 		# reset object value to prevent multiple items each update
 		self._switchAndGroupList = list()
 
@@ -625,7 +629,7 @@ class HomeAssistant(AliceSkill):
 
 		return self.databaseFetch(
 			tableName='HomeAssistant',
-			query='SELECT friendlyName FROM :__table__  WHERE deviceGroup != "sensor" ',
+			query='SELECT friendlyName, uID FROM :__table__  WHERE deviceGroup != "sensor" ',
 			method='all'
 		)
 
@@ -643,15 +647,15 @@ class HomeAssistant(AliceSkill):
 
 
 	# noinspection SqlResolve
-	def deviceGroup(self, friendlyName: str):
+	def deviceGroup(self, uID: str):
 		"""
 		Returns the deviceGroup for the selected friendlyname
 		"""
 		return self.databaseFetch(
 			tableName='HomeAssistant',
-			query='SELECT deviceGroup FROM :__table__ WHERE friendlyName = :friendlyName ',
+			query='SELECT deviceGroup FROM :__table__ WHERE uID = :uID ',
 			values={
-				'friendlyName': friendlyName
+				'uID': uID
 			}
 		)
 
@@ -820,30 +824,28 @@ class HomeAssistant(AliceSkill):
 			return False
 		friendlylist = self.listOfFriendlyNames()
 
-		# using this duplicate var to capture things like sonoff 4 channel pro or multi button devices
-		duplicate = ''
-
 		if self.getConfig('debugMode'):
 			self.logDebug('!-!-!-!-!-!-!-! **ADDING THE SLOTVALUE** !-!-!-!-!-!-!-!')
 
 		lightValueList = list()
+		switchValueList = list()
+		for friendlyName, uid in friendlylist:
+			dictValue = {'value': friendlyName}
+			row = self.deviceGroup(uID=uid)
 
-		for valuesToStore in friendlylist:
-			if valuesToStore[0] not in duplicate:
-
-				dictValue = {'value': valuesToStore[0]}
-				row = self.deviceGroup(valuesToStore[0])
-
-				if 'switch' in row['deviceGroup']:
-					self._newSlotValueList.append(dictValue)
-				elif 'light' in row['deviceGroup']:
-					lightValueList.append(dictValue)
-
+			if 'switch' in row['deviceGroup'] and not dictValue in switchValueList:
+				switchValueList.append(dictValue)
 				if self.getConfig('debugMode'):
 					self.logDebug('')
-					self.logDebug(f'{valuesToStore[0]}')
+					self.logDebug(f'{friendlyName}, of type "{row["deviceGroup"]}"')
 					self.logDebug('')
-			duplicate = valuesToStore
+
+			if 'light' in row['deviceGroup'] and not dictValue in lightValueList:
+				lightValueList.append(dictValue)
+				if self.getConfig('debugMode'):
+					self.logDebug('')
+					self.logDebug(f'{friendlyName}, of type "{row["deviceGroup"]}"')
+					self.logDebug('')
 
 		data = json.loads(file.read_text())
 
@@ -853,7 +855,7 @@ class HomeAssistant(AliceSkill):
 		for i, suggestedSlot in enumerate(data['slotTypes']):
 			if "switchnames" in suggestedSlot['name'].lower():
 				# create a dictionary and append the new slot value to original list
-				data['slotTypes'][i]['values'] = self._newSlotValueList
+				data['slotTypes'][i]['values'] = switchValueList
 			if "lightcontrollers" in suggestedSlot['name'].lower():
 				# create a dictionary and append the new slot value to original list
 				data['slotTypes'][i]['values'] = lightValueList
@@ -960,30 +962,74 @@ class HomeAssistant(AliceSkill):
 			except Exception as e:
 				self.logInfo(f'An exception occured adding {teleType} reading: {e}')
 
-	#def onStart(self):
-	#	if self.getConfig('enableBackup'):
-	#		self.ThreadManager.doLater(
-	#			interval=3,
-	#			func=self.runBackup
-	#		)
+	# This is a temporary workaround until "My Home" gets given a restore button. Puts icons back in last known position
+	def runBackup(self):
+		backupDirPath = Path(self.getResource('BackUp'))
+		if not backupDirPath.exists():
+			self.logInfo(f'No Home Assistant BackUp directory found, so I\'m making one')
+			backupDirPath.mkdir()
 
-	#def runBackup(self):
-	#	MAIN_BACKUP_DIR = Path(f'{str(Path.home())}/ProjectAlice/BackUp')
-	#	print(f' backup dir = {MAIN_BACKUP_DIR}')
+		customizeFile = Path(f'{backupDirPath}/display.json')
 
-	#	if not MAIN_BACKUP_DIR.exists():
-	#		MAIN_BACKUP_DIR.mkdir()
+		data = list()
+		for device in self.DeviceManager.getDevicesForSkill('HomeAssistant'):
+			dictFile = {
+				f'{device.uid}': {
+					"display"   : f'{device.display}',
+					"locationID": f'{device.locationID}'
+				}
+			}
+			data.append(dictFile)
 
-	#	customizeFile = Path(f'{MAIN_BACKUP_DIR}/custom.json')
+		customizeFile.write_text(json.dumps(data, ensure_ascii=False, indent=4))
+		self.makeDialogFileCopy(backupDirPath)
 
-	#	file2add = list()
-	#	for device in self.DeviceManager.getDevicesForSkill('HomeAssistant'):
-	#		dictFile = {f'{device.uid}' : f'{device.display}' }
-	#		file2add.append(dictFile)
-	#	print(f'dict file is {file2add} customfile is {customizeFile}')
+	# Back up existing DialogTemplate file
+	def makeDialogFileCopy(self, backupDirectory):
+		file = self.getResource(f'dialogTemplate/{self.activeLanguage()}.json')
+		subprocess.run(['cp', file, f'{backupDirectory}/{self.activeLanguage()}.json'])
+		self.logDebug(f'Just backed up your dialogTemplate file and "My Home" device positions ')
 
-	#	customizeFile.write_text(json.dumps(file2add, ensure_ascii=False, indent=4))
-	#	print(f'all written bro')
+	# restore backup files if HA skill was asked to be configured
+	def restoreBackUpFiles(self):
+
+		backupDirPath = Path(self.getResource('BackUp'))
+		displayFile = Path(f'{backupDirPath}/display.json')
+		dialogFile = Path(f'{backupDirPath}/{self.activeLanguage()}.json')
+
+		if dialogFile.exists() and displayFile.exists():
+			displayFileData = json.loads(displayFile.read_text())
+			for device in self.DeviceManager.getDevicesForSkill('HomeAssistant'):
+				for jsonData in displayFileData:
+					if device.uid in jsonData:
+						self.DatabaseManager.update(
+							tableName=self.DeviceManager.DB_DEVICE,
+							callerName=self.DeviceManager.name,
+							values={'display': jsonData[f'{device.uid}']['display'], 'locationID': jsonData[f'{device.uid}']['locationID']},
+							row=('id', device.id)
+						)
+			self.logInfo(f'Just restored your device locations in My home')
+			self._reconfigured = True
+
+	#on stop. backup display coordinates and dialogTemplate file
+	def onStop(self):
+		if not self.getConfig('enableBackup'):
+			return
+		self.runBackup() #save dialogTemplate file and display settings to backup directory
+
+		#Following block disabled for general usage
+		"""
+		data1 = json.loads(self.getResource(f'dialogTemplate/{self.activeLanguage()}.json').read_text())
+		data2 = json.loads(self.getResource(f'BackUp/{self.activeLanguage()}.json').read_text())
+
+		activeJson = json.dumps(data1, sort_keys=True)
+		backupJson = json.dumps(data2, sort_keys=True)
+
+		if self._reconfigured and activeJson != backupJson:
+			file = self.getResource(f'dialogTemplate/{self.activeLanguage()}.json')
+			subprocess.run(['cp', f'{self.getResource("BackUp")}/{self.activeLanguage()}.json', file])
+			self.logInfo(f'Just restored your dialogTemplate file')
+		"""
 
 	def onBooted(self) -> bool:
 
