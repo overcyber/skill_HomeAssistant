@@ -994,7 +994,7 @@ class HomeAssistant(AliceSkill):
 	def makeDialogFileCopy(self, backupDirectory):
 		file = self.getResource(f'dialogTemplate/{self.activeLanguage()}.json')
 		subprocess.run(['cp', file, f'{backupDirectory}/{self.activeLanguage()}.json'])
-		self.logDebug(f'Just backed up your dialogTemplate file and "My Home" device positions ')
+		self.logDebug(f'Backed up files. Now stopping skill ')
 
 	# restore backup files if HA skill was asked to be configured
 	def restoreBackUpFiles(self):
@@ -1017,25 +1017,52 @@ class HomeAssistant(AliceSkill):
 			self.logInfo(f'Just restored your device locations in My home')
 			self._reconfigured = True
 
-	#on stop. backup display coordinates and dialogTemplate file
+
+	def mergeDialogIntents(self):
+		activeDialogFile = json.loads(self.getResource(f'dialogTemplate/{self.activeLanguage()}.json').read_text())
+		backupDialogFile = json.loads(self.getResource(f'BackUp/{self.activeLanguage()}.json').read_text())
+		filePath = self.getResource(f'dialogTemplate/{self.activeLanguage()}.json')
+
+		for i, backupItem in enumerate(backupDialogFile['intents']):
+			if "userintent" in backupItem['name'].lower():
+				backupUserIntents = backupItem.get('utterances', list())
+				for x, activeItem in enumerate(activeDialogFile['intents']):
+					if "userintent" in activeItem['name'].lower():
+						activeDialogFile['intents'][x]['utterances'] = backupUserIntents
+						filePath.write_text(json.dumps(activeDialogFile, ensure_ascii=False, indent=4))
+
+		self.mergeDialogSlots()
+
+
+	def mergeDialogSlots(self):
+		activeDialogFile = json.loads(self.getResource(f'dialogTemplate/{self.activeLanguage()}.json').read_text())
+		backupDialogFile = json.loads(self.getResource(f'BackUp/{self.activeLanguage()}.json').read_text())
+		filePath = self.getResource(f'dialogTemplate/{self.activeLanguage()}.json')
+
+		for i, backupItem in enumerate(backupDialogFile['slotTypes']):
+			if "haintent" in backupItem['name'].lower():
+				backupUserSlots = backupItem.get('values', list())
+				for x, activeItem in enumerate(activeDialogFile['slotTypes']):
+					if "haintent" in activeItem['name'].lower():
+						activeDialogFile['slotTypes'][x]['values'] = backupUserSlots
+						filePath.write_text(json.dumps(activeDialogFile, ensure_ascii=False, indent=4))
+
+	#Merge dialogTemplate files on Update if a backup exists
+	def onSkillUpdated(self, skill: str):
+		if skill in self.name and self.getConfig('enableBackup'):
+			dialogFile = Path(self.getResource(f'BackUp/{self.activeLanguage()}.json'))
+
+			if dialogFile.exists():
+				self.mergeDialogIntents()
+				self.logInfo(f'Merged DialogTemplate files. You may need to re train Alice')
+
+	#onStop. backup display coordinates and dialogTemplate file
 	def onStop(self):
 		if not self.getConfig('enableBackup'):
 			return
+		#self.mergeDialogIntents()
 		self.runBackup() #save dialogTemplate file and display settings to backup directory
 
-		#Following block disabled for general usage
-		"""
-		data1 = json.loads(self.getResource(f'dialogTemplate/{self.activeLanguage()}.json').read_text())
-		data2 = json.loads(self.getResource(f'BackUp/{self.activeLanguage()}.json').read_text())
-
-		activeJson = json.dumps(data1, sort_keys=True)
-		backupJson = json.dumps(data2, sort_keys=True)
-
-		if self._reconfigured and activeJson != backupJson:
-			file = self.getResource(f'dialogTemplate/{self.activeLanguage()}.json')
-			subprocess.run(['cp', f'{self.getResource("BackUp")}/{self.activeLanguage()}.json', file])
-			self.logInfo(f'Just restored your dialogTemplate file')
-		"""
 
 	def onBooted(self) -> bool:
 
