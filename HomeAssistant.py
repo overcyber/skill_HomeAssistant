@@ -994,7 +994,8 @@ class HomeAssistant(AliceSkill):
 	def makeDialogFileCopy(self, backupDirectory):
 		file = self.getResource(f'dialogTemplate/{self.activeLanguage()}.json')
 		subprocess.run(['cp', file, f'{backupDirectory}/{self.activeLanguage()}.json'])
-		self.logDebug(f'Backed up files. Now stopping skill ')
+		self.logInfo(f'![green](Backing up files)')
+		self.logInfo(f'![green](Stopped)')
 
 	# restore backup files if HA skill was asked to be configured
 	def restoreBackUpFiles(self):
@@ -1058,11 +1059,10 @@ class HomeAssistant(AliceSkill):
 
 	#onStop. backup display coordinates and dialogTemplate file
 	def onStop(self):
-		if not self.getConfig('enableBackup'):
-			return
-		#self.mergeDialogIntents()
-		self.runBackup() #save dialogTemplate file and display settings to backup directory
-
+		if self.getConfig('enableBackup'):
+			self.runBackup() #save dialogTemplate file and display settings to backup directory
+		else:
+			self.logInfo(f'![green](Stopped)')
 
 	def onBooted(self) -> bool:
 
