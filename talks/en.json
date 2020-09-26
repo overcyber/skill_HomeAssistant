@@ -266,7 +266,7 @@
 			""
 		]
 	},
-	"changeColour": {
+	"changeColor": {
 		"default": [
 			"good choice. I like {0}",
 			"Done",

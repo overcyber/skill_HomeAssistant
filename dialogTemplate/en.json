@@ -240,19 +240,19 @@
         	"description": "Control light entities",
         	"enabledByDefault": true,
         	"utterances": [
-        		"set the {workbench light:=>LightControllers} to {red:=>AliceColour}",
-                "change the color of the {workbench light:=>LightControllers} to {blue:=>AliceColour}",
+        		"set the {workbench light:=>LightControllers} to {red:=>AliceColor}",
+                "change the color of the {workbench light:=>LightControllers} to {blue:=>AliceColor}",
                 "dim the {workbench light:=>LightControllers} to {10 percent:=>dimmer}",
-                "set the color of the {workbench light:=>LightControllers} to {Almond:=>AliceColour}",
+                "set the color of the {workbench light:=>LightControllers} to {Almond:=>AliceColor}",
                 "Change the brightness of the {workbench light:=>LightControllers} to {10 percent:=>dimmer} ",
                 "lower the {workbench light:LightControllers} levels to {10 percent:=>dimmer} please",
                 "set brightness levels of the {workbench light:=>LightControllers} to {10 percent:=>dimmer}",
                 "raise the {workbench light:=>LightControllers} by {30 percent:=>dimmer}",
                 "increase {workbench light:=>LightControllers} brightness to {70 percent:=>dimmer}",
                 "decrease {workbench light:=>LightControllers} brightness to {10 percent:=>dimmer}",
-                "make the {workbench light:=>LightControllers} {cyan:=>AliceColour}",
-                "change {workbench light:=>LightControllers} to {green:=>AliceColour}",
-                "set colour of {workbench light:=>LightControllers} to a {purple:=>AliceColour}"
+                "make the {workbench light:=>LightControllers} {cyan:=>AliceColor}",
+                "change {workbench light:=>LightControllers} to {green:=>AliceColor}",
+                "set Color of {workbench light:=>LightControllers} to a {purple:=>AliceColor}"
             ],
         	"slots": [
         		{
@@ -263,7 +263,7 @@
         			"missingQuestion": ""
         		},
                 {
-                    "name": "AliceColour",
+                    "name": "AliceColor",
                     "description": null,
                     "required": false,
                     "type": "Alice/Colors",
