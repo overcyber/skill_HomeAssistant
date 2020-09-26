@@ -602,7 +602,7 @@ class HomeAssistant(AliceSkill):
 		# returns SensorId for all listings of a friendlyName
 		return self.databaseFetch(
 			tableName='HomeAssistant',
-			query='SELECT entityName, uID FROM :__table__ WHERE friendlyName = :identity',
+			query='SELECT entityName, uID FROM :__table__ WHERE friendlyName = :identity and deviceGroup == "switch" ',
 			method='one',
 			values={
 				'identity': identity
