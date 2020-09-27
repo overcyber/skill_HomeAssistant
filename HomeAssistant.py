@@ -968,6 +968,21 @@ class HomeAssistant(AliceSkill):
 			except Exception as e:
 				self.logInfo(f'An exception occured adding {teleType} reading: {e}')
 
+
+	def moveBackupForUpdate(self):
+		backupDirPath = Path(self.getResource('BackUp'))
+		if not backupDirPath.exists():
+			self.runBackup()
+		subprocess.run(['cp', '-R', f'{backupDirPath}', f'{str(Path.home())}'])
+
+
+	def putBackupDirBack(self):
+		backupDirPath = Path(self.getResource('BackUp'))
+		backupToRestore = f'{str(Path.home())}/Backup'
+		subprocess.run(['mv', f'{backupToRestore}', f'{backupDirPath}'])
+		self.restoreBackUpFiles()
+
+
 	# This is a temporary workaround until "My Home" gets given a restore button. Puts icons back in last known position
 	def runBackup(self):
 		backupDirPath = Path(self.getResource('BackUp'))
@@ -1050,6 +1065,7 @@ class HomeAssistant(AliceSkill):
 
 	#Merge dialogTemplate files on Update if a backup exists
 	def onSkillUpdated(self, skill: str):
+		print(f'skill is {skill}')
 		if skill in self.name and self.getConfig('enableBackup'):
 			dialogFile = Path(self.getResource(f'BackUp/{self.activeLanguage()}.json'))
 
