@@ -1064,7 +1064,7 @@ class HomeAssistant(AliceSkill):
 	def onStop(self):
 		if self.getConfig('enableBackup'):
 			self.runBackup()
-		super.onStop()
+		super().onStop()
 
 	def onBooted(self) -> bool:
 
