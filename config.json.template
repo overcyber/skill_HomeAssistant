@@ -21,8 +21,6 @@
 		"defaultValue": true,
 		"dataType": "boolean",
 		"isSensitive": false,
-		"description": "Allows backup of dialogTemplate and my home positions",
-		"beforeUpdate": "moveBackupForUpdate",
-		"onUpdate": "putBackupDirBack"
+		"description": "Allows backup of dialogTemplate and my home positions"
 	}
 }
