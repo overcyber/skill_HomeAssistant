@@ -1063,10 +1063,8 @@ class HomeAssistant(AliceSkill):
 	# onStop. backup display coordinates and dialogTemplate file
 	def onStop(self):
 		if self.getConfig('enableBackup'):
-			self.runBackup()  # save dialogTemplate file and display settings to backup directory
-		else:
-			self.logInfo(f'![green](Stopped)')
-
+			self.runBackup()
+		super.onStop()
 
 	def onBooted(self) -> bool:
 
