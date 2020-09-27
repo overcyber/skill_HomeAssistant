@@ -7,7 +7,6 @@ from datetime import datetime
 from dateutil import tz
 import pytz
 
-from pathlib import Path
 from core.base.model.AliceSkill import AliceSkill
 from core.dialog.model.DialogSession import DialogSession
 from core.util.Decorators import IntentHandler
@@ -55,7 +54,6 @@ class HomeAssistant(AliceSkill):
 		self._triggerType = ""
 		self._telemetryLogs = list()
 		self._IpList = list()
-		self._reconfigured = False
 
 		# IntentCapture Vars
 		self._captureUtterances = ""
@@ -227,7 +225,7 @@ class HomeAssistant(AliceSkill):
 		self.processHADataRetrieval()
 		# write friendly names to dialogTemplate as slotValues
 		self.addSlotValues()
-		#restore previously saved my home locations and dialog template file
+		# restore previously saved my home locations and dialog template file
 		self.restoreBackUpFiles()
 		if self._switchAndGroupList:
 
@@ -602,7 +600,7 @@ class HomeAssistant(AliceSkill):
 		# returns SensorId for all listings of a friendlyName
 		return self.databaseFetch(
 			tableName='HomeAssistant',
-			query='SELECT entityName, uID FROM :__table__ WHERE friendlyName = :identity',
+			query='SELECT entityName, uID FROM :__table__ WHERE friendlyName = :identity and deviceGroup == "switch" ',
 			method='one',
 			values={
 				'identity': identity
@@ -968,14 +966,14 @@ class HomeAssistant(AliceSkill):
 			except Exception as e:
 				self.logInfo(f'An exception occured adding {teleType} reading: {e}')
 
+
 	# This is a temporary workaround until "My Home" gets given a restore button. Puts icons back in last known position
 	def runBackup(self):
-		backupDirPath = Path(self.getResource('BackUp'))
-		if not backupDirPath.exists():
+		if not self.getResource('Backup').exists():
 			self.logInfo(f'No Home Assistant BackUp directory found, so I\'m making one')
-			backupDirPath.mkdir()
+			self.getResource("Backup").mkdir()
 
-		customizeFile = Path(f'{backupDirPath}/display.json')
+		customizeFile = self.getResource(f'Backup/display.json')
 
 		data = list()
 		for device in self.DeviceManager.getDevicesForSkill('HomeAssistant'):
@@ -988,21 +986,21 @@ class HomeAssistant(AliceSkill):
 			data.append(dictFile)
 
 		customizeFile.write_text(json.dumps(data, ensure_ascii=False, indent=4))
-		self.makeDialogFileCopy(backupDirPath)
+		self.makeDialogFileCopy()
+
 
 	# Back up existing DialogTemplate file
-	def makeDialogFileCopy(self, backupDirectory):
+	def makeDialogFileCopy(self):
 		file = self.getResource(f'dialogTemplate/{self.activeLanguage()}.json')
-		subprocess.run(['cp', file, f'{backupDirectory}/{self.activeLanguage()}.json'])
+		subprocess.run(['cp', file, f'{self.getResource("Backup")}/{self.activeLanguage()}.json'])
 		self.logInfo(f'![green](Backing up files)')
 		self.logInfo(f'![green](Stopped)')
 
-	# restore backup files if HA skill was asked to be configured
-	def restoreBackUpFiles(self):
 
-		backupDirPath = Path(self.getResource('BackUp'))
-		displayFile = Path(f'{backupDirPath}/display.json')
-		dialogFile = Path(f'{backupDirPath}/{self.activeLanguage()}.json')
+	# restore backup files if HA skill was asked to be configured or onSkillUpdated
+	def restoreBackUpFiles(self):
+		displayFile = self.getResource(f'Backup/display.json')
+		dialogFile = self.getResource(f'Backup/{self.activeLanguage()}.json')
 
 		if dialogFile.exists() and displayFile.exists():
 			displayFileData = json.loads(displayFile.read_text())
@@ -1016,12 +1014,11 @@ class HomeAssistant(AliceSkill):
 							row=('id', device.id)
 						)
 			self.logInfo(f'Just restored your device locations in My home')
-			self._reconfigured = True
-
+			self.mergeDialogIntents()
 
 	def mergeDialogIntents(self):
 		activeDialogFile = json.loads(self.getResource(f'dialogTemplate/{self.activeLanguage()}.json').read_text())
-		backupDialogFile = json.loads(self.getResource(f'BackUp/{self.activeLanguage()}.json').read_text())
+		backupDialogFile = json.loads(self.getResource(f'Backup/{self.activeLanguage()}.json').read_text())
 		filePath = self.getResource(f'dialogTemplate/{self.activeLanguage()}.json')
 
 		for i, backupItem in enumerate(backupDialogFile['intents']):
@@ -1037,7 +1034,7 @@ class HomeAssistant(AliceSkill):
 
 	def mergeDialogSlots(self):
 		activeDialogFile = json.loads(self.getResource(f'dialogTemplate/{self.activeLanguage()}.json').read_text())
-		backupDialogFile = json.loads(self.getResource(f'BackUp/{self.activeLanguage()}.json').read_text())
+		backupDialogFile = json.loads(self.getResource(f'Backup/{self.activeLanguage()}.json').read_text())
 		filePath = self.getResource(f'dialogTemplate/{self.activeLanguage()}.json')
 
 		for i, backupItem in enumerate(backupDialogFile['slotTypes']):
@@ -1048,21 +1045,26 @@ class HomeAssistant(AliceSkill):
 						activeDialogFile['slotTypes'][x]['values'] = backupUserSlots
 						filePath.write_text(json.dumps(activeDialogFile, ensure_ascii=False, indent=4))
 
-	#Merge dialogTemplate files on Update if a backup exists
+		self.logInfo(f'Merged DialogTemplate files. You "might" need to re train Alice')
+
+
+	# Merge dialogTemplate files on Update if a backup exists and restore My home display settings
 	def onSkillUpdated(self, skill: str):
 		if skill in self.name and self.getConfig('enableBackup'):
-			dialogFile = Path(self.getResource(f'BackUp/{self.activeLanguage()}.json'))
+			dialogFile = self.getResource(f'Backup/{self.activeLanguage()}.json')
 
 			if dialogFile.exists():
-				self.mergeDialogIntents()
-				self.logInfo(f'Merged DialogTemplate files. You may need to re train Alice')
+				self.restoreBackUpFiles()
+				self.say(
+					text=self.randomTalk(text='restored')
+				)
 
-	#onStop. backup display coordinates and dialogTemplate file
+
+	# onStop. backup display coordinates and dialogTemplate file
 	def onStop(self):
 		if self.getConfig('enableBackup'):
-			self.runBackup() #save dialogTemplate file and display settings to backup directory
-		else:
-			self.logInfo(f'![green](Stopped)')
+			self.runBackup()
+		super.onStop()
 
 	def onBooted(self) -> bool:
 

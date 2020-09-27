@@ -291,5 +291,14 @@
 			"ok",
 			"done"
 		]
+	},
+	"restored": {
+		"default": [
+			"'I've just restored some backed up files. You might need to restart me'",
+			"I feel like a new person. So much knowledge to give, but you might have to restart me first"
+		],
+		"short": [
+			"restart me please"
+		]
 	}
 }
