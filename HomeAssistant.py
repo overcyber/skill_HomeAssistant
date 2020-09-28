@@ -994,7 +994,6 @@ class HomeAssistant(AliceSkill):
 		self.logInfo(f'![green](Backing up files)')
 
 
-
 	# restore backup files if HA skill was asked to be configured or onSkillUpdated
 	def restoreBackUpFiles(self):
 		displayFile = self.getResource(f'Backup/display.json')
@@ -1044,6 +1043,20 @@ class HomeAssistant(AliceSkill):
 						activeDialogFile['slotTypes'][x]['values'] = backupUserSlots
 						filePath.write_text(json.dumps(activeDialogFile, ensure_ascii=False, indent=4))
 
+			if "switchnames" in backupItem['name'].lower():
+				backupUserSlots = backupItem.get('values', list())
+				for x, activeItem in enumerate(activeDialogFile['slotTypes']):
+					if "switchnames" in activeItem['name'].lower():
+						activeDialogFile['slotTypes'][x]['values'] = backupUserSlots
+						filePath.write_text(json.dumps(activeDialogFile, ensure_ascii=False, indent=4))
+
+			if "lightcontrollers" in backupItem['name'].lower():
+				backupUserSlots = backupItem.get('values', list())
+				for x, activeItem in enumerate(activeDialogFile['slotTypes']):
+					if "lightcontrollers" in activeItem['name'].lower():
+						activeDialogFile['slotTypes'][x]['values'] = backupUserSlots
+						filePath.write_text(json.dumps(activeDialogFile, ensure_ascii=False, indent=4))
+
 		self.logInfo(f'Merged DialogTemplate files. You "might" need to re train Alice')
 
 
@@ -1059,6 +1072,7 @@ class HomeAssistant(AliceSkill):
 					text=self.randomTalk(text='restored')
 				)
 		super().onSkillUpdated(skill)
+
 
 	# onStop. backup display coordinates and dialogTemplate file
 	def onStop(self):
