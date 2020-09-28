@@ -992,7 +992,7 @@ class HomeAssistant(AliceSkill):
 		file = self.getResource(f'dialogTemplate/{self.activeLanguage()}.json')
 		subprocess.run(['cp', file, f'{self.getResource("Backup")}/{self.activeLanguage()}.json'])
 		self.logInfo(f'![green](Backing up files)')
-		self.logInfo(f'![green](Stopped)')
+
 
 
 	# restore backup files if HA skill was asked to be configured or onSkillUpdated
@@ -1049,7 +1049,7 @@ class HomeAssistant(AliceSkill):
 
 	# Merge dialogTemplate files on Update if a backup exists and restore My home display settings
 	def onSkillUpdated(self, skill: str):
-		if skill.lower() == self.name.lower() and self.getConfig('enableBackup'):
+		if skill.lower() == self.name.lower():
 			self.logInfo(f'Now restoring {skill} backups.....')
 			dialogFile = self.getResource(f'Backup/{self.activeLanguage()}.json')
 
