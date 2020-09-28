@@ -12,7 +12,6 @@ from core.dialog.model.DialogSession import DialogSession
 from core.util.Decorators import IntentHandler
 from requests import get
 from core.util.model.TelemetryType import TelemetryType
-from core.util.TelemetryManager import TelemetryManager
 
 
 class HomeAssistant(AliceSkill):
@@ -753,8 +752,7 @@ class HomeAssistant(AliceSkill):
 			activeFriendlyName.append(name[0])
 		listLength = len(activeFriendlyName)
 		self.say(
-			text=self.randomTalk(text='saynumberOfDevices', replace=[listLength]),
-			siteId=self.getAliceConfig('deviceName')
+			text=self.randomTalk(text='saynumberOfDevices', replace=[listLength])
 		)
 
 
@@ -1016,6 +1014,7 @@ class HomeAssistant(AliceSkill):
 			self.logInfo(f'Just restored your device locations in My home')
 			self.mergeDialogIntents()
 
+
 	def mergeDialogIntents(self):
 		activeDialogFile = json.loads(self.getResource(f'dialogTemplate/{self.activeLanguage()}.json').read_text())
 		backupDialogFile = json.loads(self.getResource(f'Backup/{self.activeLanguage()}.json').read_text())
@@ -1050,7 +1049,8 @@ class HomeAssistant(AliceSkill):
 
 	# Merge dialogTemplate files on Update if a backup exists and restore My home display settings
 	def onSkillUpdated(self, skill: str):
-		if skill in self.name and self.getConfig('enableBackup'):
+		if skill == self.name and self.getConfig('enableBackup'):
+			self.logInfo(f'Now restoring {skill} backups.....')
 			dialogFile = self.getResource(f'Backup/{self.activeLanguage()}.json')
 
 			if dialogFile.exists():
@@ -1066,13 +1066,13 @@ class HomeAssistant(AliceSkill):
 			self.runBackup()
 		super().onStop()
 
+
 	def onBooted(self) -> bool:
 
 		if 'http://localhost:8123/api/' in self.getConfig("haIpAddress"):
 			self.logWarning(f'You need to update the HAIpAddress in Homeassistant Skill ==> settings')
 			self.say(
-				text=self.randomTalk(text='sayConfigureMe'),
-				siteId=self.getAliceConfig('deviceName')
+				text=self.randomTalk(text='sayConfigureMe')
 			)
 			return False
 		else:
@@ -1230,39 +1230,14 @@ class HomeAssistant(AliceSkill):
 			trigger = 'low'
 
 		if not 'freezing' in self._triggerType:
+
 			self.say(
-				text=self.randomTalk(text='sayTelemetryAlert', replace=[self._triggerType, trigger, threshold, value, area]),
-				siteId=self.getAliceConfig('deviceName')
+				text=self.randomTalk(text='sayTelemetryAlert', replace=[self._triggerType, trigger, threshold, value, area])
 			)
 		else:
 			self.say(
-				text=self.randomTalk(text='sayTelemetryFreezeAlert', replace=[area, value]),
-				siteId=self.getAliceConfig('deviceName')
+				text=self.randomTalk(text='sayTelemetryFreezeAlert', replace=[area, value])
 			)
-
-
-	###############  Telemetry Logging Data  #################
-	# work in progress
-	# noinspection SqlResolve
-	def getTelemetryLogs(self):
-		telemetryDblogs = TelemetryManager()
-		self._telemetryLogs = telemetryDblogs.databaseFetch(
-			tableName='telemetry',
-			query='SELECT * FROM :__table__ ORDER BY timestamp DESC LIMIT 200',
-			method='all'
-		)
-
-		self.seperateTelemetryLogs()
-
-
-	def seperateTelemetryLogs(self):
-		temperatureLogData = list()
-		for sensor in self._telemetryLogs:
-			if 'temperature' in sensor['type']:
-				temperatureLogs = [sensor['type'], sensor['value'], sensor['siteId'], sensor['timestamp']]
-				temperatureLogData.append(temperatureLogs)
-
-		print(f'temperature data = {temperatureLogData} ')
 
 
 	########################## INTENT CAPTURE CODE ###########################################
