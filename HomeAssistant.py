@@ -1058,7 +1058,7 @@ class HomeAssistant(AliceSkill):
 				self.say(
 					text=self.randomTalk(text='restored')
 				)
-
+		super().onSkillUpdated(skill)
 
 	# onStop. backup display coordinates and dialogTemplate file
 	def onStop(self):
