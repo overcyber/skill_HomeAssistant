@@ -1049,7 +1049,7 @@ class HomeAssistant(AliceSkill):
 
 	# Merge dialogTemplate files on Update if a backup exists and restore My home display settings
 	def onSkillUpdated(self, skill: str):
-		if skill == self.name and self.getConfig('enableBackup'):
+		if skill.lower() == self.name.lower() and self.getConfig('enableBackup'):
 			self.logInfo(f'Now restoring {skill} backups.....')
 			dialogFile = self.getResource(f'Backup/{self.activeLanguage()}.json')
 
