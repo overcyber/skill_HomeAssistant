@@ -53,6 +53,7 @@ class HomeAssistant(AliceSkill):
 		self._triggerType = ""
 		self._telemetryLogs = list()
 		self._IpList = list()
+		self._configureActivated = False
 
 		# IntentCapture Vars
 		self._captureUtterances = ""
@@ -225,6 +226,7 @@ class HomeAssistant(AliceSkill):
 		# write friendly names to dialogTemplate as slotValues
 		self.addSlotValues()
 		# restore previously saved my home locations and dialog template file
+		self._configureActivated = True
 		self.restoreBackUpFiles()
 		if self._switchAndGroupList:
 
@@ -965,7 +967,9 @@ class HomeAssistant(AliceSkill):
 				self.logInfo(f'An exception occured adding {teleType} reading: {e}')
 
 
-	# This is a temporary workaround until "My Home" gets given a restore button. Puts icons back in last known position
+	################### AUTO BACKUP AND RESTORE CODE ########################
+
+	# This puts icons back in last known position of my home
 	def runBackup(self):
 		if not self.getResource('Backup').exists():
 			self.logInfo(f'No Home Assistant BackUp directory found, so I\'m making one')
@@ -1043,27 +1047,39 @@ class HomeAssistant(AliceSkill):
 						activeDialogFile['slotTypes'][x]['values'] = backupUserSlots
 						filePath.write_text(json.dumps(activeDialogFile, ensure_ascii=False, indent=4))
 
-			if "switchnames" in backupItem['name'].lower():
-				backupUserSlots = backupItem.get('values', list())
-				for x, activeItem in enumerate(activeDialogFile['slotTypes']):
-					if "switchnames" in activeItem['name'].lower():
-						activeDialogFile['slotTypes'][x]['values'] = backupUserSlots
-						filePath.write_text(json.dumps(activeDialogFile, ensure_ascii=False, indent=4))
+			if not self._configureActivated:
+				self.mergeSwitchAndLightDialog(backupItem=backupItem, activeDialogFile=activeDialogFile, filePath=filePath)
 
-			if "lightcontrollers" in backupItem['name'].lower():
-				backupUserSlots = backupItem.get('values', list())
-				for x, activeItem in enumerate(activeDialogFile['slotTypes']):
-					if "lightcontrollers" in activeItem['name'].lower():
-						activeDialogFile['slotTypes'][x]['values'] = backupUserSlots
-						filePath.write_text(json.dumps(activeDialogFile, ensure_ascii=False, indent=4))
+		if self._configureActivated:
+			self._configureActivated = False
+			self.logInfo(f'Merged DialogTemplate files.')
+			return
 
-		self.logInfo(f'Merged DialogTemplate files. You "might" need to re train Alice')
+		self.logInfo(f'Merged DialogTemplate files. Retraining now... ')
+
+
+	# Reduce Cognitive Complexity of the above method
+	@staticmethod
+	def mergeSwitchAndLightDialog(backupItem, activeDialogFile, filePath):
+		if "switchnames" in backupItem['name'].lower():
+			backupUserSlots = backupItem.get('values', list())
+			for x, activeItem in enumerate(activeDialogFile['slotTypes']):
+				if "switchnames" in activeItem['name'].lower():
+					activeDialogFile['slotTypes'][x]['values'] = backupUserSlots
+					filePath.write_text(json.dumps(activeDialogFile, ensure_ascii=False, indent=4))
+
+		if "lightcontrollers" in backupItem['name'].lower():
+			backupUserSlots = backupItem.get('values', list())
+			for x, activeItem in enumerate(activeDialogFile['slotTypes']):
+				if "lightcontrollers" in activeItem['name'].lower():
+					activeDialogFile['slotTypes'][x]['values'] = backupUserSlots
+					filePath.write_text(json.dumps(activeDialogFile, ensure_ascii=False, indent=4))
 
 
 	# Merge dialogTemplate files on Update if a backup exists and restore My home display settings
 	def onSkillUpdated(self, skill: str):
 		if skill.lower() == self.name.lower():
-			self.logInfo(f'Now restoring {skill} backups.....')
+			self.logInfo(f'![yellow](Now restoring {skill} backups.....)')
 			dialogFile = self.getResource(f'Backup/{self.activeLanguage()}.json')
 
 			if dialogFile.exists():
@@ -1080,6 +1096,8 @@ class HomeAssistant(AliceSkill):
 			self.runBackup()
 		super().onStop()
 
+
+	############### END OF AUTO BACKUP AND RESTORE CODE ########################
 
 	def onBooted(self) -> bool:
 
