@@ -294,11 +294,11 @@
 	},
 	"restored": {
 		"default": [
-			"'I've just restored some backed up files. You might need to restart me'",
-			"I feel like a new person. So much knowledge to give, but you might have to restart me first"
+			"'I've just restored some backed up files. Be back soon, just going to do some re training'",
+			"I feel like a new person. So much knowledge to give, But first. i will re train myself"
 		],
 		"short": [
-			"restart me please"
+			"retraining now"
 		]
 	}
 }
