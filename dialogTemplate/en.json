@@ -1,7 +1,5 @@
 {
     "skill": "HomeAssistant",
-    "icon": "time",
-    "description": "Connect Alice to your home assistant",
     "slotTypes": [
         {
             "name": "switchNames",
@@ -88,7 +86,6 @@
     "intents": [
         {
             "name": "AddHomeAssistantDevices",
-            "description": "Add home assistant devices to Alice",
             "enabledByDefault": true,
             "utterances": [
                 "Add my home assistant devices",
@@ -100,7 +97,6 @@
         },
         {
             "name": "HomeAssistantAction",
-            "description": "switch a devie on or off",
             "enabledByDefault": true,
             "utterances": [
                 "turn {on:=>OnOrOff} the {toilet light:=>switchNames}",
@@ -133,7 +129,6 @@
         },
         {
             "name": "HomeAssistantState",
-            "description": "Returns the state of a switch",
             "enabledByDefault": true,
             "utterances": [
                 "what is the state of the {kitchen light:=>DeviceState}",
@@ -151,7 +146,6 @@
         },
         {
             "name": "HomeAssistantSun",
-            "description": "Returns sun information",
             "enabledByDefault": true,
             "utterances": [
                 "when is {sunrise:=>sunState}",
@@ -175,7 +169,6 @@
         },
         {
             "name": "WhatHomeAssistantDevices",
-            "description": "Get a list of Home assistant devices",
             "enabledByDefault": false,
             "utterances": [
                 "What home assistant devices do you know",
@@ -189,7 +182,6 @@
         },
         {
             "name": "GetIpOfDevice",
-            "description": "Returns the IP address of selected device",
             "enabledByDefault": true,
             "utterances": [
                 "what's the ip address of the {bedroom light:=>switchNames}",
@@ -209,7 +201,6 @@
         },
         {
             "name": "CreateIntent",
-            "description": "User asking to add a intent",
             "enabledByDefault": true,
             "utterances": [
                 "Add a new Home Assistant intent",
@@ -220,7 +211,6 @@
         },
         {
             "name": "UserIntent",
-            "description": "User defined intent",
             "enabledByDefault": true,
             "utterances": [
                 "we need more home assistant utterances"
@@ -237,7 +227,6 @@
         },
         {
         	"name": "LightControl",
-        	"description": "Control light entities",
         	"enabledByDefault": true,
         	"utterances": [
         		"set the {workbench light:=>LightControllers} to {red:=>AliceColor}",
