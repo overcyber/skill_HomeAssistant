@@ -113,14 +113,12 @@
             "slots": [
                 {
                     "name": "switchNames",
-                    "description": null,
                     "required": false,
                     "type": "switchNames",
                     "missingQuestion": ""
                 },
                 {
                     "name": "OnOrOff",
-                    "description": null,
                     "required": false,
                     "type": "HomeAssistantOnOrOff",
                     "missingQuestion": ""
@@ -137,7 +135,6 @@
             "slots": [
                 {
                     "name": "DeviceState",
-                    "description": null,
                     "required": false,
                     "type": "switchNames",
                     "missingQuestion": ""
@@ -160,7 +157,6 @@
             "slots": [
                 {
                     "name": "sunState",
-                    "description": null,
                     "required": false,
                     "type": "Sun",
                     "missingQuestion": ""
@@ -192,7 +188,6 @@
             "slots": [
                 {
                     "name": "switchNames",
-                    "description": null,
                     "required": false,
                     "type": "switchNames",
                     "missingQuestion": ""
@@ -218,7 +213,6 @@
             "slots": [
                 {
                     "name": "HAintent",
-                    "description": null,
                     "required": false,
                     "type": "HAintent",
                     "missingQuestion": ""
@@ -246,21 +240,18 @@
         	"slots": [
         		{
         			"name": "LightControllers",
-        			"description": null,
         			"required": true,
         			"type": "LightControllers",
         			"missingQuestion": ""
         		},
                 {
                     "name": "AliceColor",
-                    "description": null,
                     "required": false,
                     "type": "Alice/Colors",
                     "missingQuestion": ""
                 },
                 {
                     "name": "dimmer",
-                    "description": null,
                     "required": false,
                     "type": "snips/percentage",
                     "missingQuestion": ""
