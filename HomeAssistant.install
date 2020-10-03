@@ -1,12 +1,12 @@
 {
     "name": "HomeAssistant",
-    "version": "2.1.13",
+    "version": "2.1.14",
     "icon": "fas fa-house-user",
     "category": "household",
     "author": "Lazza",
     "maintainers": [],
     "desc": "Connects Alice to your home assistant. You can then control any switches you have in Home Assistant . Refer to the readme and instructions for more info",
-    "aliceMinVersion": "1.0.0-b2",
+    "aliceMinVersion": "1.0.0-b3",
     "systemRequirements": [
         ""
     ],
