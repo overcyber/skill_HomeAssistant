@@ -1097,8 +1097,6 @@ class HomeAssistant(AliceSkill):
 		super().onStop()
 
 
-	############### END OF AUTO BACKUP AND RESTORE CODE ########################
-
 	def onBooted(self) -> bool:
 
 		if 'http://localhost:8123/api/' in self.getConfig("haIpAddress"):
