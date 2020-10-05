@@ -1350,9 +1350,9 @@ class HomeAssistant(AliceSkill):
 		)
 
 
-	@IntentHandler(intent='UserRandomAnswer', requiredState='requestingSynonymValue', isProtected=True)
-	@IntentHandler(intent='UserRandomAnswer', requiredState='requestingSlotValue', isProtected=True)
-	@IntentHandler(intent='UserRandomAnswer', requiredState='requestingToMakeAIntent', isProtected=True)
+	@IntentHandler(intent='UserRandomAnswer', requiredState='requestingSynonymValue')
+	@IntentHandler(intent='UserRandomAnswer', requiredState='requestingSlotValue')
+	@IntentHandler(intent='UserRandomAnswer', requiredState='requestingToMakeAIntent')
 	def listenForAvalue(self, session):
 		"""Process the users spoken input"""
 
@@ -1391,10 +1391,10 @@ class HomeAssistant(AliceSkill):
 		)
 
 
-	@IntentHandler(intent='AnswerYesOrNo', requiredState='requestingShouldWeAddSynonyms', isProtected=True)
-	@IntentHandler(intent='AnswerYesOrNo', requiredState='ConfirmSlotValue', isProtected=True)
-	@IntentHandler(intent='AnswerYesOrNo', requiredState='ConfirmIntent', isProtected=True)
-	@IntentHandler(intent='AnswerYesOrNo', requiredState='ConfirmSynonymValue', isProtected=True)
+	@IntentHandler(intent='AnswerYesOrNo', requiredState='requestingShouldWeAddSynonyms')
+	@IntentHandler(intent='AnswerYesOrNo', requiredState='ConfirmSlotValue')
+	@IntentHandler(intent='AnswerYesOrNo', requiredState='ConfirmIntent')
+	@IntentHandler(intent='AnswerYesOrNo', requiredState='ConfirmSynonymValue')
 	def processYesOrNoResponse(self, session):
 		"""Sorts through the multiple yes or no responces and redirects accordingly"""
 
