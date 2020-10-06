@@ -1,0 +1,300 @@
+{
+	"sayListOfDevices": {
+		"default": [
+			"Je peux activer ou désactiver ce qui suit. {}",
+			"Ce sont les appareils que je peux contrôler. {}"
+		],
+		"short": [
+			"je peux contrôler. {}"
+		]
+	},
+	"sayConfigureMe": {
+		"default": [
+			"Il semble que vous avez installé Accueil Assistant d'installation mais pas. S'il vous plaît se référer au fichier de lecture me pour les instructions",
+			"Impressionnant, vous avez installé Accueil adjoint. S'il vous plaît jeter un oeil au fichier Lisez-moi de voir comment le configurer"
+		],
+		"short": [
+			"Pour mettre en place des compétences d'assistant à domicile, s'il vous plaît lire le fichier Lisez-moi"
+		]
+	},
+	"saynumberOfDevices": {
+		"default": [
+			"J'ai trouvé {0} nouveaux appareils que je l'ai ajouté à ma base de données. Pour entendre la liste Interrogez-moi. Quels sont les appareils assistant à domicile connaissez-vous?",
+			"J'ai maintenant {0} appareils stockés dans mes banques de mémoire. Pour entendre la liste Interrogez-moi. Que pouvez-vous activer ou désactiver?"
+		],
+		"short": [
+			"Vous avez {0} nouveaux appareils connectés"
+		]
+	},
+	"sayConnectionOffline": {
+		"default": [
+			"Désolé, mais votre assistant à domicile semble être déconnecté",
+			"Je vais avoir des problèmes de connexion à votre domicile adjoint, est-il en ligne?"
+		],
+		"short": [
+			"Votre maison adjoint est déconnecté",
+			"Accueil Assistant est déconnecté"
+		]
+	},
+	"getActiveDeviceState": {
+		"default": [
+			"{0} est actuellement {1}",
+			"{0} est actuellement activé {1}"
+		],
+		"short": [
+			"{0} est {1}"
+		]
+	},
+	"getDeviceStateError": {
+		"default": [
+			"Désolé pour vous taquine, mais je nai obtenu ces valeurs encore. Il est une amélioration de l'avenir",
+			"oups, une amélioration de l'avenir qui n'a pas encore eu lieu"
+		],
+		"short": [
+			"Ne peut pas faire encore désolé"
+		]
+	},
+	"homeAssistantSwitchDevice": {
+		"default": [
+			"Pas de drame fait ça maintenant",
+			"Partout dans comme une mauvaise éruption",
+			"OK fait",
+			"trié",
+			"sûr",
+			"D'accord"
+		],
+		"short": [
+			"sûr",
+			"terminé",
+			"D'accord"
+		]
+	},
+	"addHomeAssistantDevices": {
+		"default": [
+			"Ok Faisons-le, donnez-moi un moment pour régler ce problème pour vous. Une fois que je suis fini, vous aurez besoin de me remettre en marche",
+			"Cela peut prendre un moment ou deux, vous devrez me redémarrer après que je vous ai dit combien de périphériques que j'ai trouvé",
+			"Sur elle. vous devrez me redémarrer après que je l'ai lu sur le nombre des appareils trouvés"
+		],
+		"short": [
+			"pas de problème, me donner une minute pour configurer",
+			"dessus"
+		]
+	},
+	"addHomeAssistantDevicesError": {
+		"default": [
+			"Je ne pouvais pas trouver et commutateurs Accueil assistant désolé",
+			"Désolé, mais n'a pas été en mesure d'ajouter des périphériques. S'il vous plaît vérifier Accueil adjoint a commutateurs actifs",
+			"Je n'étais pas en mesure d'ajouter des périphériques désolé. S'il vous plaît vérifier Accueil adjoint a de commutateur"
+		],
+		"short": [
+			"Couldnt ajouter des commutateurs désolé",
+			"Impossible d'ajouter des commutateurs. Pardon"
+		]
+	},
+	"saySunState": {
+		"default": [
+			"{0} {1} donc ce sera dans {2} heures et {3} minutes"
+		],
+		"short": [
+			"{0} {1} donc ce sera dans {2} heures et {3} minutes"
+		]
+	},
+	"sayHorizon": {
+		"default": [
+			"Le soleil est actuellement {0}"
+		],
+		"short": [
+			"Le soleil est actuellement {0}"
+		]
+	},
+	"sayTelemetryAlert": {
+		"default": [
+			"ATTENTION ATTENTION. Votre {0} lectures pour le {4} ont dépassé l'ensemble {1} limite de {2} avec une lecture de {3}",
+			"demande Alerte. Votre {4} {0} lectures sont à {3}",
+			"Juste pour vous faire connaître les {0} lectures pour le {4} sont au-dessus {2}"
+		],
+		"short": [
+			"Attention. Votre {0} lectures autour de la {4} sont {3}"
+		]
+	},
+	"sayTelemetryFreezeAlert": {
+		"default": [
+			"ATTENTION ATTENTION. Il commence à geler dans le {0}. la température est actuellement {1}"
+		],
+		"short": [
+			"Attention. Il commence à geler maintenant dans le {0}"
+		]
+	},
+	"sayIpError": {
+		"default": [
+			"Désolé, mais je n \\ 'ont une liste pour {0}"
+		],
+		"short": [
+			"Désolé, mais je n \\ 'ont une liste pour {0}"
+		]
+	},
+	"sayIpError2": {
+		"default": [
+			"Désolé mais Accueil assistant didn \\ 't me fournir une adresse pour {0}"
+		],
+		"short": [
+			"Désolé mais Accueil assistant didn \\ 't me fournir une adresse pour {0}"
+		]
+	},
+	"sayIpAddress": {
+		"default": [
+			"L'adresse I P pour cet appareil est {0}"
+		],
+		"short": [
+			"{0}"
+		]
+	},
+	"nextSunEvent": {
+		"default": [
+			"La prochaine {0} sera sur"
+		]
+	},
+	"sayYesICanCaptureIntent": {
+		"default": [
+			"Bien sûr, je peux le faire, ce qui est l'intention que tu veux me souvenir?",
+			"Je suis toutes les oreilles, ce qui est l'intention que vous aimeriez que je ajouter à la liste?"
+		],
+		"short": [
+			"ce qui est l'intention",
+			"ce qui est l'énoncé"
+		]
+	},
+	"utteranceExists": {
+		"default": [
+			"ressemble à cette intention existe déjà. L'essai Let recommencer à partir de zéro",
+			"Il semble que vous avez déjà énoncé. Recommençons"
+		],
+		"short": [
+			"réessayer. qui existe",
+			"existe déjà, essayez à nouveau"
+		]
+	},
+	"askSlotValue": {
+		"default": [
+			"Quel est le mot-clé de cette intention que je devrais utiliser comme valeur de l'emplacement?",
+			"dites-moi le mot-clé de cette phrase que vous souhaitez que la valeur de l'emplacement"
+		],
+		"short": [
+			"Ce qui est le mot de fente",
+			"quel est le mot clé"
+		]
+	},
+	"keywordError": {
+		"default": [
+			"Ce mot-clé ne faisait pas partie de la phrase que vous venez de me donner, essayer à nouveau. Pour rappel votre énoncé était. {0}",
+			"Ce mot-clé dans pas dans l'intention {0}, essayez à nouveau"
+		],
+		"short": [
+			"mot-clé introuvable essayez à nouveau"
+		]
+	},
+	"repeatIncomingValue": {
+		"default": [
+			"Je vous ai entendu dire {0}. Est-ce ce que vous voulez que je ajouter?",
+			"Ce que je vous ai entendu dire était {0}. Êtes-vous heureux pour moi d'utiliser cette valeur?"
+		],
+		"short": [
+			"J'ai entendu {0}, est-il exact?"
+		]
+	},
+	"userSaidNo": {
+		"default": [
+			"ok nous allons essayer à nouveau que puis. Quel est le {0} vous voulez ajouter",
+			"ok laissez-moi nettoyer mes micros et nous allons essayer encore une fois. S'il vous plaît re que votre {0} valeur"
+		],
+		"short": [
+			"ce qui est le {0} alors?",
+			"re parler de votre {0} s'il vous plaît"
+		]
+	},
+	"addSyn": {
+		"default": [
+			"voulez-vous ajouter {0} synonyme de cet emplacement?",
+			"Devons-nous ajouter {0} synonyme de cet emplacement?"
+		],
+		"short": [
+			"Dois-je ajouter {0} synonymes?"
+		]
+	},
+	"addValue": {
+		"default": [
+			"ce qui est le {0} nom que vous feriez comme moi d'ajouter?",
+			"Que dois-je ajouter un nom {0}"
+		],
+		"short": [
+			"nom que {0}?"
+		]
+	},
+	"finishUp": {
+		"default": [
+			"Tout est fait, vous êtes maintenant un codeur verbal",
+			"Génial. J'ai assez d'informations à traiter. Ajoutera tout ce qui maintenant",
+			"Impressionnant, je viens d'ajouter que pour vous. Vous allez devoir me remettre en marche afin que je puisse me former maintenant",
+			"La prochaine fois que vous me redémarrez je vais me apprendre à utiliser cette information. Merci de me faire plus intelligemment"
+		],
+		"short": [
+			"terminé",
+			"ok trié"
+		]
+	},
+	"dummyUtterance": {
+		"default": [
+			"Fantastique, vous avez trouvé mon mannequin intention. Essayez de me demander quelque chose d'autre à la place",
+			"nous vous. Essayez de dire. Ajouter dialogue assistant à domicile, pour obtenir plus intentions dans cette section",
+			"bien fait pour tomber sur cette intention. Vous gagnez une étoile d'or et une adhésion gratuite à la classe de. personnes observatrices",
+			"Bien que de fantaisie. Et ici, je pensais que personne ne trouverait cette mannequin intention. Bien joué",
+			"Renseignez-vous auprès du bureau de poste. Je pense qu'ils sont dans le courrier"
+		],
+		"short": [
+			"besoin est un mot fort"
+		]
+	},
+	"dummyIntent": {
+		"default": [
+			"nous avons besoin de plus d'énoncés des assistants à domicile"
+		],
+		"short": [
+			"nous avons besoin de plus d'énoncés des assistants à domicile",
+			""
+		]
+	},
+	"changeColor": {
+		"default": [
+			"bon choix. J'aime {0}",
+			"Terminé",
+			"D'accord",
+			"Dois-je commander une {0} peinture aussi bien? nous pourrions peindre les murs pour correspondre",
+			"grand, l'amour d'une touche de {0} pour égayer la journée"
+		],
+		"short": [
+			"D'accord",
+			"terminé"
+		]
+	},
+	"changeBrightness": {
+		"default": [
+			"Il est un bon niveau {0} pour cent. Mettra pour vous maintenant",
+			"Certes, et j'espère que la journée est plus brillante que {0} pour cent",
+			"Changement de {0} pour cent que nous parlons",
+			"Arrrr me Matey. fera dat plus vite qu'il ya faut pour se demander pourquoi je suis juste allé tout pirate ya. La réponse est. Parce que je peux"
+		],
+		"short": [
+			"D'accord",
+			"terminé"
+		]
+	},
+	"restored": {
+		"default": [
+			"« Je viens des fichiers sauvegardés restauré vers le haut. Soyez bientôt de retour, juste faire une formation de re »",
+			"Je me sens comme une nouvelle personne. Donc, beaucoup de connaissances à donner, mais d'abord. Je vais à nouveau me former"
+		],
+		"short": [
+			"recyclage maintenant"
+		]
+	}
+}

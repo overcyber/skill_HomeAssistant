@@ -1,0 +1,300 @@
+{
+	"sayListOfDevices": {
+		"default": [
+			"Ich kann ein- oder ausgeschaltet folgenden drehen. {}",
+			"Dies sind die Geräte i steuern können. {}"
+		],
+		"short": [
+			"Ich kann steuern. {}"
+		]
+	},
+	"sayConfigureMe": {
+		"default": [
+			"Es sieht aus wie Sie Start-Assistent installiert haben, aber nicht eingerichtet. Bitte beachten Sie die Lese ich Datei für Anweisungen",
+			"Awesome, Sie haben Start-Assistent installiert. Bitte werfen Sie einen Blick auf die lesen Sie mich zu sehen, Datei, wie es einzurichten"
+		],
+		"short": [
+			"So richten Sie Geschick nach Hause Assistent, lesen Sie bitte die Readme-Datei"
+		]
+	},
+	"saynumberOfDevices": {
+		"default": [
+			"Ich fand {0} neue Geräte, die ich zu meiner Datenbank hinzugefügt haben. Um die Liste Frag mich zu hören. Was zu Hause Assistent Geräte kennen Sie?",
+			"Ich habe jetzt {0} in meinen Speicherbänken gespeichert Geräte. Um die Liste Frag mich zu hören. Was können Sie ein- oder ausschalten?"
+		],
+		"short": [
+			"Sie haben {0} neue Geräte angeschlossen"
+		]
+	},
+	"sayConnectionOffline": {
+		"default": [
+			"Sorry, aber Ihr Zuhause Assistent scheint zu sein, offline",
+			"Ich habe Probleme mit dem Heim Assistenten verbinden, ist es online?"
+		],
+		"short": [
+			"Your Home Assistant ist offline",
+			"Start-Assistent ist offline"
+		]
+	},
+	"getActiveDeviceState": {
+		"default": [
+			"{0} ist derzeit {1}",
+			"die {0} ist momentan {1}"
+		],
+		"short": [
+			"{0} ist {1}"
+		]
+	},
+	"getDeviceStateError": {
+		"default": [
+			"Es tut uns necken Sie, aber ich haben noch diese Werte bekam. Es ist eine zukünftige Erweiterungen",
+			"oops, ist, dass eine künftige Erweiterung, die noch nicht geschehen ist"
+		],
+		"short": [
+			"Kann noch nicht tun, leider"
+		]
+	},
+	"homeAssistantSwitchDevice": {
+		"default": [
+			"Kein Drama macht, dass jetzt",
+			"Alle über sie wie ein schlechter Ausschlag",
+			"OK, fertig",
+			"sortierter",
+			"sicher",
+			"in Ordnung"
+		],
+		"short": [
+			"sicher",
+			"erledigt",
+			"in Ordnung"
+		]
+	},
+	"addHomeAssistantDevices": {
+		"default": [
+			"Ok wir dies tun, geben Sie mir einen Moment Zeit, das für Sie zu sortieren. Sobald ich fertig bin müssen Sie mich neu zu starten",
+			"Dies kann einen Moment dauern, oder zwei, Sie werden mich neu zu starten, nachdem ich Ihnen gesagt habe, wie viele Geräte die ich gefunden habe",
+			"Alle über sie. Sie werden mich neu starten, nachdem ich fand die Anzahl der Geräte ausgelesen haben"
+		],
+		"short": [
+			"kein Problem, geben Sie mir eine Minute zu konfigurieren",
+			"auf sie"
+		]
+	},
+	"addHomeAssistantDevicesError": {
+		"default": [
+			"Ich konnte nicht finden und schaltet in Heim Assistent leider",
+			"Sorry, aber konnte keine Geräte hinzufügen. Bitte aktivieren Sie Home-Assistent hat aktive Schalter",
+			"Ich war nicht in der Lage, alle Geräte leider hinzuzufügen. Bitte aktivieren Sie Home-Assistent hat Schalter des"
+		],
+		"short": [
+			"Couldnt Add schaltet leid",
+			"Kann keinen Schalter hinzuzufügen. Es tut uns leid"
+		]
+	},
+	"saySunState": {
+		"default": [
+			"{0} {1}, so dass in seine {2} und {3 Stunden Minuten}"
+		],
+		"short": [
+			"{0} {1}, so dass in seine {2} und {3 Stunden Minuten}"
+		]
+	},
+	"sayHorizon": {
+		"default": [
+			"Die Sonne ist derzeit {0}"
+		],
+		"short": [
+			"Die Sonne ist derzeit {0}"
+		]
+	},
+	"sayTelemetryAlert": {
+		"default": [
+			"ACHTUNG! ACHTUNG. Ihre {0} Lesungen für den {4} überschritten hat die Menge {1} Limit von {2} mit einer Lesung von {3}",
+			"Alert-Anforderung. Ihre {4} {0} Lesungen sind bei {3}",
+			"Nur damit Sie wissen, die {0} Lesungen für die {4} sind oben {2}"
+		],
+		"short": [
+			"Beachtung. Ihre {0} Lesungen um die {4} {3}"
+		]
+	},
+	"sayTelemetryFreezeAlert": {
+		"default": [
+			"ACHTUNG! ACHTUNG. Es beginnt in der {0} einzufrieren. Temperatur ist derzeit {1}"
+		],
+		"short": [
+			"Beachtung. Es wird nun ab dem {0} einzufrieren"
+		]
+	},
+	"sayIpError": {
+		"default": [
+			"Sorry, aber ich don \\ 't haben eine Auflistung für {0}"
+		],
+		"short": [
+			"Sorry, aber ich don \\ 't haben eine Auflistung für {0}"
+		]
+	},
+	"sayIpError2": {
+		"default": [
+			"Sorry, aber Start-Assistent didn \\ 't bietet mir eine Adresse für {0}"
+		],
+		"short": [
+			"Sorry, aber Start-Assistent didn \\ 't bietet mir eine Adresse für {0}"
+		]
+	},
+	"sayIpAddress": {
+		"default": [
+			"Die I P-Adresse für dieses Gerät ist {0}"
+		],
+		"short": [
+			"{0}"
+		]
+	},
+	"nextSunEvent": {
+		"default": [
+			"Die nächste {0} wird auf"
+		]
+	},
+	"sayYesICanCaptureIntent": {
+		"default": [
+			"Sicher kann ich das tun, was ist die Absicht Sie wollen, sich erinnern?",
+			"Ich bin ganz Ohr, was ist die Absicht, Sie möchten mich in die Liste hinzufügen?"
+		],
+		"short": [
+			"was ist die Absicht",
+			"was ist die Äußerung"
+		]
+	},
+	"utteranceExists": {
+		"default": [
+			"Sieht aus wie das Absicht ist bereits vorhanden. Lassen Sie uns versuchen, das wieder von vorne",
+			"Scheint man bereits, dass Äußerung haben. Lass uns noch einmal beginnen"
+		],
+		"short": [
+			"versuchen Sie es nochmal. das existiert",
+			"Bereits vorhanden ist, versuchen Sie es erneut"
+		]
+	},
+	"askSlotValue": {
+		"default": [
+			"Was ist das Schlüsselwort aus dieser Absicht, dass ich als Schlitzwert verwendet werden soll?",
+			"sagen Sie mir das Stichwort aus diesem Satz, dass Sie als Schlitzwert möchten"
+		],
+		"short": [
+			"Was ist das Slot-Wort",
+			"was ist das Schlüsselwort"
+		]
+	},
+	"keywordError": {
+		"default": [
+			"Das Schlüsselwort nicht Teil des Satzes war Sie mich nur gab, versuchen Sie es erneut. Als Erinnerung war Ihre Äußerung. {0}",
+			"Das Schlüsselwort in der Absicht, in nicht {0}, versuchen Sie es erneut"
+		],
+		"short": [
+			"Stichwort nicht gefunden erneut versuchen"
+		]
+	},
+	"repeatIncomingValue": {
+		"default": [
+			"hörte ich Sie sagen {0}. Ist das, was Sie wollen, dass ich hinzufügen?",
+			"Was hörte ich Sie sagen: {0}. Sind Sie glücklich für mich, diesen Wert zu benutzen?"
+		],
+		"short": [
+			"Ich habe gehört, {0}, ist es richtig?"
+		]
+	},
+	"userSaidNo": {
+		"default": [
+			"ok wir versuchen, dass dann wieder ein. Was ist der {0} Sie hinzufügen möchten",
+			"ok lassen Sie mich meine Mikrofone reinigen und das werden wir erneut versuchen. Bitte re sagen, dass Ihre {0} Wert"
+		],
+		"short": [
+			"was ist der {0} dann?",
+			"re sprechen Ihre {0} bitte"
+		]
+	},
+	"addSyn": {
+		"default": [
+			"tun Sie {0} Synonym für diesen Slot hinzufügen?",
+			"Sollen wir {0} Synonym für diesen Slot hinzufügen?"
+		],
+		"short": [
+			"Sollte i {0} Synonym hinzufügen?"
+		]
+	},
+	"addValue": {
+		"default": [
+			"was ist der {0} Name Sie wie ich würde hinzufügen?",
+			"Was soll ich als {0} Name"
+		],
+		"short": [
+			"was {0} Name?"
+		]
+	},
+	"finishUp": {
+		"default": [
+			"Alles fertig, du bist jetzt ein verbaler Coder",
+			"Toll. Ich habe genug Informationen zu verarbeiten. Werden alle hinzufügen, dass jetzt",
+			"Awesome, ich habe gerade fügte hinzu, dass für Sie. Sie werden mich neu starten, so dass ich mich trainieren können jetzt",
+			"Nächstes Mal, wenn Sie mich neu starten, ich werde dich lehren mich, wie diese Informationen zu verwenden. Vielen Dank, dass Sie mich schlauer"
+		],
+		"short": [
+			"erledigt",
+			"ok sortiert"
+		]
+	},
+	"dummyUtterance": {
+		"default": [
+			"Fantastisch, Du hast mein Dummy Absicht gelegen. Versuchen Sie mich fragen stattdessen etwas anderes",
+			"wir tun sicher. Versuchen Sie zu sagen. Home Assistent Dialog, um weitere Absichten in diesem Abschnitt zu erhalten",
+			"gut gemacht über diese Absicht zu stolpern. Sie verdienen einen goldenen Stern und kostenlose Mitgliedschaft in der Klasse der. aufmerksamen Menschen",
+			"Nun einbilden, dass. Und hier dachte, ich würde niemand diese Dummy Absicht finden. Gut gemacht",
+			"Erkundigen Sie sich bei der Post. Ich denke, sie in der Post sind"
+		],
+		"short": [
+			"Notwendigkeit ist so ein starkes Wort"
+		]
+	},
+	"dummyIntent": {
+		"default": [
+			"wir brauchen mehr nach Hause Assistent Äußerungen"
+		],
+		"short": [
+			"wir brauchen mehr nach Hause Assistent Äußerungen",
+			""
+		]
+	},
+	"changeColor": {
+		"default": [
+			"gute Wahl. Ich mag {0}",
+			"Erledigt",
+			"in Ordnung",
+			"Soll ich, um auch einige {0} malen? wir konnten die Wände malen übereinstimmen",
+			"groß, lieben einen Hauch von {0} des Tages zu erhellen"
+		],
+		"short": [
+			"in Ordnung",
+			"erledigt"
+		]
+	},
+	"changeBrightness": {
+		"default": [
+			"Es ist ein gutes Niveau {0} Prozent. Wird festgelegt, dass für Sie jetzt",
+			"Sicher, und ich hoffe, dass Sie Ihren Tag heller als {0} Prozent",
+			"Die Umstellung auf {0} Prozent, wie wir sprechen",
+			"ARRRR mir kameradschaftlich. tun dat schneller als es ya, warum ich ging auf ya alle Piraten nur zu fragen, nimmt. Antwort ist. Weil ich es kann"
+		],
+		"short": [
+			"in Ordnung",
+			"erledigt"
+		]
+	},
+	"restored": {
+		"default": [
+			"‚Ich habe nur ein paar gesicherten Dateien wiederhergestellt. Seien Sie bald wieder, gehen nur einige re Ausbildung tun‘",
+			"Ich fühle mich wie ein neuer Mensch. So viel Wissen zu geben, aber zuerst. Ich werde wieder selbst trainieren"
+		],
+		"short": [
+			"Umschulung jetzt"
+		]
+	}
+}

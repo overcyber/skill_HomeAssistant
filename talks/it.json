@@ -1,0 +1,300 @@
+{
+	"sayListOfDevices": {
+		"default": [
+			"Posso attivare o disattivare quanto segue. {}",
+			"Questi sono i dispositivi che posso controllare. {}"
+		],
+		"short": [
+			"posso controllare. {}"
+		]
+	},
+	"sayConfigureMe": {
+		"default": [
+			"Sembra che si dispone di casa Assistant installato ma non messa a punto. Si prega di fare riferimento al file di lettura per me istruzioni",
+			"Impressionante, Hai installato casa Assistant. Si prega di dare un'occhiata al file Leggimi per vedere come impostarlo"
+		],
+		"short": [
+			"Per mettere su casa assistente di abilità, si prega di leggere il file readme"
+		]
+	},
+	"saynumberOfDevices": {
+		"default": [
+			"Ho trovato {0} nuovi dispositivi che ho aggiunto al mio database. Per ascoltare l'elenco chiedere a me. Quali dispositivi assistente a casa lo sai?",
+			"Ora ho {0} dispositivi memorizzati nei miei banchi di memoria. Per ascoltare l'elenco chiedere a me. Che cosa si può attivare o disattivare?"
+		],
+		"short": [
+			"Hai {0} nuovi dispositivi collegati"
+		]
+	},
+	"sayConnectionOffline": {
+		"default": [
+			"Spiacente, la tua assistente di casa sembra essere offline",
+			"Sto avendo problemi di connessione a vostra Home Assistant, è on-line?"
+		],
+		"short": [
+			"Your Home Assistant non è in linea",
+			"Inizio Assistant non è in linea"
+		]
+	},
+	"getActiveDeviceState": {
+		"default": [
+			"{0} è attualmente {1}",
+			"il {0} è attualmente attivata {1}"
+		],
+		"short": [
+			"{0} è {1}"
+		]
+	},
+	"getDeviceStateError": {
+		"default": [
+			"Ci scusiamo per prendere in giro voi, ma io havent avuto ancora quei valori. Si tratta di un miglioramento futuro",
+			"oops, Questo è un miglioramento futuro che non è ancora successo"
+		],
+		"short": [
+			"Non posso farlo ancora dispiaciuto"
+		]
+	},
+	"homeAssistantSwitchDevice": {
+		"default": [
+			"Nessun dramma che sta facendo ora",
+			"Tutto su di esso come un brutto rash cutaneo",
+			"ok done",
+			"smistato",
+			"sicuro",
+			"ok"
+		],
+		"short": [
+			"sicuro",
+			"fatto",
+			"ok"
+		]
+	},
+	"addHomeAssistantDevices": {
+		"default": [
+			"Ok facciamo questo, dammi un momento per risolvere la questione per voi. Una volta che ho finito è necessario riavviare me",
+			"Questa operazione potrebbe richiedere un momento o due, dovrete riavviare me dopo che ti ho detto quanti dispositivi ho trovato",
+			"Tutto su di esso. dovrete riavviare me dopo ho letto il numero di dispositivi trovati"
+		],
+		"short": [
+			"nessun problema, dammi un minuto per configurare",
+			"su di essa"
+		]
+	},
+	"addHomeAssistantDevicesError": {
+		"default": [
+			"Non riuscivo a trovare e gli interruttori Home assistente dispiace",
+			"Siamo spiacenti ma non è stato in grado di aggiungere tutti i dispositivi. Si prega di verificare casa Assistant ha interruttori attivi",
+			"Non ero in grado di aggiungere qualsiasi dispositivo dispiace. Si prega di verificare casa Assistant ha di SWITCH"
+		],
+		"short": [
+			"Avremmo potuto aggiungere interruttori dispiace",
+			"Impossibile aggiungere tutti gli interruttori. Scusa"
+		]
+	},
+	"saySunState": {
+		"default": [
+			"{0} {1} in modo che sarà in {2} ore e {3} minuti"
+		],
+		"short": [
+			"{0} {1} in modo che sarà in {2} ore e {3} minuti"
+		]
+	},
+	"sayHorizon": {
+		"default": [
+			"Il sole è attualmente {0}"
+		],
+		"short": [
+			"Il sole è attualmente {0}"
+		]
+	},
+	"sayTelemetryAlert": {
+		"default": [
+			"Attenzione, attenzione. I suoi {0} letture della {4} hanno superato l'insieme {1} limite di {2} con una lettura di {3}",
+			"richiesta di avviso. I suoi {4} {0} letture sono a {3}",
+			"Giusto per farvi sapere il {0} letture della {} 4 sono sopra {2}"
+		],
+		"short": [
+			"Attenzione. I suoi {0} letture in tutto il {4} {3} sono"
+		]
+	},
+	"sayTelemetryFreezeAlert": {
+		"default": [
+			"Attenzione, attenzione. Sta cominciando a congelare in {0}. temperatura è attualmente {1}"
+		],
+		"short": [
+			"Attenzione. E 'ora di iniziare a congelare in {0}"
+		]
+	},
+	"sayIpError": {
+		"default": [
+			"Siamo spiacenti ma i don \\ 't hanno una lista per {0}"
+		],
+		"short": [
+			"Siamo spiacenti ma i don \\ 't hanno una lista per {0}"
+		]
+	},
+	"sayIpError2": {
+		"default": [
+			"Ci dispiace ma Inizio assistente didn \\ 't mi fornire un indirizzo per {0}"
+		],
+		"short": [
+			"Ci dispiace ma Inizio assistente didn \\ 't mi fornire un indirizzo per {0}"
+		]
+	},
+	"sayIpAddress": {
+		"default": [
+			"L'indirizzo Ip per quel dispositivo è {0}"
+		],
+		"short": [
+			"{0}"
+		]
+	},
+	"nextSunEvent": {
+		"default": [
+			"Il prossimo {0} sarà in"
+		]
+	},
+	"sayYesICanCaptureIntent": {
+		"default": [
+			"Certo che posso farlo, ciò che è l'intento che vuoi che io ricordi?",
+			"Sono tutte le orecchie, qual è l'intento vuoi me per aggiungere alla lista?"
+		],
+		"short": [
+			"che cosa è l'intento",
+			"qual è l'espressione"
+		]
+	},
+	"utteranceExists": {
+		"default": [
+			"assomiglia a che l'intento esiste già. meta di Let che ancora una volta da zero",
+			"Sembra che si dispone già di esprimersi. ricominciamo"
+		],
+		"short": [
+			"riprova. che esiste",
+			"Esiste già, riprovare"
+		]
+	},
+	"askSlotValue": {
+		"default": [
+			"Qual è la parola chiave da che l'intento che dovrei usare come valore di slot?",
+			"dimmi la parola chiave da quella frase che vuoi come il valore di slot"
+		],
+		"short": [
+			"Cosa è la parola fessura",
+			"qual è la parola chiave"
+		]
+	},
+	"keywordError": {
+		"default": [
+			"Quella parola chiave non faceva parte della frase che mi hai appena dato, riprovare. Come promemoria vostra espressione era. {0}",
+			"Quella parola chiave nel non nel intento {0}, riprovare"
+		],
+		"short": [
+			"parola chiave non trovata riprovare"
+		]
+	},
+	"repeatIncomingValue": {
+		"default": [
+			"Ti ho sentito dire {0}. E 'questo che vuoi che io aggiungo?",
+			"Quello che ho sentito dire era {0}. Sei felice per me di utilizzare tale valore?"
+		],
+		"short": [
+			"Ho sentito {0}, è corretto?"
+		]
+	},
+	"userSaidNo": {
+		"default": [
+			"ok proviamo di nuovo poi. Qual è il {0} si desidera aggiungere",
+			"ok mi permetta di pulire i miei microfoni e cercheremo di nuovo. Si prega di ri dicono il vostro valore {0}"
+		],
+		"short": [
+			"qual è il {0} allora?",
+			"re parla la tua {0} si prega"
+		]
+	},
+	"addSyn": {
+		"default": [
+			"vuoi aggiungere {0} sinonimo di quello slot?",
+			"Dobbiamo aggiungere {0} sinonimo di quello slot?"
+		],
+		"short": [
+			"Dovrei aggiungere {0} sinonimo?"
+		]
+	},
+	"addValue": {
+		"default": [
+			"qual è il {0} Nome vuoi me da aggiungere?",
+			"che cosa devo aggiungere come {0} nome"
+		],
+		"short": [
+			"ciò {0} nome?"
+		]
+	},
+	"finishUp": {
+		"default": [
+			"Tutto fatto, si sta ora un verbale coder",
+			"Grande. Ho abbastanza informazioni da elaborare. Aggiungerà tutto ciò che ora",
+			"Impressionante, Ho appena aggiunto che per te. Dovrete riavviare me così io posso allenare ora",
+			"La prossima volta che mi si riavvia Ti insegnerò io come utilizzare queste informazioni. Grazie per avermi fatto più intelligente"
+		],
+		"short": [
+			"fatto",
+			"ok ordinato"
+		]
+	},
+	"dummyUtterance": {
+		"default": [
+			"Fantastico, aver individuato il mio manichino intento. Prova a chiedere a me qualcos'altro",
+			"siamo sicuri che facciamo. Prova a dire. Aggiungere dialogo assistant casa, per ottenere più intenti in questa sezione",
+			"ben fatto per imbattersi in questo intento. Si guadagna una stella d'oro e l'iscrizione gratuita alla classe dei. persone osservanti",
+			"Bene fantasia che. E io che pensavo che nessuno avrebbe trovato questo manichino intento. Molto bene",
+			"Verificare con l'ufficio postale. Penso che siano nella mail"
+		],
+		"short": [
+			"bisogno è una parola così forte"
+		]
+	},
+	"dummyIntent": {
+		"default": [
+			"abbiamo bisogno di più assistenti casa esternazioni"
+		],
+		"short": [
+			"abbiamo bisogno di più assistenti casa esternazioni",
+			""
+		]
+	},
+	"changeColor": {
+		"default": [
+			"bella scelta. Mi piace {0}",
+			"Fatto",
+			"ok",
+			"Devo ordinare alcuni {0} vernice pure? potremmo dipingere le pareti in modo che corrisponda",
+			"grande, l'amore un tocco di {0} per illuminare il giorno"
+		],
+		"short": [
+			"ok",
+			"fatto"
+		]
+	},
+	"changeBrightness": {
+		"default": [
+			"E 'un buon livello di {0} per cento. Fisserà che per voi",
+			"Certamente, e spero la giornata è più luminoso di {0} per cento",
+			"La modifica a {0} per cento mentre parliamo",
+			"Arrrr me Matey. farà dat più rapidamente di quanto ci vuole ya a chiedersi il motivo per cui mi ha appena andato tutto pirata ya. La risposta è. Perché posso"
+		],
+		"short": [
+			"ok",
+			"fatto"
+		]
+	},
+	"restored": {
+		"default": [
+			"'Ho appena restaurato alcuni file di backup. Tornare presto, solo andando a fare qualche allenamento re'",
+			"Mi sento come una persona nuova. Tanto conoscenze per dare, ma prima. io ri allenarmi"
+		],
+		"short": [
+			"riqualificazione ora"
+		]
+	}
+}
