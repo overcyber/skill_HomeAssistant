@@ -93,16 +93,16 @@
 			"name": "HomeAssistantAction",
 			"enabledByDefault": true,
 			"utterances": [
-				"drehen {on: => OnOrOff} die {Toilette Licht: => switchNames}",
-				"drehen Sie die {Toilette Licht: => switchNames} {on: => OnOrOff}",
-				"drehen {Schlafzimmerlicht: => switchNames} {off: => OnOrOff}",
-				"drehen {off: => OnOrOff} die {Schlafzimmerlicht: => switchNames}",
-				"Schalter {off: => OnOrOff} die {Schlafzimmerlicht: => switchNames}",
-				"Schalten Sie das {Schlafzimmerlicht: => switchNames} {off: => OnOrOff}",
-				"Schalter {Schlafzimmerlicht: => switchNames} {off: => OnOrOff} bitte",
-				"{Toggle: => OnOrOff} die {Küchenleuchten: => switchNames}",
-				"{Open: => OnOrOff} die {Garagentors: => switchNames}",
-				"{Schließen: => OnOrOff} die {Schlafzimmerfenster: => switchNames}"
+				"drehen {on:=>OnOrOff} die {Toilette Licht:=>switchNames}",
+				"drehen Sie die {Toilette Licht:=>switchNames} {on:=>OnOrOff}",
+				"drehen {Schlafzimmerlicht:=>switchNames} {off:=>OnOrOff}",
+				"drehen {off:=>OnOrOff} die {Schlafzimmerlicht:=>switchNames}",
+				"Schalter {off:=>OnOrOff} die {Schlafzimmerlicht:=>switchNames}",
+				"Schalten Sie das {Schlafzimmerlicht:=>switchNames} {off:=>OnOrOff}",
+				"Schalter {Schlafzimmerlicht:=>switchNames} {off:=>OnOrOff} bitte",
+				"{Toggle:=>OnOrOff} die {Küchenleuchten:=>switchNames}",
+				"{Open:=>OnOrOff} die {Garagentors:=>switchNames}",
+				"{Schließen:=>OnOrOff} die {Schlafzimmerfenster:=>switchNames}"
 			],
 			"slots": [
 				{
@@ -123,8 +123,8 @@
 			"name": "HomeAssistantState",
 			"enabledByDefault": true,
 			"utterances": [
-				"was ist der Zustand des {Küchenlicht: =>} Device",
-				"was ist der Zustand des {Toilette Licht: =>} Device"
+				"was ist der Zustand des {Küchenlicht:=>} Device",
+				"was ist der Zustand des {Toilette Licht:=>} Device"
 			],
 			"slots": [
 				{
@@ -139,14 +139,14 @@
 			"name": "HomeAssistantSun",
 			"enabledByDefault": true,
 			"utterances": [
-				"wenn ist {Sonnenaufgang: => Sunstate}",
-				"wenn der nächste {Sonnenuntergang: => Sunstate}",
-				"was {position: => Sunstate} ist die Sonne",
-				"Wann ist der nächste {Sonnenaufgang: => Sunstate}",
-				"Wann wird {Dämmerung: => Sunstate} sein nächstes",
-				"was Zeit ist {Sonnenaufgang: => Sunstate}",
-				"wie lange, bis {Sonnenuntergang: => Sunstate}",
-				"Wann ist {Sonnenuntergang: => Sunstate}"
+				"wenn ist {Sonnenaufgang:=>sunState}",
+				"wenn der nächste {Sonnenuntergang:=>sunState}",
+				"was {position:=>sunState} ist die Sonne",
+				"Wann ist der nächste {Sonnenaufgang:=>sunState}",
+				"Wann wird {Dämmerung:=>sunState} sein nächstes",
+				"was Zeit ist {Sonnenaufgang:=>sunState}",
+				"wie lange, bis {Sonnenuntergang:=>sunState}",
+				"Wann ist {Sonnenuntergang:=>sunState}"
 			],
 			"slots": [
 				{
@@ -174,10 +174,10 @@
 			"name": "GetIpOfDevice",
 			"enabledByDefault": true,
 			"utterances": [
-				"Was ist die IP-Adresse des {Schlafzimmerlicht: => switchNames}",
-				"Was ist die IP des {Garage Licht: => Schalter Namen}",
-				"sagen Sie mir, die IP-Adresse des {Garage Licht: => switchNames} bitte",
-				"sagen Sie mir die ip der {Küchenleuchten: => switchNames}"
+				"Was ist die IP-Adresse des {Schlafzimmerlicht:=>switchNames}",
+				"Was ist die IP des {Garage Licht:=>Schalter Namen}",
+				"sagen Sie mir, die IP-Adresse des {Garage Licht:=>switchNames} bitte",
+				"sagen Sie mir die ip der {Küchenleuchten:=>switchNames}"
 			],
 			"slots": [
 				{
@@ -217,19 +217,19 @@
 			"name": "LightControl",
 			"enabledByDefault": true,
 			"utterances": [
-				"stellen Sie die {Workbench light: => Lichtsteuerung} bis {rot: => AliceColor}",
-				"ändern die Farbe der {Workbench light: => Lichtsteuerung} zu {blue: => AliceColor}",
-				"dim {die Werkbank light: => Lichtsteuerung} bis {10 Prozent: => Dimmer}",
-				"legen Sie die Farbe des {Werkbank Licht: => Lichtsteuerung} bis {Almond: => AliceColor}",
-				"Ändern Sie die Helligkeit des {Werkbank Licht: => Lichtsteuerung} bis {10 Prozent: => Dimmer}",
-				"senken Sie das {Werkbank Licht: Lichtsteuerung} Ebene {10 Prozent: => Dimmer} bitte",
-				"eingestellten Helligkeitspegel der {Werkbank light: => Lichtsteuerung} bis {10 Prozent: => Dimmer}",
-				"erhöhen {Werkbank light: => Lichtsteuerung} von {30 Prozent: => Dimmer}",
-				"Werkbank erhöht {light: => Lichtsteuerung} {Helligkeit auf 70 Prozent: => Dimmer}",
-				"Werkbank verringert {light: => Lichtsteuerung} {Helligkeit auf 10 Prozent: => Dimmer}",
-				"machen die {Werkbank light: => Lichtsteuerung} {Cyan: => AliceColor}",
-				"Änderung {Werkbank light: => Lichtsteuerung} bis {grün: => AliceColor}",
-				"Set Farbe {Werkbank light: => Lichtsteuerung}, um einen {lila: => AliceColor}"
+				"stellen Sie die {Workbench light:=>LightControllers} bis {rot:=>AliceColor}",
+				"ändern die Farbe der {Workbench light:=>LightControllers} zu {blue:=>AliceColor}",
+				"dim {die Werkbank light:=>LightControllers} bis {10 Prozent:=>dimmer}",
+				"legen Sie die Farbe des {Werkbank Licht:=>LightControllers} bis {Almond:=>AliceColor}",
+				"Ändern Sie die Helligkeit des {Werkbank Licht:=>LightControllers} bis {10 Prozent:=>dimmer}",
+				"senken Sie das {Werkbank Licht: LightControllers} Ebene {10 Prozent:=>dimmer} bitte",
+				"eingestellten Helligkeitspegel der {Werkbank light:=>LightControllers} bis {10 Prozent:=>dimmer}",
+				"erhöhen {Werkbank light:=>LightControllers} von {30 Prozent:=>dimmer}",
+				"Werkbank erhöht {light:=>LightControllers} {Helligkeit auf 70 Prozent:=>dimmer}",
+				"Werkbank verringert {light:=>LightControllers} {Helligkeit auf 10 Prozent:=>dimmer}",
+				"machen die {Werkbank light:=>LightControllers} {Cyan:=>AliceColor}",
+				"Änderung {Werkbank light:=>LightControllers} bis {grün:=>AliceColor}",
+				"Set Farbe {Werkbank light:=>LightControllers}, um einen {lila:=>AliceColor}"
 			],
 			"slots": [
 				{

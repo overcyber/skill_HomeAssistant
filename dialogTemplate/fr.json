@@ -93,16 +93,16 @@
 			"name": "HomeAssistantAction",
 			"enabledByDefault": true,
 			"utterances": [
-				"tour {sur: => OnOrOff} {la lumière des toilettes: => switchNames}",
-				"tourner la lumière {toilettes: => switchNames} {sur: => OnOrOff}",
-				"tourner {lumière de la chambre: => switchNames} {off: => OnOrOff}",
-				"tour {off: => OnOrOff} {la lumière de la chambre: => switchNames}",
-				"interrupteur {off: => OnOrOff} {la lumière de la chambre: => switchNames}",
-				"changer la {lumière de la chambre: => switchNames} {off: => OnOrOff}",
-				"interrupteur {chambre lumineuse: => switchNames} {off: => OnOrOff} s'il vous plaît",
-				"{Bascule: => OnOrOff} {les feux de cuisine: => switchNames}",
-				"{Ouvert: => OnOrOff} {la porte de garage: => switchNames}",
-				"{Proche: => OnOrOff} {les fenêtres de la chambre: => switchNames}"
+				"tour {sur:=>OnOrOff} {la lumière des toilettes:=>switchNames}",
+				"tourner la lumière {toilettes:=>switchNames} {sur:=>OnOrOff}",
+				"tourner {lumière de la chambre:=>switchNames} {off:=>OnOrOff}",
+				"tour {off:=>OnOrOff} {la lumière de la chambre:=>switchNames}",
+				"interrupteur {off:=>OnOrOff} {la lumière de la chambre:=>switchNames}",
+				"changer la {lumière de la chambre:=>switchNames} {off:=>OnOrOff}",
+				"interrupteur {chambre lumineuse:=>switchNames} {off:=>OnOrOff} s'il vous plaît",
+				"{Bascule:=>OnOrOff} {les feux de cuisine:=>switchNames}",
+				"{Ouvert:=>OnOrOff} {la porte de garage:=>switchNames}",
+				"{Proche:=>OnOrOff} {les fenêtres de la chambre:=>switchNames}"
 			],
 			"slots": [
 				{
@@ -123,8 +123,8 @@
 			"name": "HomeAssistantState",
 			"enabledByDefault": true,
 			"utterances": [
-				"quel est l'état de la {lumière de la cuisine: => DeviceState}",
-				"quel est l'état de la {lumière toilettes: => DeviceState}"
+				"quel est l'état de la {lumière de la cuisine:=>DeviceState}",
+				"quel est l'état de la {lumière toilettes:=>DeviceState}"
 			],
 			"slots": [
 				{
@@ -139,14 +139,14 @@
 			"name": "HomeAssistantSun",
 			"enabledByDefault": true,
 			"utterances": [
-				"quand est {lever du soleil: => SunState}",
-				"quand est la prochaine {coucher du soleil: => SunState}",
-				"ce {position: => SunState} est le soleil",
-				"quand est la prochaine {lever du soleil: => SunState}",
-				"quand sera {crépuscule: => SunState} être le prochain",
-				"quelle heure est {lever du soleil: => SunState}",
-				"combien de temps jusqu'à ce que {coucher du soleil: => SunState}",
-				"quand est {coucher du soleil: => SunState}"
+				"quand est {lever du soleil:=>sunState}",
+				"quand est la prochaine {coucher du soleil:=>sunState}",
+				"ce {position:=>sunState} est le soleil",
+				"quand est la prochaine {lever du soleil:=>sunState}",
+				"quand sera {crépuscule:=>sunState} être le prochain",
+				"quelle heure est {lever du soleil:=>sunState}",
+				"combien de temps jusqu'à ce que {coucher du soleil:=>sunState}",
+				"quand est {coucher du soleil:=>sunState}"
 			],
 			"slots": [
 				{
@@ -174,10 +174,10 @@
 			"name": "GetIpOfDevice",
 			"enabledByDefault": true,
 			"utterances": [
-				"Quelle est l'adresse IP de la {chambre lumineuse: => switchNames}",
-				"ce qui est l'adresse IP du {lumière du garage: => Noms des switches}",
-				"dites-moi l'adresse IP du {lumière du garage: => switchNames} s'il vous plaît",
-				"dites-moi l'adresse IP du {lumières de cuisine: => switchNames}"
+				"Quelle est l'adresse IP de la {chambre lumineuse:=>switchNames}",
+				"ce qui est l'adresse IP du {lumière du garage:=>Noms des switches}",
+				"dites-moi l'adresse IP du {lumière du garage:=>switchNames} s'il vous plaît",
+				"dites-moi l'adresse IP du {lumières de cuisine:=>switchNames}"
 			],
 			"slots": [
 				{
@@ -217,19 +217,19 @@
 			"name": "LightControl",
 			"enabledByDefault": true,
 			"utterances": [
-				"régler la lumière {établi: => LightControllers} à {rouge: => AliceColor}",
-				"changer la couleur de la lumière {établi: => LightControllers} à {bleu: => AliceColor}",
-				"dim la lumière {établi: => LightControllers} à {10 pour cent: => gradateur}",
-				"définir la couleur de la lumière {établi: => LightControllers} à {Amande: => AliceColor}",
-				"Changer la luminosité de la lumière {établi: => LightControllers} {à 10 pour cent: => gradateur}",
-				"abaisser la {lumière établi: LightControllers} {niveaux à 10 pour cent: => variateur} s'il vous plaît",
-				"définir des niveaux de luminosité de la lumière {Etabli: => LightControllers} à {10 pour cent: => gradateur}",
-				"augmenter le {lumière établi: => LightControllers} par {30 pour cent: => gradateur}",
-				"augmenter {lumière établi: => LightControllers} luminosité {70 pour cent: => gradateur}",
-				"{diminuer la lumière du plan de travail: => LightControllers} {luminosité à 10 pour cent: => gradateur}",
-				"faire la lumière {établi: => LightControllers} {cyan: => AliceColor}",
-				"changement {lumière établi: => LightControllers} à {vert: => AliceColor}",
-				"ensemble Couleur de lumière {établi: => LightControllers} à {violet: => AliceColor}"
+				"régler la lumière {établi:=>LightControllers} à {rouge:=>AliceColor}",
+				"changer la couleur de la lumière {établi:=>LightControllers} à {bleu:=>AliceColor}",
+				"dim la lumière {établi:=>LightControllers} à {10 pour cent:=>dimmer}",
+				"définir la couleur de la lumière {établi:=>LightControllers} à {Amande:=>AliceColor}",
+				"Changer la luminosité de la lumière {établi:=>LightControllers} {à 10 pour cent:=>dimmer}",
+				"abaisser la {lumière établi: LightControllers} {niveaux à 10 pour cent:=>variateur} s'il vous plaît",
+				"définir des niveaux de luminosité de la lumière {Etabli:=>LightControllers} à {10 pour cent:=>dimmer}",
+				"augmenter le {lumière établi:=>LightControllers} par {30 pour cent:=>dimmer}",
+				"augmenter {lumière établi:=>LightControllers} luminosité {70 pour cent:=>dimmer}",
+				"{diminuer la lumière du plan de travail:=>LightControllers} {luminosité à 10 pour cent:=>dimmer}",
+				"faire la lumière {établi:=>LightControllers} {cyan:=>AliceColor}",
+				"changement {lumière établi:=>LightControllers} à {vert:=>AliceColor}",
+				"ensemble Couleur de lumière {établi:=>LightControllers} à {violet:=>AliceColor}"
 			],
 			"slots": [
 				{

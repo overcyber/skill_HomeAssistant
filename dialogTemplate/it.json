@@ -93,16 +93,16 @@
 			"name": "HomeAssistantAction",
 			"enabledByDefault": true,
 			"utterances": [
-				"girare {on: => OnOrOff} {la luce gabinetto: => switchNames}",
-				"accendere la luce {WC: => switchNames} {on: => OnOrOff}",
-				"girare {luce camera da letto: => switchNames} {off: => OnOrOff}",
-				"girare {off: => OnOrOff} {la luce camera da letto: => switchNames}",
-				"Interruttore {off: => OnOrOff} {la luce camera da letto: => switchNames}",
-				"accendere la luce {camera da letto: => switchNames} {off: => OnOrOff}",
-				"Interruttore {luce camera da letto: => switchNames} {off: => OnOrOff} prega",
-				"{Ginocchiera: => OnOrOff} {le luci della cucina: => switchNames}",
-				"{Open: => OnOrOff} {la porta del garage: => switchNames}",
-				"{Close: => OnOrOff} {le finestre delle camere: => switchNames}"
+				"girare {on:=>OnOrOff} {la luce gabinetto:=>switchNames}",
+				"accendere la luce {WC:=>switchNames} {on:=>OnOrOff}",
+				"girare {luce camera da letto:=>switchNames} {off:=>OnOrOff}",
+				"girare {off:=>OnOrOff} {la luce camera da letto:=>switchNames}",
+				"Interruttore {off:=>OnOrOff} {la luce camera da letto:=>switchNames}",
+				"accendere la luce {camera da letto:=>switchNames} {off:=>OnOrOff}",
+				"Interruttore {luce camera da letto:=>switchNames} {off:=>OnOrOff} prega",
+				"{Ginocchiera:=>OnOrOff} {le luci della cucina:=>switchNames}",
+				"{Open:=>OnOrOff} {la porta del garage:=>switchNames}",
+				"{Close:=>OnOrOff} {le finestre delle camere:=>switchNames}"
 			],
 			"slots": [
 				{
@@ -123,8 +123,8 @@
 			"name": "HomeAssistantState",
 			"enabledByDefault": true,
 			"utterances": [
-				"qual è lo stato della {luce della cucina: => DeviceState}",
-				"qual è lo stato della {luce WC: => DeviceState}"
+				"qual è lo stato della {luce della cucina:=>DeviceState}",
+				"qual è lo stato della {luce WC:=>DeviceState}"
 			],
 			"slots": [
 				{
@@ -139,14 +139,14 @@
 			"name": "HomeAssistantSun",
 			"enabledByDefault": true,
 			"utterances": [
-				"quando è {alba: => Sunstate}",
-				"quando è la prossima {tramonto: => Sunstate}",
-				"ciò {position: => Sunstate} è il sole",
-				"A quando il prossimo {alba: => Sunstate}",
-				"quando sarà {crepuscolo: => Sunstate} essere il prossimo",
-				"che ora è {alba: => Sunstate}",
-				"quanto tempo fino a {tramonto: => Sunstate}",
-				"quando c'è di {tramonto: => Sunstate}"
+				"quando è {alba:=>sunState}",
+				"quando è la prossima {tramonto:=>sunState}",
+				"ciò {position:=>sunState} è il sole",
+				"A quando il prossimo {alba:=>sunState}",
+				"quando sarà {crepuscolo:=>sunState} essere il prossimo",
+				"che ora è {alba:=>sunState}",
+				"quanto tempo fino a {tramonto:=>sunState}",
+				"quando c'è di {tramonto:=>sunState}"
 			],
 			"slots": [
 				{
@@ -174,10 +174,10 @@
 			"name": "GetIpOfDevice",
 			"enabledByDefault": true,
 			"utterances": [
-				"qual è l'indirizzo IP del {luce camera da letto: => switchNames}",
-				"qual è l'ip del {luce garage: => Interruttore Nomi}",
-				"dirmi l'indirizzo ip del {luce garage: => switchNames} prega",
-				"dimmi la ip delle {luci della cucina: => switchNames}"
+				"qual è l'indirizzo IP del {luce camera da letto:=>switchNames}",
+				"qual è l'ip del {luce garage:=>Interruttore Nomi}",
+				"dirmi l'indirizzo ip del {luce garage:=>switchNames} prega",
+				"dimmi la ip delle {luci della cucina:=>switchNames}"
 			],
 			"slots": [
 				{
@@ -217,19 +217,19 @@
 			"name": "LightControl",
 			"enabledByDefault": true,
 			"utterances": [
-				"impostare il {luce banco di lavoro: => LightControllers} a {Rosso: => AliceColor}",
-				"cambiare il colore della luce {Workbench: => LightControllers} a {blu: => AliceColor}",
-				"attenuare la luce {Workbench: => LightControllers} a {10 per cento: => dimmer}",
-				"impostare il colore della luce {Workbench: => LightControllers} a {Almond: => AliceColor}",
-				"Modificare la luminosità della luce {banco di lavoro: => LightControllers} a {il 10 per cento: => dimmer}",
-				"abbassare il {luce banco di lavoro: LightControllers} {livelli per il 10 per cento: => dimmer} prega",
-				"impostare i livelli di luminosità della luce {banco: => LightControllers} e {10 percento: => dimmer}",
-				"aumentare il {luce Workbench: => LightControllers} da {30 per cento: => dimmer}",
-				"aumentare {luce Workbench: => LightControllers} {luminosità al 70 per cento: => dimmer}",
-				"diminuire {luce Workbench: => LightControllers} {luminosità al 10 per cento: => dimmer}",
-				"rendere il {luce Workbench: => LightControllers} {ciano: => AliceColor}",
-				"cambiamento {luce Workbench: => LightControllers} a {verde: => AliceColor}",
-				"Set di colori di luce {Workbench: => LightControllers} {ad un viola: => AliceColor}"
+				"impostare il {luce banco di lavoro:=>LightControllers} a {Rosso:=>AliceColor}",
+				"cambiare il colore della luce {Workbench:=>LightControllers} a {blu:=>AliceColor}",
+				"attenuare la luce {Workbench:=>LightControllers} a {10 per cento:=>dimmer}",
+				"impostare il colore della luce {Workbench:=>LightControllers} a {Almond:=>AliceColor}",
+				"Modificare la luminosità della luce {banco di lavoro:=>LightControllers} a {il 10 per cento:=>dimmer}",
+				"abbassare il {luce banco di lavoro: LightControllers} {livelli per il 10 per cento:=>dimmer} prega",
+				"impostare i livelli di luminosità della luce {banco:=>LightControllers} e {10 percento:=>dimmer}",
+				"aumentare il {luce Workbench:=>LightControllers} da {30 per cento:=>dimmer}",
+				"aumentare {luce Workbench:=>LightControllers} {luminosità al 70 per cento:=>dimmer}",
+				"diminuire {luce Workbench:=>LightControllers} {luminosità al 10 per cento:=>dimmer}",
+				"rendere il {luce Workbench:=>LightControllers} {ciano:=>AliceColor}",
+				"cambiamento {luce Workbench:=>LightControllers} a {verde:=>AliceColor}",
+				"Set di colori di luce {Workbench:=>LightControllers} {ad un viola:=>AliceColor}"
 			],
 			"slots": [
 				{
