@@ -1,0 +1,256 @@
+{
+	"skill": "HomeAssistant",
+	"slotTypes": [
+		{
+			"name": "switchNames",
+			"matchingStrictness": null,
+			"automaticallyExtensible": true,
+			"useSynonyms": true,
+			"values": []
+		},
+		{
+			"name": "HomeAssistantOnOrOff",
+			"matchingStrictness": null,
+			"automaticallyExtensible": true,
+			"useSynonyms": true,
+			"values": [
+				{
+					"value": "on"
+				},
+				{
+					"value": "off"
+				},
+				{
+					"value": "open"
+				},
+				{
+					"value": "close"
+				},
+				{
+					"value": "toggle"
+				}
+			]
+		},
+		{
+			"name": "Sun",
+			"matchingStrictness": null,
+			"automaticallyExtensible": true,
+			"useSynonyms": true,
+			"values": [
+				{
+					"value": "sun"
+				},
+				{
+					"value": "position"
+				},
+				{
+					"value": "dawn"
+				},
+				{
+					"value": "rising"
+				},
+				{
+					"value": "setting"
+				},
+				{
+					"value": "dusk"
+				}
+			]
+		},
+		{
+			"name": "HAintent",
+			"matchingStrictness": null,
+			"automaticallyExtensible": true,
+			"useSynonyms": true,
+			"values": []
+		},
+		{
+			"name": "LightControllers",
+			"matchingStrictness": null,
+			"automaticallyExtensible": true,
+			"useSynonyms": true,
+			"values": [
+				{
+					"value": "workbench light",
+					"synonyms": []
+				}
+			]
+		}
+	],
+	"intents": [
+		{
+			"name": "AddHomeAssistantDevices",
+			"enabledByDefault": true,
+			"utterances": [
+				"Ajouter mes périphériques assistant à domicile",
+				"Configurer la compétence assistant à domicile",
+				"configurer des compétences assistant accueil",
+				"configuration compétences assistant à domicile",
+				"compétences assistant maison remise à zéro"
+			]
+		},
+		{
+			"name": "HomeAssistantAction",
+			"enabledByDefault": true,
+			"utterances": [
+				"tour {sur:=>OnOrOff} {la lumière des toilettes:=>switchNames}",
+				"tourner la lumière {toilettes:=>switchNames} {sur:=>OnOrOff}",
+				"tourner {lumière de la chambre:=>switchNames} {off:=>OnOrOff}",
+				"tour {off:=>OnOrOff} {la lumière de la chambre:=>switchNames}",
+				"interrupteur {off:=>OnOrOff} {la lumière de la chambre:=>switchNames}",
+				"changer la {lumière de la chambre:=>switchNames} {off:=>OnOrOff}",
+				"interrupteur {chambre lumineuse:=>switchNames} {off:=>OnOrOff} s'il vous plaît",
+				"{Bascule:=>OnOrOff} {les feux de cuisine:=>switchNames}",
+				"{Ouvert:=>OnOrOff} {la porte de garage:=>switchNames}",
+				"{Proche:=>OnOrOff} {les fenêtres de la chambre:=>switchNames}"
+			],
+			"slots": [
+				{
+					"name": "switchNames",
+					"required": false,
+					"type": "switchNames",
+					"missingQuestion": ""
+				},
+				{
+					"name": "OnOrOff",
+					"required": false,
+					"type": "HomeAssistantOnOrOff",
+					"missingQuestion": ""
+				}
+			]
+		},
+		{
+			"name": "HomeAssistantState",
+			"enabledByDefault": true,
+			"utterances": [
+				"quel est l'état de la {lumière de la cuisine:=>DeviceState}",
+				"quel est l'état de la {lumière toilettes:=>DeviceState}"
+			],
+			"slots": [
+				{
+					"name": "DeviceState",
+					"required": false,
+					"type": "switchNames",
+					"missingQuestion": ""
+				}
+			]
+		},
+		{
+			"name": "HomeAssistantSun",
+			"enabledByDefault": true,
+			"utterances": [
+				"quand est {lever du soleil:=>sunState}",
+				"quand est la prochaine {coucher du soleil:=>sunState}",
+				"ce {position:=>sunState} est le soleil",
+				"quand est la prochaine {lever du soleil:=>sunState}",
+				"quand sera {crépuscule:=>sunState} être le prochain",
+				"quelle heure est {lever du soleil:=>sunState}",
+				"combien de temps jusqu'à ce que {coucher du soleil:=>sunState}",
+				"quand est {coucher du soleil:=>sunState}"
+			],
+			"slots": [
+				{
+					"name": "sunState",
+					"required": false,
+					"type": "Sun",
+					"missingQuestion": ""
+				}
+			]
+		},
+		{
+			"name": "WhatHomeAssistantDevices",
+			"enabledByDefault": false,
+			"utterances": [
+				"Quels sont les appareils auxiliaires à domicile ne vous connaissez",
+				"quels dispositifs assistants à domicile peuvent vous contrôler",
+				"dites-moi ce que mes périphériques assistant à domicile sont s'il vous plaît",
+				"Que pouvez-vous activer ou désactiver",
+				"Que pouvez-vous activer et désactiver",
+				"ce que les commutateurs peuvent vous activer ou désactiver",
+				"quels sont les commutateurs que vous pouvez activer"
+			]
+		},
+		{
+			"name": "GetIpOfDevice",
+			"enabledByDefault": true,
+			"utterances": [
+				"Quelle est l'adresse IP de la {chambre lumineuse:=>switchNames}",
+				"ce qui est l'adresse IP du {lumière du garage:=>Noms des switches}",
+				"dites-moi l'adresse IP du {lumière du garage:=>switchNames} s'il vous plaît",
+				"dites-moi l'adresse IP du {lumières de cuisine:=>switchNames}"
+			],
+			"slots": [
+				{
+					"name": "switchNames",
+					"required": false,
+					"type": "switchNames",
+					"missingQuestion": ""
+				}
+			]
+		},
+		{
+			"name": "CreateIntent",
+			"enabledByDefault": true,
+			"utterances": [
+				"Ajouter une nouvelle intention Accueil adjoint",
+				"créer énoncé assistant à domicile",
+				"ajouter le dialogue assistant à domicile",
+				"mise à jour du dialogue assistant accueil"
+			]
+		},
+		{
+			"name": "UserIntent",
+			"enabledByDefault": true,
+			"utterances": [
+				"nous avons besoin de plus d'énoncés des assistants à domicile"
+			],
+			"slots": [
+				{
+					"name": "HAintent",
+					"required": false,
+					"type": "HAintent",
+					"missingQuestion": ""
+				}
+			]
+		},
+		{
+			"name": "LightControl",
+			"enabledByDefault": true,
+			"utterances": [
+				"régler la lumière {établi:=>LightControllers} à {rouge:=>AliceColor}",
+				"changer la couleur de la lumière {établi:=>LightControllers} à {bleu:=>AliceColor}",
+				"dim la lumière {établi:=>LightControllers} à {10 pour cent:=>dimmer}",
+				"définir la couleur de la lumière {établi:=>LightControllers} à {Amande:=>AliceColor}",
+				"Changer la luminosité de la lumière {établi:=>LightControllers} {à 10 pour cent:=>dimmer}",
+				"abaisser la {lumière établi: LightControllers} {niveaux à 10 pour cent:=>variateur} s'il vous plaît",
+				"définir des niveaux de luminosité de la lumière {Etabli:=>LightControllers} à {10 pour cent:=>dimmer}",
+				"augmenter le {lumière établi:=>LightControllers} par {30 pour cent:=>dimmer}",
+				"augmenter {lumière établi:=>LightControllers} luminosité {70 pour cent:=>dimmer}",
+				"{diminuer la lumière du plan de travail:=>LightControllers} {luminosité à 10 pour cent:=>dimmer}",
+				"faire la lumière {établi:=>LightControllers} {cyan:=>AliceColor}",
+				"changement {lumière établi:=>LightControllers} à {vert:=>AliceColor}",
+				"ensemble Couleur de lumière {établi:=>LightControllers} à {violet:=>AliceColor}"
+			],
+			"slots": [
+				{
+					"name": "LightControllers",
+					"required": true,
+					"type": "LightControllers",
+					"missingQuestion": ""
+				},
+				{
+					"name": "AliceColor",
+					"required": false,
+					"type": "Alice/Colors",
+					"missingQuestion": ""
+				},
+				{
+					"name": "dimmer",
+					"required": false,
+					"type": "snips/percentage",
+					"missingQuestion": ""
+				}
+			]
+		}
+	]
+}

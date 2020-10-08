@@ -1,0 +1,256 @@
+{
+	"skill": "HomeAssistant",
+	"slotTypes": [
+		{
+			"name": "switchNames",
+			"matchingStrictness": null,
+			"automaticallyExtensible": true,
+			"useSynonyms": true,
+			"values": []
+		},
+		{
+			"name": "HomeAssistantOnOrOff",
+			"matchingStrictness": null,
+			"automaticallyExtensible": true,
+			"useSynonyms": true,
+			"values": [
+				{
+					"value": "on"
+				},
+				{
+					"value": "off"
+				},
+				{
+					"value": "open"
+				},
+				{
+					"value": "close"
+				},
+				{
+					"value": "toggle"
+				}
+			]
+		},
+		{
+			"name": "Sun",
+			"matchingStrictness": null,
+			"automaticallyExtensible": true,
+			"useSynonyms": true,
+			"values": [
+				{
+					"value": "sun"
+				},
+				{
+					"value": "position"
+				},
+				{
+					"value": "dawn"
+				},
+				{
+					"value": "rising"
+				},
+				{
+					"value": "setting"
+				},
+				{
+					"value": "dusk"
+				}
+			]
+		},
+		{
+			"name": "HAintent",
+			"matchingStrictness": null,
+			"automaticallyExtensible": true,
+			"useSynonyms": true,
+			"values": []
+		},
+		{
+			"name": "LightControllers",
+			"matchingStrictness": null,
+			"automaticallyExtensible": true,
+			"useSynonyms": true,
+			"values": [
+				{
+					"value": "workbench light",
+					"synonyms": []
+				}
+			]
+		}
+	],
+	"intents": [
+		{
+			"name": "AddHomeAssistantDevices",
+			"enabledByDefault": true,
+			"utterances": [
+				"In meiner Heimat Assistent Geräte",
+				"Konfigurieren Sie den Heim Assistent Geschick",
+				"configure Hause Assistent Geschicklichkeit",
+				"Setup-Assistent nach Hause Geschicklichkeit",
+				"Reset nach Hause Assistent Geschicklichkeit"
+			]
+		},
+		{
+			"name": "HomeAssistantAction",
+			"enabledByDefault": true,
+			"utterances": [
+				"drehen {on:=>OnOrOff} die {Toilette Licht:=>switchNames}",
+				"drehen Sie die {Toilette Licht:=>switchNames} {on:=>OnOrOff}",
+				"drehen {Schlafzimmerlicht:=>switchNames} {off:=>OnOrOff}",
+				"drehen {off:=>OnOrOff} die {Schlafzimmerlicht:=>switchNames}",
+				"Schalter {off:=>OnOrOff} die {Schlafzimmerlicht:=>switchNames}",
+				"Schalten Sie das {Schlafzimmerlicht:=>switchNames} {off:=>OnOrOff}",
+				"Schalter {Schlafzimmerlicht:=>switchNames} {off:=>OnOrOff} bitte",
+				"{Toggle:=>OnOrOff} die {Küchenleuchten:=>switchNames}",
+				"{Open:=>OnOrOff} die {Garagentors:=>switchNames}",
+				"{Schließen:=>OnOrOff} die {Schlafzimmerfenster:=>switchNames}"
+			],
+			"slots": [
+				{
+					"name": "switchNames",
+					"required": false,
+					"type": "switchNames",
+					"missingQuestion": ""
+				},
+				{
+					"name": "OnOrOff",
+					"required": false,
+					"type": "HomeAssistantOnOrOff",
+					"missingQuestion": ""
+				}
+			]
+		},
+		{
+			"name": "HomeAssistantState",
+			"enabledByDefault": true,
+			"utterances": [
+				"was ist der Zustand des {Küchenlicht:=>} Device",
+				"was ist der Zustand des {Toilette Licht:=>} Device"
+			],
+			"slots": [
+				{
+					"name": "DeviceState",
+					"required": false,
+					"type": "switchNames",
+					"missingQuestion": ""
+				}
+			]
+		},
+		{
+			"name": "HomeAssistantSun",
+			"enabledByDefault": true,
+			"utterances": [
+				"wenn ist {Sonnenaufgang:=>sunState}",
+				"wenn der nächste {Sonnenuntergang:=>sunState}",
+				"was {position:=>sunState} ist die Sonne",
+				"Wann ist der nächste {Sonnenaufgang:=>sunState}",
+				"Wann wird {Dämmerung:=>sunState} sein nächstes",
+				"was Zeit ist {Sonnenaufgang:=>sunState}",
+				"wie lange, bis {Sonnenuntergang:=>sunState}",
+				"Wann ist {Sonnenuntergang:=>sunState}"
+			],
+			"slots": [
+				{
+					"name": "sunState",
+					"required": false,
+					"type": "Sun",
+					"missingQuestion": ""
+				}
+			]
+		},
+		{
+			"name": "WhatHomeAssistantDevices",
+			"enabledByDefault": false,
+			"utterances": [
+				"Was zu Hause Assistent Geräte wissen Sie,",
+				"was zu Hause Assistent Geräte können Sie steuern,",
+				"sag mir, was meine Heimat Assistent Geräte sind bitte",
+				"was können Sie ein- oder ausschalten",
+				"was können Sie ein- und ausschalten",
+				"was die Schalter können Sie ein- oder ausschalten",
+				"was die Schalter sind, können Sie einschalten"
+			]
+		},
+		{
+			"name": "GetIpOfDevice",
+			"enabledByDefault": true,
+			"utterances": [
+				"Was ist die IP-Adresse des {Schlafzimmerlicht:=>switchNames}",
+				"Was ist die IP des {Garage Licht:=>Schalter Namen}",
+				"sagen Sie mir, die IP-Adresse des {Garage Licht:=>switchNames} bitte",
+				"sagen Sie mir die ip der {Küchenleuchten:=>switchNames}"
+			],
+			"slots": [
+				{
+					"name": "switchNames",
+					"required": false,
+					"type": "switchNames",
+					"missingQuestion": ""
+				}
+			]
+		},
+		{
+			"name": "CreateIntent",
+			"enabledByDefault": true,
+			"utterances": [
+				"Fügen Sie eine neue Start-Assistenten Absicht",
+				"Heim Assistent Äußerung erstellen",
+				"mehr nach Hause Assistenten Dialog hinzufügen",
+				"Update nach Hause assistant dialogue"
+			]
+		},
+		{
+			"name": "UserIntent",
+			"enabledByDefault": true,
+			"utterances": [
+				"wir brauchen mehr nach Hause Assistent Äußerungen"
+			],
+			"slots": [
+				{
+					"name": "HAintent",
+					"required": false,
+					"type": "HAintent",
+					"missingQuestion": ""
+				}
+			]
+		},
+		{
+			"name": "LightControl",
+			"enabledByDefault": true,
+			"utterances": [
+				"stellen Sie die {Workbench light:=>LightControllers} bis {rot:=>AliceColor}",
+				"ändern die Farbe der {Workbench light:=>LightControllers} zu {blue:=>AliceColor}",
+				"dim {die Werkbank light:=>LightControllers} bis {10 Prozent:=>dimmer}",
+				"legen Sie die Farbe des {Werkbank Licht:=>LightControllers} bis {Almond:=>AliceColor}",
+				"Ändern Sie die Helligkeit des {Werkbank Licht:=>LightControllers} bis {10 Prozent:=>dimmer}",
+				"senken Sie das {Werkbank Licht: LightControllers} Ebene {10 Prozent:=>dimmer} bitte",
+				"eingestellten Helligkeitspegel der {Werkbank light:=>LightControllers} bis {10 Prozent:=>dimmer}",
+				"erhöhen {Werkbank light:=>LightControllers} von {30 Prozent:=>dimmer}",
+				"Werkbank erhöht {light:=>LightControllers} {Helligkeit auf 70 Prozent:=>dimmer}",
+				"Werkbank verringert {light:=>LightControllers} {Helligkeit auf 10 Prozent:=>dimmer}",
+				"machen die {Werkbank light:=>LightControllers} {Cyan:=>AliceColor}",
+				"Änderung {Werkbank light:=>LightControllers} bis {grün:=>AliceColor}",
+				"Set Farbe {Werkbank light:=>LightControllers}, um einen {lila:=>AliceColor}"
+			],
+			"slots": [
+				{
+					"name": "LightControllers",
+					"required": true,
+					"type": "LightControllers",
+					"missingQuestion": ""
+				},
+				{
+					"name": "AliceColor",
+					"required": false,
+					"type": "Alice/Colors",
+					"missingQuestion": ""
+				},
+				{
+					"name": "dimmer",
+					"required": false,
+					"type": "snips/percentage",
+					"missingQuestion": ""
+				}
+			]
+		}
+	]
+}
