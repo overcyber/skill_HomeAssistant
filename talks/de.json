@@ -152,6 +152,9 @@
 	"nextSunEvent": {
 		"default": [
 			"Die nächste {0} wird auf"
+		],
+		"short": [
+			""
 		]
 	},
 	"sayYesICanCaptureIntent": {
