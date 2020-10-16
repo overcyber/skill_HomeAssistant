@@ -1,5 +1,7 @@
 import threading
 import json
+from typing import Dict, List
+
 import requests
 import subprocess
 
@@ -831,8 +833,8 @@ class HomeAssistant(AliceSkill):
 		if self.getConfig('debugMode'):
 			self.logDebug('!-!-!-!-!-!-!-! **ADDING THE SLOTVALUE** !-!-!-!-!-!-!-!')
 
-		lightValueList = list()
-		switchValueList = list()
+		lightValueList: List[Dict[str, str]] = list()
+		switchValueList: List[Dict[str, str]] = list()
 		for friendlyName, uid in friendlylist:
 			dictValue = {'value': friendlyName}
 			row = self.deviceGroup(uID=uid)
