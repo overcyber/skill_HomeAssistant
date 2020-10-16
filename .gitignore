@@ -109,4 +109,8 @@ venv.bak/
 .vscode/
 
 config.json
+
+scenarioNodes/node_modules/
+package-lock.json
+/__init__.py
 /Backup
