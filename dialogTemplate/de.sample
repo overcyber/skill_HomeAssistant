@@ -1,0 +1,10 @@
+{
+    "AddHomeAssistantDevices": [],
+    "HomeAssistantAction": [],
+    "HomeAssistantState": [],
+    "HomeAssistantSun": [],
+    "GetIpOfDevice": [],
+    "CreateIntent": [],
+    "UserIntent": [],
+    "LightControl": []
+}
