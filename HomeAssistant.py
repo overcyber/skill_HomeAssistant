@@ -603,7 +603,7 @@ class HomeAssistant(AliceSkill):
 		# returns SensorId for all listings of a friendlyName
 		return self.databaseFetch(
 			tableName='HomeAssistant',
-			query='SELECT entityName, uID FROM :__table__ WHERE friendlyName = :identity and deviceGroup == "switch" ',
+			query='SELECT entityName, uID FROM :__table__ WHERE friendlyName = :identity and deviceGroup == "switch" or friendlyName = :identity and deviceGroup == "group" ',
 			method='one',
 			values={
 				'identity': identity
@@ -835,11 +835,12 @@ class HomeAssistant(AliceSkill):
 
 		lightValueList: List[Dict[str, str]] = list()
 		switchValueList: List[Dict[str, str]] = list()
+
 		for friendlyName, uid in friendlylist:
 			dictValue = {'value': friendlyName}
 			row = self.deviceGroup(uID=uid)
 
-			if 'switch' in row['deviceGroup'] and not dictValue in switchValueList:
+			if 'switch' or 'group' in row['deviceGroup'] and not dictValue in switchValueList:
 				switchValueList.append(dictValue)
 				if self.getConfig('debugMode'):
 					self.logDebug('')
