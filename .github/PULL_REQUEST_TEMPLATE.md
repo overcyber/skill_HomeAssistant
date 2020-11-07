@@ -1,10 +1,8 @@
-<!-- Please don't delete this template!! -->
 
-<!-- (Change "[ ]" to "[x]" to check a box) -->
 
 ##### Summary
 
-<!-- Please summarize your Pull Request -->
+
 
 ##### What kind of change does this PR introduce?
 
