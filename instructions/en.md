@@ -171,33 +171,14 @@ and here <a href="https://www.home-assistant.io/integrations/binary_sensor/"targ
 
 <span style="color: #ff6600;">Accessing sensor data that Alice captures but currently does nothing with</span>
 
-So lets say for example you know Alice is capturing your outside motion sensor and storing that data in the 
-HomeAsistant database. You want to use that value in your own skill to do something.
+So let's say for example you know Alice is capturing your outside motion sensor and storing that data in the 
+HomeAsistant database and you want to use that value in your own skill to do something.
 
-You can access that value by importing the HomeAssistant Class, 
-create a instance of HomeAssistant and use the get.SensorValues() function:
+All current device states that Alice knows about (from HA skill) are stored in the database. However 
+every 5 minutes they are also written to a file in the skills directory called "currentStateOfDevices.json"
 
-<span style="color: #00ff00;">Example:</span>
-
-```
-
-from skills.HomeAssistant import HomeAssistant
-
-   @staticmethod
-
-    def getHomeAssitantSensorData():
-	
-		haClass = HomeAssistant.HomeAssistant()
-	
-		knownSensors = haClass.getSensorValues
-	
-		if knownSensors:
-	
-			return knownSensors
-
-```
-
-You'll then want to iterate over the result to find the sensor data you're specifically after.
+This will allow you to grab the state of all devices via your own skill or perhaps via the "file in" node of Node red, 
+without the need to extract it from the database directly.
 
 <span style="color: #ff0000;">Creating Extra intents on the fly</span> #####
 
