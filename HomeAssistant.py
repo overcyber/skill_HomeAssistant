@@ -691,6 +691,17 @@ class HomeAssistant(AliceSkill):
 			method='all'
 		)
 
+	# noinspection SqlResolve
+	def getAllDeviceValues(self):
+		"""
+		Returns a list of known device states
+		"""
+
+		return self.databaseFetch(
+			tableName='HomeAssistant',
+			query='SELECT * FROM :__table__',
+			method='all'
+		)
 
 	# noinspection SqlResolve
 	def rowOfRequestedDevice(self, friendlyName: str):
@@ -921,7 +932,7 @@ class HomeAssistant(AliceSkill):
 	def sendToTelemetry(self, newPayload: dict, siteId: str):
 		# create location if it doesnt exist and get the id
 		locationID = self.LocationManager.getLocation(location=siteId).id
-
+		deviceValueDictionary = dict()
 		for item in newPayload.items():
 			teleType: str = item[0]
 			teleType = teleType.upper()
@@ -958,16 +969,29 @@ class HomeAssistant(AliceSkill):
 				elif 'WIND_STRENGTH' in teleType:
 					self.TelemetryManager.storeData(ttype=TelemetryType.WIND_STRENGTH, value=item[1], service=self.name, siteId=siteId, locationID=locationID)
 				elif 'WIND_ANGLE' in teleType:
-					self.TelemetryManager.storeData(ttype=TelemetryType.WIND_ANGLE, value=item[1], service=self.name, siteId=siteId, locationID=locationID)
+					self.TelemetryManager.storeData(ttype=TelemetryType.WIND_ANGLE, value=item[1], service=self.name,
+													siteId=siteId, locationID=locationID)
 				elif 'GUST_STREGTH' in teleType:
-					self.TelemetryManager.storeData(ttype=TelemetryType.GUST_STRENGTH, value=item[1], service=self.name, siteId=siteId, locationID=locationID)
+					self.TelemetryManager.storeData(ttype=TelemetryType.GUST_STRENGTH, value=item[1], service=self.name,
+													siteId=siteId, locationID=locationID)
 				elif 'GUST_ANGLE' in teleType:
-					self.TelemetryManager.storeData(ttype=TelemetryType.GUST_ANGLE, value=item[1], service=self.name, siteId=siteId, locationID=locationID)
+					self.TelemetryManager.storeData(ttype=TelemetryType.GUST_ANGLE, value=item[1], service=self.name,
+													siteId=siteId, locationID=locationID)
 				elif 'Illuminance' in teleType:
-					self.TelemetryManager.storeData(ttype=TelemetryType.LIGHT, value=item[1], service=self.name, siteId=siteId, locationID=locationID)
+					self.TelemetryManager.storeData(ttype=TelemetryType.LIGHT, value=item[1], service=self.name,
+													siteId=siteId, locationID=locationID)
 
 			except Exception as e:
 				self.logInfo(f'An exception occured adding {teleType} reading: {e}')
+			finally:
+				# Store all device states in a file for access from external sources like Node red
+				deviceCurrentValue = self.getAllDeviceValues()
+
+				for listedDevice in deviceCurrentValue:
+					deviceValueDictionary.update({listedDevice['entityName']: listedDevice['deviceState']})
+
+		self.getResource('currentStateOfDevices.json').write_text(
+			json.dumps(deviceValueDictionary, ensure_ascii=False, indent=4))
 
 
 	################### AUTO BACKUP AND RESTORE CODE ########################
