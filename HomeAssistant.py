@@ -56,6 +56,7 @@ class HomeAssistant(AliceSkill):
 		self._telemetryLogs = list()
 		self._IpList = list()
 		self._configureActivated = False
+		self._jsonDict = dict()
 
 		# IntentCapture Vars
 		self._captureUtterances = ""
@@ -431,9 +432,13 @@ class HomeAssistant(AliceSkill):
 			self._action = 'turn_off'
 
 		header, url = self.retrieveAuthHeader(urlPath='services/switch/', urlAction=self._action)
+		# Update json file on click via Myhome
+		self._jsonDict = json.loads(str(self.getResource('currentStateOfDevices.json').read_text()))
+		self._jsonDict[entityRow['entityName']] = customValue
 
 		jsonData = {"entity_id": entityRow['entityName']}
 		requests.request("POST", url=url, headers=header, json=jsonData)
+		self.updateDeviceStateJSONfile()
 
 
 	##################### POST AND GET HANDLERS ##############################
@@ -471,6 +476,7 @@ class HomeAssistant(AliceSkill):
 			device = self.DeviceManager.getDeviceByUID(uid=uid)
 			try:
 				if name in device.name:
+					self._jsonDict[entityName] = state
 					if self.getConfig('debugMode'):
 						self.logDebug(f'')
 						self.logDebug(f'I\'m updating the "{entityName}" with state "{state}" ')
@@ -487,7 +493,7 @@ class HomeAssistant(AliceSkill):
 
 		for sensorName, entity, state, haClass, uid in self._dbSensorList:
 			# Locate sensor in the database and update it's value
-
+			self._jsonDict[sensorName] = state
 			if self.getConfig('debugMode'):
 				self.logDebug(f'')
 				self.logDebug(f'I\'m now updating the SENSOR "{sensorName}" with the state of "{state}" ')
@@ -500,7 +506,7 @@ class HomeAssistant(AliceSkill):
 				self.DeviceManager.onDeviceHeartbeat(uid=uid)
 		# reset object value to prevent multiple items each update
 		self._dbSensorList = list()
-
+		self.updateDeviceStateJSONfile()
 
 	def retrieveAuthHeader(self, urlPath: str, urlAction: str = None):
 		"""
@@ -691,7 +697,9 @@ class HomeAssistant(AliceSkill):
 			method='all'
 		)
 
+
 	# noinspection SqlResolve
+	# not used - temporarily redundant ?
 	def getAllDeviceValues(self):
 		"""
 		Returns a list of known device states
@@ -785,7 +793,8 @@ class HomeAssistant(AliceSkill):
 
 		self.updateDBStates()
 		sensorDBrows = self.getSensorValues()
-
+		# update the deviceState json file
+		self.updateDeviceStateJSONfile()
 		debugtrigger = 0
 		for sensor in sensorDBrows:
 			if not 'unavailable' in sensor['deviceState'] and not 'unknown' in sensor['deviceState']:
@@ -932,7 +941,7 @@ class HomeAssistant(AliceSkill):
 	def sendToTelemetry(self, newPayload: dict, siteId: str):
 		# create location if it doesnt exist and get the id
 		locationID = self.LocationManager.getLocation(location=siteId).id
-		deviceValueDictionary = dict()
+
 		for item in newPayload.items():
 			teleType: str = item[0]
 			teleType = teleType.upper()
@@ -983,15 +992,16 @@ class HomeAssistant(AliceSkill):
 
 			except Exception as e:
 				self.logInfo(f'An exception occured adding {teleType} reading: {e}')
-			finally:
-				# Store all device states in a file for access from external sources like Node red
-				deviceCurrentValue = self.getAllDeviceValues()
 
-				for listedDevice in deviceCurrentValue:
-					deviceValueDictionary.update({listedDevice['entityName']: listedDevice['deviceState']})
 
+	# Write Device states to the Json file in the skill folder
+	def updateDeviceStateJSONfile(self):
+		if self.getConfig('debugMode'):
+			self.logDebug(f'')
+			self.logDebug(f'Updated currentStateOfDevices.json')
+			self.logDebug(f'')
 		self.getResource('currentStateOfDevices.json').write_text(
-			json.dumps(deviceValueDictionary, ensure_ascii=False, indent=4))
+			json.dumps(self._jsonDict, ensure_ascii=False, indent=4))
 
 
 	################### AUTO BACKUP AND RESTORE CODE ########################
