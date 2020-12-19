@@ -46,6 +46,7 @@ class HomeAssistant(AliceSkill):
 		self._deviceState = ""
 		self._entireSensorlist = list()
 		self._switchAndGroupList = list()
+		self._inputBoolean = list()
 		self._dbSensorList = list()
 		self._grouplist = list()
 		self._lightList = list()
@@ -160,21 +161,29 @@ class HomeAssistant(AliceSkill):
 
 				if 'Gas' in item["attributes"]["friendly_name"]:
 					sensorType: str = 'gas'
-					dbSensorList = [self.getFriendyNameAttributes(item=item), item["entity_id"], item["state"], sensorType, item["entity_id"]]
+					dbSensorList = [self.getFriendyNameAttributes(item=item), item["entity_id"], item["state"],
+									sensorType, item["entity_id"]]
 
 					self._dbSensorList.append(dbSensorList)
 
 				if 'light.' in item["entity_id"]:
-					lightList = [item["entity_id"], self.getFriendyNameAttributes(item=item), item['state'], item["entity_id"]]
+					lightList = [item["entity_id"], self.getFriendyNameAttributes(item=item), item['state'],
+								 item["entity_id"]]
 
 					self._lightList.append(lightList)
 
-				if 'switch.' in item["entity_id"] or 'group.' in item["entity_id"] and item["entity_id"] not in self._switchAndGroupList:
+				if 'switch.' in item["entity_id"] or 'group.' in item["entity_id"] or 'input_boolean' in item[
+					"entity_id"] and item["entity_id"] not in self._switchAndGroupList:
 					if 'switch.' in item["entity_id"]:
-						switchList = [item["entity_id"], self.getFriendyNameAttributes(item=item), item['state'], item["entity_id"]]
+						switchList = [item["entity_id"], self.getFriendyNameAttributes(item=item), item['state'],
+									  item["entity_id"]]
 
 						self._switchAndGroupList.append(switchList)
+					if 'input_boolean' in item["entity_id"]:
+						booleanList = [item["entity_id"], self.getFriendyNameAttributes(item=item), item['state'],
+									   item["entity_id"]]
 
+						self._inputBoolean.append(booleanList)
 					else:
 						groupList = [item["entity_id"], self.getFriendyNameAttributes(item=item), item["entity_id"]]
 
@@ -208,7 +217,7 @@ class HomeAssistant(AliceSkill):
 		header, url = self.retrieveAuthHeader(urlPath='states')
 		data = get(url, headers=header).json()
 
-		if self.getConfig('debugMode'):
+		if self.getConfig('viewJsonPayload'):
 			self.logDebug(f'!-!-!-!-!-!-!-! **INCOMING JSON PAYLOAD** !-!-!-!-!-!-!-!')
 			self.logDebug(f'')
 			self.logDebug(f'{data}')
@@ -257,8 +266,11 @@ class HomeAssistant(AliceSkill):
 		elif 'off' in session.slotRawValue('OnOrOff') or 'close' in session.slotRawValue('OnOrOff'):
 			self._action = "turn_off"
 
+		deviceGroup = ""
+
 		if session.slotValue('switchNames'):
 			deviceName = session.slotRawValue('switchNames')
+
 			if self.getConfig('debugMode'):
 				self.logDebug(f'!-!-!-!-!-!-!-! **SWITCHING EVENT** !-!-!-!-!-!-!-!')
 				self.logDebug(f'')
@@ -271,10 +283,13 @@ class HomeAssistant(AliceSkill):
 					self.logDebug(f' a error occured switching the switch : {e}')
 
 			tempSwitchId = self.getDatabaseEntityID(identity=deviceName)
+
 			self._entity = tempSwitchId['entityName']
+			tempRow = self.deviceGroup(uID=self._entity)
+			deviceGroup = tempRow["deviceGroup"]
 
 		if self._action and self._entity:
-			header, url = self.retrieveAuthHeader(urlPath='services/switch/', urlAction=self._action)
+			header, url = self.retrieveAuthHeader(urlPath=f'services/{deviceGroup}/', urlAction=self._action)
 
 			jsonData = {"entity_id": self._entity}
 			requests.request("POST", url=url, headers=header, json=jsonData)
@@ -431,7 +446,9 @@ class HomeAssistant(AliceSkill):
 		elif "off" in customValue or "close" in customValue:
 			self._action = 'turn_off'
 
-		header, url = self.retrieveAuthHeader(urlPath='services/switch/', urlAction=self._action)
+		tempRow = self.deviceGroup(uID=uid)
+		deviceGroup = tempRow['deviceGroup']
+		header, url = self.retrieveAuthHeader(urlPath=f'services/{deviceGroup}/', urlAction=self._action)
 		# Update json file on click via Myhome
 		self._jsonDict = json.loads(str(self.getResource('currentStateOfDevices.json').read_text()))
 		self._jsonDict[entityRow['entityName']] = customValue
@@ -485,11 +502,31 @@ class HomeAssistant(AliceSkill):
 					if not 'unavailable' in state and not 'NULL' in state:
 						self.DeviceManager.onDeviceHeartbeat(uid=uid)
 			except Exception as e:
-				self.logWarning(f'A device is missing. Please try asking Alice to "Configure home assistant skill" : {e}')
+				self.logWarning(
+					f'A device is missing. Please try asking Alice to "Configure home assistant skill" : {e}')
+				return
+
+		# add updated states of input booleans to device.customValue
+		for entityName, name, state, uid in self._inputBoolean:
+			device = self.DeviceManager.getDeviceByUID(uid=uid)
+			try:
+				if name in device.name:
+					self._jsonDict[entityName] = state
+					if self.getConfig('debugMode'):
+						self.logDebug(f'')
+						self.logDebug(f'I\'m updating the "{entityName}" with state "{state}" ')
+
+					device.setCustomValue('state', state)
+					if not 'unavailable' in state and not 'NULL' in state:
+						self.DeviceManager.onDeviceHeartbeat(uid=uid)
+			except Exception as e:
+				self.logWarning(
+					f'A device is missing. Please try asking Alice to "Configure home assistant skill" : {e}')
 				return
 
 		# reset object value to prevent multiple items each update
 		self._switchAndGroupList = list()
+		self._inputBoolean = list()
 
 		for sensorName, entity, state, haClass, uid in self._dbSensorList:
 			# Locate sensor in the database and update it's value
@@ -860,7 +897,7 @@ class HomeAssistant(AliceSkill):
 			dictValue = {'value': friendlyName}
 			row = self.deviceGroup(uID=uid)
 
-			if 'switch' or 'group' in row['deviceGroup'] and not dictValue in switchValueList:
+			if 'switch' or 'group' or 'input_boolean' in row['deviceGroup'] and not dictValue in switchValueList:
 				switchValueList.append(dictValue)
 				if self.getConfig('debugMode'):
 					self.logDebug('')
@@ -898,6 +935,8 @@ class HomeAssistant(AliceSkill):
 
 		duplicateList = dict((x[0], x) for x in self._switchAndGroupList).values()
 
+		duplicateInputBooleanList = dict((x[0], x) for x in self._inputBoolean).values()
+
 		duplicateGroupList = dict((x[0], x) for x in self._grouplist).values()
 
 		duplicateSensorList = dict((x[0], x) for x in self._dbSensorList).values()
@@ -914,23 +953,33 @@ class HomeAssistant(AliceSkill):
 
 		# process Switch entities
 		for lightItem in duplicateLightList:
-			self.addEntityToHADatabase(entityName=lightItem[0], friendlyName=lightItem[1], deviceState=lightItem[2], uID=lightItem[3], deviceGroup='light')
+			self.addEntityToHADatabase(entityName=lightItem[0], friendlyName=lightItem[1], deviceState=lightItem[2],
+									   uID=lightItem[3], deviceGroup='light')
 
 			self.AddToAliceDB(uID=lightItem[3], friendlyName=lightItem[1], deviceType=lightTypeID)
 
 		# process Switch entities
 		for switchItem in duplicateList:
-			self.addEntityToHADatabase(entityName=switchItem[0], friendlyName=switchItem[1], deviceState=switchItem[2], uID=switchItem[3], deviceGroup='switch')
+			self.addEntityToHADatabase(entityName=switchItem[0], friendlyName=switchItem[1], deviceState=switchItem[2],
+									   uID=switchItem[3], deviceGroup='switch')
 
 			self.AddToAliceDB(uID=switchItem[3], friendlyName=switchItem[1], deviceType=switchTypeID)
+
+		# process inputBoolean entities
+		for booleanItem in duplicateInputBooleanList:
+			self.addEntityToHADatabase(entityName=booleanItem[0], friendlyName=booleanItem[1],
+									   deviceState=booleanItem[2], uID=booleanItem[3], deviceGroup='input_boolean')
+
+			self.AddToAliceDB(uID=booleanItem[3], friendlyName=booleanItem[1], deviceType=switchTypeID)
 
 		# Process Sensor entities
 		for sensorItem in duplicateSensorList:
 			if 'temperature' in sensorItem[3]:
+				self.AddToAliceDB(uID=sensorItem[4], friendlyName=sensorItem[0],
+								  deviceType=self.DeviceManager.getDeviceTypeByName("HaSensor").id)
 
-				self.AddToAliceDB(uID=sensorItem[4], friendlyName=sensorItem[0], deviceType=self.DeviceManager.getDeviceTypeByName("HaSensor").id)
-
-			self.addEntityToHADatabase(entityName=sensorItem[1], friendlyName=sensorItem[0], uID=sensorItem[4], deviceState=sensorItem[2], deviceGroup='sensor', deviceType=sensorItem[3])
+			self.addEntityToHADatabase(entityName=sensorItem[1], friendlyName=sensorItem[0], uID=sensorItem[4],
+									   deviceState=sensorItem[2], deviceGroup='sensor', deviceType=sensorItem[3])
 
 		# Process Sensor entities
 		for deviceDetails in self._IpList:
