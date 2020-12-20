@@ -593,23 +593,29 @@ class HomeAssistant(AliceSkill):
 
 	def addEntityToHADatabase(self, entityName: str, friendlyName: str, deviceState: str = None, ipAddress: str = None, deviceGroup: str = None, deviceType: str = None, uID: str = None):
 		"""
-		Adds device details to the Home Assistant databse
+		Adds device details to the Home Assistant database
 		"""
+		existingDeviceList = list()
+		dbRows = self.getAllDeviceValues()
 
-		# noinspection SqlResolve
-		self.databaseInsert(
-			tableName='HomeAssistant',
-			query='INSERT INTO :__table__ (entityName, friendlyName, deviceState, ipAddress, deviceGroup, deviceType, uID) VALUES (:entityName, :friendlyName, :deviceState, :ipAddress, :deviceGroup, :deviceType, :uID)',
-			values={
-				'entityName'  : entityName,
-				'friendlyName': friendlyName,
-				'deviceState' : deviceState,
-				'ipAddress'   : ipAddress,
-				'deviceGroup' : deviceGroup,
-				'deviceType'  : deviceType,
-				'uID'         : uID
-			}
-		)
+		for row in dbRows:
+			existingDeviceList.append(row['entityName'])
+
+		if not entityName in existingDeviceList:
+			# noinspection SqlResolve
+			self.databaseInsert(
+				tableName='HomeAssistant',
+				query='INSERT INTO :__table__ (entityName, friendlyName, deviceState, ipAddress, deviceGroup, deviceType, uID) VALUES (:entityName, :friendlyName, :deviceState, :ipAddress, :deviceGroup, :deviceType, :uID)',
+				values={
+					'entityName'  : entityName,
+					'friendlyName': friendlyName,
+					'deviceState' : deviceState,
+					'ipAddress'   : ipAddress,
+					'deviceGroup' : deviceGroup,
+					'deviceType'  : deviceType,
+					'uID'         : uID
+				}
+			)
 
 
 	# noinspection SqlResolve
@@ -898,14 +904,16 @@ class HomeAssistant(AliceSkill):
 			row = self.deviceGroup(uID=uid)
 
 			if 'switch' or 'group' or 'input_boolean' in row['deviceGroup'] and not dictValue in switchValueList:
-				switchValueList.append(dictValue)
+				if not dictValue in switchValueList:
+					switchValueList.append(dictValue)
 				if self.getConfig('debugMode'):
 					self.logDebug('')
 					self.logDebug(f'{friendlyName}, of type "{row["deviceGroup"]}"')
 					self.logDebug('')
 
 			if 'light' in row['deviceGroup'] and not dictValue in lightValueList:
-				lightValueList.append(dictValue)
+				if not dictValue in lightValueList:
+					lightValueList.append(dictValue)
 				if self.getConfig('debugMode'):
 					self.logDebug('')
 					self.logDebug(f'{friendlyName}, of type "{row["deviceGroup"]}"')
