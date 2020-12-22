@@ -220,7 +220,9 @@ class HomeAssistant(AliceSkill):
 		if self.getConfig('viewJsonPayload'):
 			self.logDebug(f'!-!-!-!-!-!-!-! **INCOMING JSON PAYLOAD** !-!-!-!-!-!-!-!')
 			self.logDebug(f'')
-			self.logDebug(f'{data}')
+			self.logDebug(f'Incomming payload has been written to  HomeAssistant/jsonPayload.json ')
+			file = self.getResource('jsonPayload.json')
+			file.write_text(json.dumps(data, ensure_ascii=False, indent=4))
 			self.logDebug(f'')
 			self.logDebug(f'')
 
