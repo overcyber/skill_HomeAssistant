@@ -19,8 +19,8 @@
 	},
 	"saynumberOfDevices": {
 		"default": [
-			"I found {0} new devices which i've added to my Database. To hear the list ask me. What home assistant devices do you know ? ",
-			"I now have {0} devices stored in my memory banks. To hear the list ask me. What can you turn on or off ? "
+			"I've just added {0} new devices, so now I have {1} Home Assistant devices in my Database. To hear the list ask me. What home assistant devices do you know ?",
+			"Just added {0} new devices so I now have {1} devices stored in my memory banks. To hear the list ask me. What can you turn on or off ?"
 		],
 		"short": [
 			"You have {0} new devices connected"
