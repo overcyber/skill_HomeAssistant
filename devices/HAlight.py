@@ -27,17 +27,14 @@ class HAlight(Device):
 
 	def getDeviceIcon(self) -> Path:
 
-		if not self.connected:
-			return Path(f'{self._imagePath}Lights/HaLight_Offline.png')
-
 		if self.getParam(key='state') == "on":
-			return Path(f'{self._imagePath}Lights/HaLight_On.png')
+			return Path(f'{self._imagePath}Lights/HAlightOn.png')
 
 		elif self.getParam(key='state') == "off":
-			return Path(f'{self._imagePath}Lights/HaLight_Off.png')
+			return Path(f'{self._imagePath}Lights/HAlightOff.png')
 
 		else:
-			return Path(f'{self._imagePath}Lights/HAlight.png')
+			return Path(f'{self._imagePath}Lights/HAlightOff.png')
 
 
 	def onUIClick(self):

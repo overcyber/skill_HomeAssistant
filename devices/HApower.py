@@ -5,12 +5,12 @@ from pathlib import Path
 from core.device.model.DeviceAbility import DeviceAbility
 
 
-class HAsensor(Device):
+class HApower(Device):
 
 	@classmethod
 	def getDeviceTypeDefinition(cls) -> dict:
 		return {
-			'deviceTypeName'        : 'HAsensor',
+			'deviceTypeName'        : 'HApower',
 			'perLocationLimit'      : 0,
 			'totalDeviceLimit'      : 0,
 			'allowLocationLinks'    : False,
@@ -26,13 +26,17 @@ class HAsensor(Device):
 
 
 	def getDeviceIcon(self) -> Path:
-		if self.connected:
-			return Path(f'{self._imagePath}HAsensor.png')
+		powerType = self.uid.split('_')[-1]
 
-		return Path(f'{self._imagePath}HAsensor.png')
+		if powerType == "current":
+			return Path(f'{self._imagePath}GeneralSensors/HAcurrent.png')
+		elif powerType == "voltage":
+			return Path(f'{self._imagePath}GeneralSensors/HAvoltage.png')
+		else:
+			return Path(f'{self._imagePath}HAsensorOffline.png')
 
 
 	def onUIClick(self):
 
-		answer = f"The {self.displayName} currently reads {self.getParam('state')}"
+		answer = f"The {self.displayName} has a reading of {self.getParam('state')}"
 		self.MqttManager.say(text=answer)

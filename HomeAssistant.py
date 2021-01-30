@@ -174,6 +174,7 @@ class HomeAssistant(AliceSkill):
 				self._IpList.append(iplist)
 
 			if 'device_class' in item["attributes"]:
+
 				dbSensorList = [self.getFriendyNameAttributes(item=item), item["entity_id"], item["state"],
 								item["attributes"]["device_class"], item["entity_id"]]
 
@@ -492,7 +493,7 @@ class HomeAssistant(AliceSkill):
 			self.logWarning(f'Device name not available, HA may not of supplied that devices IP')
 
 
-	# devices was asked to switch from Myhome
+	# device was asked to switch from Myhome
 	def deviceClicked(self, uid: str):
 		if not self.checkConnection():
 			return
@@ -627,7 +628,7 @@ class HomeAssistant(AliceSkill):
 
 			if self.determineAliceSensorOrHaSensor(uid=uid):
 				device = self.DeviceManager.getDevice(uid=uid)
-				self._jsonDict[sensorName] = state
+				self._jsonDict[entity] = state
 
 				if self.getConfig('debugMode'):
 					self.logDebug(f'')
@@ -636,12 +637,14 @@ class HomeAssistant(AliceSkill):
 					self.logDebug(f'The entity ID is "{entity}"')
 
 				device.updateParams(key='state', value=state)
+				device.updateParams(key="HAdeviceType", value=haClass)
 
 				self.updateDeviceValueInDB(key=entity, value=state, name=sensorName)
 
 				if not 'unavailable' in state and state and device:
 					self.DeviceManager.onDeviceHeartbeat(uid=uid)
 			else:
+				self._jsonDict[entity] = state
 				self.updateDeviceValueInDB(key=entity, value=state, name=sensorName)
 
 		# reset object value to prevent multiple items each update
@@ -1105,14 +1108,28 @@ class HomeAssistant(AliceSkill):
 
 		# Process Sensor entities
 		for sensorDevice in finalSensorList:
+			# if sensor not already in alice database and
+			#
 			if not sensorDevice[4] in self._haDevicesFromAliceDatabase and str(
 					sensorDevice[3]).lower() in self._telemtryItems:
+				self._newDeviceCount += 1
 				self.AddToAliceDB(uID=sensorDevice[4],
 								  friendlyName=sensorDevice[0],
 								  deviceType="HAtelemetrySensor")
+				device = self.DeviceManager.getDevice(sensorDevice[4])
+				device.updateParams(key="HAdeviceType", value=str(sensorDevice[3]).lower())
+
+			classList = ["motion", 'power']
+			if not sensorDevice[4] in self._haDevicesFromAliceDatabase and str(
+					sensorDevice[3]).lower() in classList:
+				self._newDeviceCount += 1
+				self.AddToAliceDB(uID=sensorDevice[4],
+								  friendlyName=sensorDevice[0],
+								  deviceType=f"HA{str(sensorDevice[3]).lower()}")
+				device = self.DeviceManager.getDevice(sensorDevice[4])
+				device.updateParams(key="HAdeviceType", value=str(sensorDevice[3]).lower())
 
 			if not sensorDevice[1] in self._entitiesFromHaDatabase:
-				self._newDeviceCount += 1
 				self.addEntityToHADatabase(entityName=sensorDevice[1],
 										   friendlyName=sensorDevice[0],
 										   uID=sensorDevice[4],
@@ -1191,57 +1208,14 @@ class HomeAssistant(AliceSkill):
 				self.logDebug(f'The {teleType} reading for the {device.displayName} is {item[1]} ')
 
 			try:
-				if 'TEMPERATURE' in teleType:
-					self.TelemetryManager.storeData(ttype=TelemetryType.TEMPERATURE, value=item[1], service=self.name,
-													deviceId=deviceId, locationId=locationID)
-				elif 'HUMIDITY' in teleType:
-					self.TelemetryManager.storeData(ttype=TelemetryType.HUMIDITY, value=item[1], service=self.name,
-													deviceId=deviceId, locationId=locationID)
-				elif 'DEWPOINT' in teleType:
-					self.TelemetryManager.storeData(ttype=TelemetryType.DEWPOINT, value=item[1], service=self.name,
-													deviceId=deviceId, locationId=locationID)
-				elif 'PRESSURE' in teleType:
-					self.TelemetryManager.storeData(ttype=TelemetryType.PRESSURE, value=item[1], service=self.name,
-													deviceId=deviceId, locationId=locationID)
-				elif 'GAS' in teleType:
-					self.TelemetryManager.storeData(ttype=TelemetryType.GAS, value=item[1], service=self.name,
-													deviceId=deviceId, locationId=locationID)
-				elif 'AIR_QUALITY' in teleType:
-					self.TelemetryManager.storeData(ttype=TelemetryType.AIR_QUALITY, value=item[1], service=self.name,
-													deviceId=deviceId, locationId=locationID)
-				elif 'UV_INDEX' in teleType:
-					self.TelemetryManager.storeData(ttype=TelemetryType.UV_INDEX, value=item[1], service=self.name,
-													deviceId=deviceId, locationId=locationID)
-				elif 'NOISE' in teleType:
-					self.TelemetryManager.storeData(ttype=TelemetryType.NOISE, value=item[1], service=self.name,
-													deviceId=deviceId, locationId=locationID)
-				elif 'CO2' in teleType:
-					self.TelemetryManager.storeData(ttype=TelemetryType.CO2, value=item[1], service=self.name,
-													deviceId=deviceId, locationId=locationID)
-				elif 'RAIN' in teleType:
-					self.TelemetryManager.storeData(ttype=TelemetryType.RAIN, value=item[1], service=self.name,
-													deviceId=deviceId, locationId=locationID)
-				elif 'SUM_RAIN_1' in teleType:
-					self.TelemetryManager.storeData(ttype=TelemetryType.SUM_RAIN_1, value=item[1], service=self.name,
-													deviceId=deviceId, locationId=locationID)
-				elif 'SUM_RAIN_24' in teleType:
-					self.TelemetryManager.storeData(ttype=TelemetryType.SUM_RAIN_24, value=item[1], service=self.name,
-													deviceId=deviceId, locationId=locationID)
-				elif 'WIND_STRENGTH' in teleType:
-					self.TelemetryManager.storeData(ttype=TelemetryType.WIND_STRENGTH, value=item[1], service=self.name,
-													deviceId=deviceId, locationId=locationID)
-				elif 'WIND_ANGLE' in teleType:
-					self.TelemetryManager.storeData(ttype=TelemetryType.WIND_ANGLE, value=item[1], service=self.name,
-													deviceId=deviceId, locationId=locationID)
-				elif 'GUST_STREGTH' in teleType:
-					self.TelemetryManager.storeData(ttype=TelemetryType.GUST_STRENGTH, value=item[1], service=self.name,
-													deviceId=deviceId, locationId=locationID)
-				elif 'GUST_ANGLE' in teleType:
-					self.TelemetryManager.storeData(ttype=TelemetryType.GUST_ANGLE, value=item[1], service=self.name,
-													deviceId=deviceId, locationId=locationID)
-				elif 'Illuminance' in teleType:
-					self.TelemetryManager.storeData(ttype=TelemetryType.LIGHT, value=item[1], service=self.name,
-													deviceId=deviceId, locationId=locationID)
+				if TelemetryType[teleType]:
+					self.TelemetryManager.storeData(ttype=TelemetryType[teleType],
+													value=item[1],
+													service=self.name,
+													deviceId=deviceId,
+													locationId=locationID)
+				else:
+					continue
 
 			except Exception as e:
 				self.logInfo(f'An exception occured adding {teleType} reading: {e}')

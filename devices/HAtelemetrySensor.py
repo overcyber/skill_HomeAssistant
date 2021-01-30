@@ -77,11 +77,11 @@ class HAtelemetrySensor(Device):
 
 
 	def getDeviceIcon(self) -> Path:
-		teleType = self.uid.split('_')[-1]
+		haDeviceType: str = self.getParam("HAdeviceType")
 
-		if teleType == 'temperature':
+		if haDeviceType.lower() == 'temperature':
 			# todo This doesnt work Larry still has to implement it
-			# CHange thermometer icon depending on temperatures from telemetry
+			# Change thermometer icon depending on temperatures from telemetry
 			if self._highAlert and self.connected and self.getParam("state") >= self._highAlert[0]:
 				return Path(f'{self._imagePath}Temperature/hot1.png')
 
@@ -92,17 +92,20 @@ class HAtelemetrySensor(Device):
 				return Path(f'{self._imagePath}Temperature/normal1.png')
 
 
-		elif teleType == 'humidity':
+		elif haDeviceType.lower() == 'humidity':
 			return Path(f'{self._imagePath}HAhumidity.png')
 
-		elif teleType == 'gas':
+		elif haDeviceType.lower() == 'gas':
 			return Path(f'{self._imagePath}HAco2.png')
 
-		elif teleType == 'pressure':
+		elif haDeviceType.lower() == 'pressure':
 			return Path(f'{self._imagePath}HApressure.png')
 
-		elif teleType == 'dewpoint':
+		elif haDeviceType.lower() == 'dewpoint':
 			return Path(f'{self._imagePath}HAdewpoint.png')
+
+		elif haDeviceType.lower() == 'illuminance':
+			return Path(f'{self._imagePath}HAlightSensorOn.png')
 
 		else:
 			return Path(f'{self._imagePath}HAsensor.png')

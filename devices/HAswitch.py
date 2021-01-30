@@ -44,16 +44,12 @@ class HAswitch(Device):
 
 		if self.getParam(key='state') == "on":
 			self.updateParams(key='state', value='off')
-			self.getDeviceIcon()
 			self.updateStateOfDevice()
-
 			return
 
 		if self.getParam(key='state') == "off":
 			self.updateParams(key='state', value='on')
-
 			self.updateStateOfDevice()
-			self.getDeviceIcon()
 			return
 
 		if self.getParam(key='state') == "unavailable":
@@ -63,4 +59,3 @@ class HAswitch(Device):
 	def updateStateOfDevice(self):
 		haClass = HomeAssistant()
 		haClass.deviceClicked(uid=self.uid)
-		self.publishDevice()
