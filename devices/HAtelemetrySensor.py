@@ -21,11 +21,10 @@ class HAtelemetrySensor(Device):
 
 
 	def __init__(self, data: sqlite3.Row):
+		super().__init__(data)
 		self._imagePath = f'{self.Commons.rootDir()}/skills/HomeAssistant/devices/img/'
 		self._highAlert = list()
 		self._lowAlert = list()
-
-		super().__init__(data)
 
 		self._telemetryUnits = {
 			'airQuality'   : '%',
@@ -77,7 +76,7 @@ class HAtelemetrySensor(Device):
 
 
 	def getDeviceIcon(self) -> Path:
-		haDeviceType: str = self.getParam("HAdeviceType")
+		haDeviceType: str = self.getParam("haDeviceType")
 
 		if haDeviceType.lower() == 'temperature':
 			# todo This doesnt work Larry still has to implement it
