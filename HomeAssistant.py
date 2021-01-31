@@ -13,7 +13,7 @@ from core.dialog.model.DialogSession import DialogSession
 from core.util.Decorators import IntentHandler
 from requests import get
 from core.util.model.TelemetryType import TelemetryType
-from core.device.model.Device import Device
+
 
 
 class HomeAssistant(AliceSkill):
@@ -54,27 +54,6 @@ class HomeAssistant(AliceSkill):
 		self._sunState = tuple
 		self._triggerType = ""
 		self._telemetryLogs = list()
-		self._telemtryItems = ['temperature',
-							   'pressure',
-							   'humidity',
-							   'light',
-							   'gas',
-							   'airquality',
-							   'uvindex',
-							   'noise',
-							   'co2',
-							   'rain',
-							   'sumrain1',
-							   'sumrain24',
-							   'windstrength',
-							   'windangle',
-							   'guststrength',
-							   'gustangle',
-							   'dewpoint',
-							   'battery',
-							   'voltage',
-							   'contact',
-							   'linkquality']
 		self._IpList = list()
 		self._configureActivated = False
 		self._jsonDict = dict()
@@ -101,6 +80,13 @@ class HomeAssistant(AliceSkill):
 
 	@IntentHandler('LightControl')
 	def controlLightEntities(self, session: DialogSession):
+		"""
+		Light entities in HA can turn on and off lights, control colour etc. This method,
+		allows for that to happen.
+
+		:param session: the incoming dialogSession
+		:return:
+		"""
 		eventKey = ""
 		eventValue = ""
 		textResponce = ""
@@ -146,6 +132,12 @@ class HomeAssistant(AliceSkill):
 
 
 	def skipAddingSelectedDevice(self, item) -> bool:
+		""" if a user has added { aliceIgnore : true} as a attribute in Home Assistant
+		Then Alice will ignore that device and not add it to the database
+
+		:param item: The current dictionary item from the incomming HA payload
+		:return True: if AliceIgnore is set to true
+		"""
 
 		try:
 			aliceIgnore: str = item['attributes']['AliceIgnore']
@@ -163,6 +155,16 @@ class HomeAssistant(AliceSkill):
 
 	# Used for picking required data from incoming JSON (used in two places)
 	def sortThroughJson(self, item):
+		"""
+		A main method for The Skill. This method reads the incoming JSON data from HA.
+		It then goes through each line and based on below code will add devices to a specific list
+		depending on the type of device. These list will later get iterated over and added to Alice and
+		 HA databases. Or if it's 5 minute update then this method gets used also to recreate the lists
+		  with updated info and then iterated over those lists to update device states
+
+		:param item: The current dictionary item from incoming payload
+		:return: nothing , but updates entity lists
+		"""
 
 		if not self.skipAddingSelectedDevice(item):
 
@@ -238,6 +240,11 @@ class HomeAssistant(AliceSkill):
 
 	@staticmethod
 	def getFriendyNameAttributes(item):
+		"""
+		Extract the friendly name from incoming JSON payload
+		:param item: The current dictionary item from incoming payload
+		:return: The devices friendly name
+		"""
 		friendlyName: str = item["attributes"]["friendly_name"]
 		friendlyName = friendlyName.lower()
 		return friendlyName
@@ -245,6 +252,13 @@ class HomeAssistant(AliceSkill):
 
 	@IntentHandler('AddHomeAssistantDevices')
 	def addHomeAssistantDevices(self, session: DialogSession):
+		"""
+		User has requested to add home assistant devices so this method GETS the payload using
+		RestAPI , then sends that data off for sorting through, then sends the results off for adding to the
+		appropriate databases. Then it triggers adding synonyms to the dialog file. then gives the user feedback
+		:param session: DialogSession
+		:return:
+		"""
 		if not self.checkConnection():  # If not connected to HA, say so and stop
 			self.sayConnectionOffline(session)
 			return
@@ -255,11 +269,6 @@ class HomeAssistant(AliceSkill):
 			siteId=session.siteId
 		)
 
-		# delete and existing values in DB so we can update with a fresh list of Devices
-		# for device in self.DeviceManager.getDevicesBySkill(skillName=self.name, connectedOnly=False):
-		#	self.DeviceManager.deleteDevice(deviceId=device.id)
-
-		# self.deleteHomeAssistantDBEntries()
 
 		# connect to the HomeAssistant API/States to retrieve entity names and values
 		header, url = self.retrieveAuthHeader(urlPath='states')
@@ -356,6 +365,7 @@ class HomeAssistant(AliceSkill):
 	# Get the state of a single devices
 	@IntentHandler('HomeAssistantState')
 	def getDeviceState(self, session: DialogSession):
+		""" return the current state of the requested device"""
 		if not self.checkConnection():
 			self.sayConnectionOffline(session)
 			return
@@ -374,7 +384,6 @@ class HomeAssistant(AliceSkill):
 			# add the devices state to the database
 			device = self.DeviceManager.getDevice(uid=entityID)
 			device.updateParams(key='state', value=entityState)
-			device.publishDevice()
 
 			self.endDialog(
 				sessionId=session.sessionId,
@@ -458,6 +467,7 @@ class HomeAssistant(AliceSkill):
 
 	@IntentHandler('GetIpOfDevice')
 	def returnIpAddressOfDevice(self, session: DialogSession):
+		"""Tells user the ip address of the requested device (if known)"""
 		tableRowvalue = session.slotRawValue('switchNames')
 		requestedRow = self.rowOfRequestedDevice(friendlyName=tableRowvalue)
 		ipOfDevice: str = ''
@@ -495,6 +505,13 @@ class HomeAssistant(AliceSkill):
 
 	# device was asked to switch from Myhome
 	def deviceClicked(self, uid: str):
+		"""
+		User has clicked a device in My home. The uid of the device is used to grab the current
+		state of the device and turn on or off the device as required. Last of all it also writes
+		The device states to the file found in the skill folder.
+		:param uid: The uid of the device
+		:return:
+		"""
 		if not self.checkConnection():
 			return
 		device = self.DeviceManager.getDevice(uid=uid)
@@ -519,6 +536,10 @@ class HomeAssistant(AliceSkill):
 	##################### POST AND GET HANDLERS ##############################
 
 	def getUpdatedDetails(self):
+		"""
+		Request the data from HA's restApi
+		:return:
+		"""
 		header, url = self.retrieveAuthHeader(urlPath='states')
 		data = get(url, headers=header).json()
 
@@ -534,7 +555,7 @@ class HomeAssistant(AliceSkill):
 
 
 	def updateDBStates(self):
-		"""Update entity states from a 5 min timer"""
+		"""Update entity states from a 5 min timer and on boot"""
 
 		# use getUpdatedDetails method to reduce complexity of updateDBStates and keep sonar quiet
 		self.getUpdatedDetails()
@@ -573,7 +594,7 @@ class HomeAssistant(AliceSkill):
 
 
 	def updateDeviceState(self, deviceList: list, listName: str):
-		# add updated states of switches to devices.customValue
+		""" add updated states of switches, and input booleans to devices.params"""
 		for entityName, name, state, uid in deviceList:
 
 			if not self.cleanUpHaDbIfDeviceDeletedFromAlice(uid=uid):
@@ -623,6 +644,11 @@ class HomeAssistant(AliceSkill):
 
 
 	def updateSensors(self):
+		"""
+		Update the values of sensors in both HA and alice database. update the JSON file for states
+		in the main skill directory
+		:return:
+		"""
 		for sensorName, entity, state, haClass, uid in self._dbSensorList:
 			# Locate sensor in the database and update it's value
 
@@ -637,7 +663,7 @@ class HomeAssistant(AliceSkill):
 					self.logDebug(f'The entity ID is "{entity}"')
 
 				device.updateParams(key='state', value=state)
-				device.updateParams(key="HAdeviceType", value=haClass)
+				device.updateParams(key="haDeviceType", value=haClass)
 
 				self.updateDeviceValueInDB(key=entity, value=state, name=sensorName)
 
@@ -660,7 +686,7 @@ class HomeAssistant(AliceSkill):
 		:param urlPath - sets the path such as services/Switch/
 		:param urlAction - sets the action such as turn_on or turn_off
 
-		EG: useage - header, url = self.requestAuthHeader(urlPath='services/switch/', urlAction=self._action)
+		EG: usage - header, url = self.requestAuthHeader(urlPath='services/switch/', urlAction=self._action)
 		:returns: header and url
 		"""
 
@@ -675,6 +701,10 @@ class HomeAssistant(AliceSkill):
 
 
 	def checkConnection(self) -> bool:
+		"""
+		Used several times through out the code to check if there is a active connection to Home Assistant
+		:return: True if connected
+		"""
 		try:
 			header, url = self.retrieveAuthHeader(' ', ' ')
 			response = get(self.getConfig('haIpAddress'), headers=header)
@@ -692,10 +722,17 @@ class HomeAssistant(AliceSkill):
 	########################## DATABASE ITEMS ####################################
 
 	def AddToAliceDB(self, uID: str, friendlyName: str, deviceType: str):
-		"""Add devices to Alices Devicemanager-Devices table.
-		create and store devices in a StoreRoom"""
+		"""
+		Add devices to Alices Devicemanager-Devices table. Create and store devices in a StoreRoom
+		:param uID: The devices uid (in HA's case this is same as entity name)
+		:param friendlyName: The devices friendly name
+		:param deviceType: The devices Type EG: HAswitch, HAlight etc
+		:return:
+		"""
+		# If there is no "storeroom" location, create it and store devices there.
 		if not self.LocationManager.getLocationByName('StoreRoom'):
 			self.LocationManager.addNewLocation({"name": "StoreRoom", "parentLocation": 0})
+		# register the device type if not already existing
 		if not self.DeviceManager.getDeviceType(skillName=self.name, deviceType=deviceType):
 			self.DeviceManager.registerDeviceType(skillName=self.name, data={"deviceTypeName": deviceType})
 
@@ -720,9 +757,17 @@ class HomeAssistant(AliceSkill):
 
 
 	def addEntityToHADatabase(self, entityName: str, friendlyName: str, deviceState: str = None, ipAddress: str = None,
-							  deviceGroup: str = None, deviceType: str = None, uID: str = None):
+							  triggerType: str = None, deviceType: str = None, uID: str = None):
 		"""
-		Adds devices details to the Home Assistant database
+		Adds devices to HA's Database
+		:param entityName: The entities name (generated by HA)
+		:param friendlyName: The devices friendly name (generated by HA)
+		:param deviceState: The current state of the device
+		:param ipAddress: The ip address of the device
+		:param triggerType: Which group it belongs to ? EG: switch, sensor, input_boolean etc
+		:param deviceType: The device type : temperature, motion, illuimnance, humidity etc
+		:param uID:
+		:return:
 		"""
 		existingDeviceList = self.getAllHaEntityNames()
 
@@ -736,7 +781,7 @@ class HomeAssistant(AliceSkill):
 					'friendlyName': friendlyName,
 					'deviceState' : deviceState,
 					'ipAddress'   : ipAddress,
-					'triggerType' : deviceGroup,
+					'triggerType' : triggerType,
 					'deviceType'  : deviceType,
 					'uID'         : uID
 				}
@@ -761,32 +806,16 @@ class HomeAssistant(AliceSkill):
 	def getDatabaseEntityID(self, identity):
 		"""
 		Get entityName and uID where friendlyName is the same as requested
+		:param identity: The friendly name being looked up
+		:return: Returns the entityId and uID of the device
 		"""
 
-		# returns SensorId for all listings of a friendlyName
 		return self.databaseFetch(
 			tableName='HomeAssistant',
 			query='SELECT entityName, uID FROM :__table__ WHERE friendlyName = :identity and triggerType == "switch" or friendlyName = :identity and triggerType == "group" ',
 			method='one',
 			values={
 				'identity': identity
-			}
-		)
-
-
-	# noinspection SqlResolve
-	def getHeatbeatDeviceRow(self, uid):
-		"""
-		returns the state of a heartbeat compatible  devices
-
-		:params uid = Device identification
-		"""
-
-		return self.databaseFetch(
-			tableName='HomeAssistant',
-			query='SELECT entityName, deviceState FROM :__table__ WHERE uID = :uid ',
-			values={
-				'uid': uid
 			}
 		)
 
@@ -799,7 +828,7 @@ class HomeAssistant(AliceSkill):
 
 		return self.databaseFetch(
 			tableName='HomeAssistant',
-			query='SELECT friendlyName, uID FROM :__table__  WHERE triggerType != "sensor" ',
+			query='SELECT friendlyName, uID FROM :__table__  WHERE triggerType != "sensor" or "HAtelemetrySensor" ',
 			method='all'
 		)
 
@@ -825,7 +854,7 @@ class HomeAssistant(AliceSkill):
 		"""
 		return self.databaseFetch(
 			tableName='HomeAssistant',
-			query='SELECT deviceType FROM :__table__ WHERE uID == :uID ',
+			query='SELECT deviceType FROM :__table__ WHERE uID == :uID',
 			values={'uID': uID}
 		)
 
@@ -833,12 +862,12 @@ class HomeAssistant(AliceSkill):
 	# noinspection SqlResolve
 	def getSensorValuesFromHaDatabase(self):
 		"""
-		Returns a list of known sensors
+		Returns a list of known telemetry sensors from HA database
 		"""
 
 		return self.databaseFetch(
 			tableName='HomeAssistant',
-			query='SELECT * FROM :__table__  WHERE triggerType == "HAtelemetrySensor" ',
+			query='SELECT * FROM :__table__  WHERE triggerType == "sensor"',
 			method='all'
 		)
 
@@ -912,6 +941,23 @@ class HomeAssistant(AliceSkill):
 
 	################# General Methods ###################
 	# todo General methods shortcut
+
+	# todo - Delete all method, not implimented yet
+	def wipeAllHaData(self):
+		# delete and existing values in DB so we can update with a fresh list of Devices
+		for device in self.DeviceManager.getDevicesBySkill(skillName=self.name, connectedOnly=False):
+			self.DeviceManager.deleteDevice(deviceId=device.id)
+
+		self.DatabaseManager.delete(
+			tableName="HomeAssistant",
+			callerName=self.name,
+			query='DELETE FROM :__table__ ',
+		)
+		self.logWarning(f'Just deleted your Home Assistant records. Now going to reinstate them')
+		# self.updateConfig(key="wipeAll", value='false')
+		self.addHomeAssistantDevices()
+
+
 	def sayNumberOfDeviceViaThread(self):
 
 		self.say(
@@ -940,52 +986,42 @@ class HomeAssistant(AliceSkill):
 	def onFiveMinute(self):
 		if not self.checkConnection():
 			return
-
+		# todo LARRY sensor shortcut
 		self.updateDBStates()
-		sensorDBrows = self.getSensorValuesFromHaDatabase()
-		# update the deviceState json file
-		self.updateDeviceStateJSONfile()
+		self.getTelemetryValues()
 
+
+	def getTelemetryValues(self):
+		"""
+		Pull out telemetry sensors and send those updated states to the telemetry db
+		:return:
+		"""
 		debugtrigger = 0
-		for sensor in sensorDBrows:
-			state = sensor['deviceState']
-			if state.isnumeric() or self.isNumber(state):
-				newPayload = dict()
 
-				# shuts pycharm up
-				self.onFiveMinuteCodeComplexityReducer(sensor=sensor, newPayload=newPayload)
+		for uid in self._haDevicesFromAliceDatabase:
+			device = self.DeviceManager.getDevice(uid=uid)
+			state = device.getParam('state')
+			if device.deviceTypeName == 'HAtelemetrySensor' and state.isnumeric() or self.isNumber(state):
+				haDeviceType = device.getParam('haDeviceType')
+
+				newPayload = dict()
+				newPayload[str(haDeviceType).upper()] = state
+				# self.createTelemetryPayloadBasedOnDeviceType(haDeviceType=haDeviceType, state=state, newPayload=newPayload)
 				if newPayload:
 
 					try:
-						device: Device = self.DeviceManager.getDevice(uid=sensor["entityName"])
-						deviceID = device.id
-
 						if self.getConfig('debugMode') and debugtrigger == 0:
 							self.logDebug("")
 							self.logDebug(f'!-!-!-!-!-!-!-! **Now adding to the Telemetry DataBase** !-!-!-!-!-!-!-!')
 							debugtrigger = 1
-						self.sendToTelemetry(newPayload=newPayload, deviceId=deviceID)
+
+						# senddata to telemtry Database
+						self.sendToTelemetry(newPayload=newPayload, device=device)
+
 					except Exception as e:
-						self.logWarning(f'There was a error logging data for sensor {sensor["friendlyName"]} as : {e}')
-
-
-	@staticmethod
-	def onFiveMinuteCodeComplexityReducer(sensor, newPayload):
-		if 'temperature' in sensor["deviceType"]:
-			newPayload['TEMPERATURE'] = sensor['deviceState']
-		if 'humidity' in sensor["deviceType"]:
-			newPayload['HUMIDITY'] = sensor['deviceState']
-		if 'pressure' in sensor["deviceType"]:
-			newPayload['PRESSURE'] = sensor['deviceState']
-		if 'gas' in sensor["deviceType"] and isinstance(sensor['deviceState'], int) or isinstance(sensor['deviceState'],
-																								  float):
-			newPayload['GAS'] = sensor['deviceState']
-		if 'dewpoint' in sensor["deviceType"]:
-			newPayload['DEWPOINT'] = sensor['deviceState']
-		if 'illuminance' in sensor["deviceType"]:
-			newPayload['ILLUMINANCE'] = sensor['deviceState']
-
-		return newPayload
+						self.logWarning(f'There was a error logging data for sensor {device.displayName} as : {e}')
+			else:
+				continue
 
 
 	# add friendlyNames to dialog template as a list of slotValues
@@ -1086,7 +1122,7 @@ class HomeAssistant(AliceSkill):
 				self.addEntityToHADatabase(entityName=groupItem[0],
 										   friendlyName=groupItem[1],
 										   uID=groupItem[2],
-										   deviceGroup='group')
+										   triggerType='group')
 
 		self.addDevicesToBothDatabaseTables(finallist=finalLightList,
 											haData=self._entitiesFromHaDatabase,
@@ -1108,16 +1144,23 @@ class HomeAssistant(AliceSkill):
 
 		# Process Sensor entities
 		for sensorDevice in finalSensorList:
-			# if sensor not already in alice database and
-			#
-			if not sensorDevice[4] in self._haDevicesFromAliceDatabase and str(
-					sensorDevice[3]).lower() in self._telemtryItems:
+
+			isTelemtryType = False
+			try:
+				if TelemetryType[str(sensorDevice[3]).upper()]:
+					isTelemtryType = True
+			except:
+				pass
+
+			## If the sensor matches the TelemetryType Enum list. then do this block
+			if not sensorDevice[4] in self._haDevicesFromAliceDatabase and isTelemtryType:
 				self._newDeviceCount += 1
+
 				self.AddToAliceDB(uID=sensorDevice[4],
 								  friendlyName=sensorDevice[0],
 								  deviceType="HAtelemetrySensor")
 				device = self.DeviceManager.getDevice(sensorDevice[4])
-				device.updateParams(key="HAdeviceType", value=str(sensorDevice[3]).lower())
+				device.updateParams(key="haDeviceType", value=str(sensorDevice[3]).upper())
 
 			classList = ["motion", 'power']
 			if not sensorDevice[4] in self._haDevicesFromAliceDatabase and str(
@@ -1127,14 +1170,14 @@ class HomeAssistant(AliceSkill):
 								  friendlyName=sensorDevice[0],
 								  deviceType=f"HA{str(sensorDevice[3]).lower()}")
 				device = self.DeviceManager.getDevice(sensorDevice[4])
-				device.updateParams(key="HAdeviceType", value=str(sensorDevice[3]).lower())
+				device.updateParams(key="haDeviceType", value=str(sensorDevice[3]).lower())
 
 			if not sensorDevice[1] in self._entitiesFromHaDatabase:
 				self.addEntityToHADatabase(entityName=sensorDevice[1],
 										   friendlyName=sensorDevice[0],
 										   uID=sensorDevice[4],
 										   deviceState=sensorDevice[2],
-										   deviceGroup="sensor",
+										   triggerType="sensor",
 										   deviceType=sensorDevice[3])
 
 		# Process Sensor entities
@@ -1169,7 +1212,7 @@ class HomeAssistant(AliceSkill):
 		:param finallist: The list of devices that is currently getting processed
 		:param haData: A list of known devices from the HA database
 		:param aliceList: A list of known devices from Alices database
-		:param deviceGroup: Which deviceGroup it belongs to IE: switch, inputBoolean. for storing correctly in HA database
+		:param deviceGroup: Which triggerType it belongs to IE: switch, inputBoolean. for storing correctly in HA database
 		:param deviceType: Which deviceType it belongs to IE: HAswitch, HAinputBoolean. for storing correctly in Alice database
 		:return:
 		"""
@@ -1180,7 +1223,7 @@ class HomeAssistant(AliceSkill):
 										   friendlyName=device[1],
 										   deviceState=device[2],
 										   uID=device[3],
-										   deviceGroup=deviceGroup)
+										   triggerType=deviceGroup)
 
 			if not device[3] in aliceList:
 				self.AddToAliceDB(uID=device[3],
@@ -1188,37 +1231,33 @@ class HomeAssistant(AliceSkill):
 								  deviceType=deviceType)
 
 
-	def sendToTelemetry(self, newPayload: dict, deviceId: int):
+	def sendToTelemetry(self, newPayload: dict, device):
 		"""
 		Send the incoming data to the TelemtryManager for storing in Telemtry Database
 		:param newPayload: A Dict containing 'deviceType' and the 'value'. EG: {"TEMPERATURE": 23.4}
-		:param deviceId: The Id of the current device
+		:param device: The current device
 		:return:
 		"""
 		# create location if it doesnt exist and get the id
-		device = self.DeviceManager.getDevice(deviceId)
 		locationID = self.LocationManager.getLocation(locId=device.parentLocation).id
 
-		for item in newPayload.items():
-			teleType: str = item[0]
-			teleType = teleType.upper()
+		haTelemetryType = list(newPayload.keys())[0]
 
+		try:
+			if TelemetryType[str(haTelemetryType)]:
+				self.TelemetryManager.storeData(ttype=TelemetryType[str(haTelemetryType)],
+												value=newPayload[str(haTelemetryType)],
+												service=self.name,
+												deviceId=device.id,
+												locationId=locationID)
 			if self.getConfig('debugMode'):
 				self.logDebug(f'')
-				self.logDebug(f'The {teleType} reading for the {device.displayName} is {item[1]} ')
+				self.logDebug(
+					f'The {str(haTelemetryType)} reading for the {device.displayName} is {newPayload[str(haTelemetryType)]} ')
 
-			try:
-				if TelemetryType[teleType]:
-					self.TelemetryManager.storeData(ttype=TelemetryType[teleType],
-													value=item[1],
-													service=self.name,
-													deviceId=deviceId,
-													locationId=locationID)
-				else:
-					continue
 
-			except Exception as e:
-				self.logInfo(f'An exception occured adding {teleType} reading: {e}')
+		except:
+			pass
 
 
 	def updateDeviceStateJSONfile(self):
