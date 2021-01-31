@@ -23,8 +23,8 @@ class HAtelemetrySensor(Device):
 	def __init__(self, data: sqlite3.Row):
 		super().__init__(data)
 		self._imagePath = f'{self.Commons.rootDir()}/skills/HomeAssistant/devices/img/'
-		self._highAlert = list()
-		self._lowAlert = list()
+		self._highAlert: list = []
+		self._lowAlert: list = []
 
 		self._telemetryUnits = {
 			'airQuality'   : '%',
