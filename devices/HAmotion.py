@@ -37,3 +37,4 @@ class HAmotion(Device):
 
 		answer = f"The {location} motion sensor currently reads {self.getParam('state')}"
 		self.MqttManager.say(text=answer)
+		return super().onUIClick()

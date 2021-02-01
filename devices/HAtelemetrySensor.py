@@ -115,3 +115,4 @@ class HAtelemetrySensor(Device):
 
 		answer = f"The {location} {self.uid.split('_')[-1]} is {self.getParam('state')} {self._telemetryUnits.get(self.uid.split('_')[-1], '')}"
 		self.MqttManager.say(text=answer)
+		return super().onUIClick()

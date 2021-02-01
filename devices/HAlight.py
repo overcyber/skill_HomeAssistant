@@ -39,3 +39,4 @@ class HAlight(Device):
 
 	def onUIClick(self):
 		self.logDebug(f'Currently there\'s no toggle event available for this light controller')
+		return super().onUIClick()

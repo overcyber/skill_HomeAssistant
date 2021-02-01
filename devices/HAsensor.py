@@ -36,3 +36,4 @@ class HAsensor(Device):
 
 		answer = f"The {self.displayName} currently reads {self.getParam('state')}"
 		self.MqttManager.say(text=answer)
+		return super().onUIClick()

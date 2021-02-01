@@ -2,6 +2,8 @@ import sqlite3
 from pathlib import Path
 from core.device.model.Device import Device
 from skills.HomeAssistant.HomeAssistant import HomeAssistant
+import random
+import string
 
 from core.device.model.DeviceAbility import DeviceAbility
 
@@ -45,16 +47,17 @@ class HAswitch(Device):
 		if self.getParam(key='state') == "on":
 			self.updateParams(key='state', value='off')
 			self.updateStateOfDevice()
-			return
+
+			return super().onUIClick()
 
 		if self.getParam(key='state') == "off":
 			self.updateParams(key='state', value='on')
 			self.updateStateOfDevice()
-			return
+			return super().onUIClick()
 
 		if self.getParam(key='state') == "unavailable":
 			self.logInfo(f"Sorry but device is currently unavailable. Is it connected ? connected to network ?")
-
+			return super().onUIClick()
 
 	def updateStateOfDevice(self):
 		haClass = HomeAssistant()

@@ -40,3 +40,4 @@ class HApower(Device):
 
 		answer = f"The {self.displayName} has a reading of {self.getParam('state')}"
 		self.MqttManager.say(text=answer)
+		return super().onUIClick()

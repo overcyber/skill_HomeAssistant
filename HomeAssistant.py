@@ -1160,7 +1160,9 @@ class HomeAssistant(AliceSkill):
 								  friendlyName=sensorDevice[0],
 								  deviceType="HAtelemetrySensor")
 				device = self.DeviceManager.getDevice(sensorDevice[4])
-				device.updateParams(key="haDeviceType", value=str(sensorDevice[3]).upper())
+
+				if device:
+					device.updateParams(key="haDeviceType", value=str(sensorDevice[3]).upper())
 
 			classList = ["motion", 'power']
 			if not sensorDevice[4] in self._haDevicesFromAliceDatabase and str(
@@ -1170,7 +1172,8 @@ class HomeAssistant(AliceSkill):
 								  friendlyName=sensorDevice[0],
 								  deviceType=f"HA{str(sensorDevice[3]).lower()}")
 				device = self.DeviceManager.getDevice(sensorDevice[4])
-				device.updateParams(key="haDeviceType", value=str(sensorDevice[3]).lower())
+				if device:
+					device.updateParams(key="haDeviceType", value=str(sensorDevice[3]).lower())
 
 			if not sensorDevice[1] in self._entitiesFromHaDatabase:
 				self.addEntityToHADatabase(entityName=sensorDevice[1],
