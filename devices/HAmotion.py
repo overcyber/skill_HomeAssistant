@@ -29,7 +29,7 @@ class HAmotion(Device):
 		if self.connected:
 			return Path(f'{self._imagePath}GeneralSensors/HAmotion.png')
 
-		return Path(f'{self._imagePath}HAsensorOffline.png')
+		return Path(f'{self._imagePath}GeneralSensors/HAsensorOffline.png')
 
 
 	def onUIClick(self):

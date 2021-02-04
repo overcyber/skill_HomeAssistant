@@ -33,7 +33,7 @@ class HApower(Device):
 		elif powerType == "voltage":
 			return Path(f'{self._imagePath}GeneralSensors/HAvoltage.png')
 		else:
-			return Path(f'{self._imagePath}HAsensorOffline.png')
+			return Path(f'{self._imagePath}GeneralSensors/HAsensorOffline.png')
 
 
 	def onUIClick(self):

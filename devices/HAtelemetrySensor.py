@@ -1,4 +1,5 @@
 import sqlite3
+import json
 
 from core.device.model.Device import Device
 from pathlib import Path
@@ -23,11 +24,10 @@ class HAtelemetrySensor(Device):
 	def __init__(self, data: sqlite3.Row):
 		super().__init__(data)
 		self._imagePath = f'{self.Commons.rootDir()}/skills/HomeAssistant/devices/img/'
-		self._highAlert: list = []
-		self._lowAlert: list = []
+		self._telemetrySetpointPath = Path(f"{str(Path.home())}/ProjectAlice/skills/Telemetry/config.json")
 
 		self._telemetryUnits = {
-			'airQuality'   : '%',
+			'airquality'   : '%',
 			'co2'          : 'ppm',
 			'gas'          : 'ppm',
 			'gust_angle'   : '°',
@@ -42,77 +42,59 @@ class HAtelemetrySensor(Device):
 		}
 
 
-	# todo change this as this event doesnt get broadcast to this file
-	def onTemperatureHighAlert(self, **kwargs):
-		if "HomeAssistant" in kwargs['service']:
-			areaId = self.LocationManager.getLocationByName(kwargs["area"])
-			self.setAlertIcon(triggerType='temperature', value=kwargs['value'], area=areaId, high=True)
-
-
-	def setAlertIcon(self, triggerType: str, value: int, area, high: bool = False, low: bool = False):
-		"""
-		Used for setting the device alert icon values.
-		Only set either High or low to True, not both
-		:param triggerType: example "temperature" or "humidity" etc.
-		:param value: The device state value
-		:param area: The location id of the device
-		:param high: Set True if High Alert event
-		:param low: set to True if its a low alaert event
-		:return: adds values to a list
-		"""
-
-		if high and low:
-			self.logWarning("Can't set both low and high to true")
-			return
-
-		if high:
-			self._lowAlert = list()
-			self._highAlert = [value, triggerType, area]
-		elif low:
-			self._highAlert = list()
-			self._lowAlert = [value, triggerType, area]
-
-		self.getDeviceIcon()
-
-
 	def getDeviceIcon(self) -> Path:
-		haDeviceType: str = self.getParam("haDeviceType")
+		telemetryConfig = self.telemetrySetPoints()
+		# haDeviceType: str = self.getParam("haDeviceType")
 
-		if haDeviceType.lower() == 'temperature':
-			# todo This doesnt work Larry still has to implement it
-			# Change thermometer icon depending on temperatures from telemetry
-			if self._highAlert and self.connected and self.getParam("state") >= self._highAlert[0]:
-				return Path(f'{self._imagePath}Temperature/hot1.png')
-
-			elif self._lowAlert and self.connected and self.getParam("state") <= self._lowAlert[0]:
-				return Path(f'{self._imagePath}Temperature/cold1.png')
-
-			else:
-				return Path(f'{self._imagePath}Temperature/normal1.png')
-
-
-		elif haDeviceType.lower() == 'humidity':
-			return Path(f'{self._imagePath}HAhumidity.png')
-
-		elif haDeviceType.lower() == 'gas':
-			return Path(f'{self._imagePath}HAco2.png')
-
-		elif haDeviceType.lower() == 'pressure':
-			return Path(f'{self._imagePath}HApressure.png')
-
-		elif haDeviceType.lower() == 'dewpoint':
-			return Path(f'{self._imagePath}HAdewpoint.png')
-
-		elif haDeviceType.lower() == 'illuminance':
-			return Path(f'{self._imagePath}HAlightSensorOn.png')
-
-		else:
-			return Path(f'{self._imagePath}HAsensor.png')
+		# Change icon depending on telemetry config setPoints
+		iconState = self.highOrLowIconAlert(telemetrySetPoint=telemetryConfig)
+		print(f"icon state {iconState}")
+		return iconState
 
 
 	def onUIClick(self):
 		location = self.LocationManager.getLocationName(self.parentLocation)
-
-		answer = f"The {location} {self.uid.split('_')[-1]} is {self.getParam('state')} {self._telemetryUnits.get(self.uid.split('_')[-1], '')}"
+		answer = f"The {location} {self.getParam('haDeviceType')} is {self.getParam('state')} {self._telemetryUnits.get(self.getParam('haDeviceType').lower())}"
 		self.MqttManager.say(text=answer)
 		return super().onUIClick()
+
+
+	def telemetrySetPoints(self):
+		if self._telemetrySetpointPath.exists():
+			telemetrySetpoint = json.loads(self._telemetrySetpointPath.read_text())
+			return telemetrySetpoint
+
+
+	def highOrLowIconAlert(self, telemetrySetPoint: dict):
+		alertHigh = f'{str(self.getParam("haDeviceType")).capitalize()}AlertHigh'
+		alertLow = f'{str(self.getParam("haDeviceType")).capitalize()}AlertLow'
+
+		# If Telemetry Alerts have both low and high alerts, do this
+		if alertHigh in telemetrySetPoint.keys() and alertLow in telemetrySetPoint.keys():
+			if self.connected and float(self.getParam("state")) >= telemetrySetPoint[alertHigh]:
+				return self.returnHigh(alert=alertHigh, telemetrySetPoint=telemetrySetPoint)
+
+			elif self.connected and float(self.getParam("state")) <= telemetrySetPoint[alertLow]:
+				return self.returnLow(alert=alertLow, telemetrySetPoint=telemetrySetPoint)
+
+		# If Telemetry Alerts only have High alerts do this
+		elif alertHigh in telemetrySetPoint.keys() \
+				and not alertLow in telemetrySetPoint.keys() \
+				and self.connected and float(self.getParam("state")) >= telemetrySetPoint[alertHigh]:
+			print(f"state is high")
+			return self.returnHigh(alert=alertHigh, telemetrySetPoint=telemetrySetPoint)
+
+		# if any of the above fails return the devices standard icon
+		return Path(f'{self._imagePath}Telemetry/{str(self.getParam("haDeviceType")).lower()}.png')
+
+
+	# Return the path of the high alert icon
+	def returnHigh(self, alert: str, telemetrySetPoint) -> Path:
+		if self.connected and float(self.getParam("state")) >= telemetrySetPoint[alert]:
+			return Path(f'{self._imagePath}Telemetry/{str(self.getParam("haDeviceType")).lower()}High.gif')
+
+
+	# Return the path of the low alert icon
+	def returnLow(self, alert: str, telemetrySetPoint) -> Path:
+		if self.connected and float(self.getParam("state")) >= telemetrySetPoint[alert]:
+			return Path(f'{self._imagePath}Telemetry/{str(self.getParam("haDeviceType")).lower()}Low.png')
