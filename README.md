@@ -6,7 +6,7 @@ Connect alice to your home assistant
 
 - Author: Lazza
 - Maintainers: 
-- Alice minimum Version: 1.0.0-b2
+- Alice minimum Version: 1.0.0-b5
 - Languages:
     en
 
