@@ -28,5 +28,11 @@
 		"dataType": "boolean",
 		"isSensitive": false,
 		"description": "Allow user to view incoming json payload"
+	},
+	"wipeAll": {
+		"defaultValue": false,
+		"dataType": "boolean",
+		"isSensitive": false,
+		"description": "Allow user to start with a fresh set of settings"
 	}
 }
