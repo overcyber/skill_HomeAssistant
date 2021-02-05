@@ -491,7 +491,7 @@ class HomeAssistant(AliceSkill):
 
 		jsonData = {"entity_id": device.getParam('entityName')}
 		result = requests.request("POST", url=url, headers=header, json=jsonData)
-		print(f"{result.text} and {result.json()}")
+		self.Commons.getMethodCaller(result=result.text)
 		self.updateDeviceStateJSONfile()
 
 
