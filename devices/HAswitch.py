@@ -2,8 +2,6 @@ import sqlite3
 from pathlib import Path
 from core.device.model.Device import Device
 from skills.HomeAssistant.HomeAssistant import HomeAssistant
-import random
-import string
 
 from core.device.model.DeviceAbility import DeviceAbility
 
@@ -29,36 +27,44 @@ class HAswitch(Device):
 
 
 	def getDeviceIcon(self) -> Path:
-		if not self.connected:
-			return Path(f"{self._imagePath}Switches/switch_offline.png")
+		iconPath = self.selectIconBasedOnState()
 
-		if self.getParam(key='state') == 'on':
-			return Path(f"{self._imagePath}Switches/switch_on.png")
-
-		elif self.getParam(key='state') == 'off':
-			return Path(f"{self._imagePath}Switches/switch_off.png")
+		if Path(iconPath).exists():
+			return iconPath
 
 		else:
 			return Path(f"{self._imagePath}Switches/HAswitch.png")
 
 
 	def onUIClick(self):
+		if self.getParam('entityGroup') == "input_boolean":
+			self.logInfo(f"Input booleans are currently not clickable. It's on the 'todo' list.")
+			return super().onUIClick()
 
 		if self.getParam(key='state') == "on":
 			self.updateParams(key='state', value='off')
-			self.updateStateOfDevice()
+			self.updateStateOfDeviceInHA()
 
 			return super().onUIClick()
 
 		if self.getParam(key='state') == "off":
 			self.updateParams(key='state', value='on')
-			self.updateStateOfDevice()
+			self.updateStateOfDeviceInHA()
 			return super().onUIClick()
 
 		if self.getParam(key='state') == "unavailable":
-			self.logInfo(f"Sorry but device is currently unavailable. Is it connected ? connected to network ?")
+			self.updateStateOfDeviceInHA()
 			return super().onUIClick()
 
-	def updateStateOfDevice(self):
+
+	def updateStateOfDeviceInHA(self):
+		""" Sends uid to HomeAssistant skill which then sends the command over
+			API to HomeAssistant to turn on or off the device
+		"""
 		haClass = HomeAssistant()
 		haClass.deviceClicked(uid=self.uid)
+
+
+	def selectIconBasedOnState(self):
+		return Path(
+			f"{self._imagePath}Switches/{self.getParam('entityGroup')}{str(self.getParam('state')).capitalize()}.png")

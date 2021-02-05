@@ -41,8 +41,8 @@ Add either of those to your Home Assistant configuration.yaml, if you'd like Ali
 </ol>
 
 <span style="color: #ffff00;">SIDE NOTE:</span>
-For now all switches captured by Alice from HA will get installed in one location
-- You may want to at some stage, go to "My Home" in the web Ui and move each switch to an appropriate location. To keep
+For now all devices captured by Alice from HA will get installed in one location
+- You may want to at some stage, go to "My Home" in the web Ui and move each device to an appropriate location. To keep
   a tidy house keeps Alice happy :)
 
 Once alice restarts you can then ask her :
@@ -55,9 +55,8 @@ or
 You really only need to ask that once. By asking that she will
 
 <ol>
-<li>Get the list of switch entities from Home assistant</li>
-<li>Write them to Alices new HomeAssistant Database</li>
-<li>Add those devices to Alice's Database ( so they show in My home and are Alice acknowledable)</li>
+<li>Get the list of device entities from Home Assistant</li>
+<li>Write them to Alices devices Database</li>
 <li>Takes all the friendly names and automatically writes them to dialogTemplate file</li>
 </ol>
 Once setup is completed (takes 30 seconds or so) and <strong>you restart alice</strong> again for training.
@@ -117,11 +116,13 @@ Tasmota firmware on your devices. However, you may find that currently not all s
 <span style="color: #ff6600;">There's potentially at least two common reasons for this</span>
 <ol>
 <li> Currently only sensors that have a function in the HA skill are concentrated on. This will change as the 
-skill progresses. Devices such as, temperature, humidity, gas, illuminance, pressure and dewpoint are used 
-and can be reported on by Alice.
+skill progresses. Devices that have a device_class of , temperature, humidity, gas, illuminance, pressure, dewpoint,
+battery, power, current, voltage, motion are used and can be reported on by Alice.
 
-Sensors such as motion sensor's, battery sensors etc "might" also get captured, however they have no 
-function in Alice currently. Please see example configurations further down these instructions </li>
+NOTE: HA skill may collect other sensor's above what i've listed. So if you notice some sensors
+added to Home Assistant that don't display a Icon, Please let lazza in discord
+know about these sensors and i'll add that support.
+ </li>
 
 <li> You've manually configured a MQTT device in the yaml but have not added a "device_class" attribute </li>
 </ol>
@@ -234,4 +235,51 @@ To do that:
 - For attribute value type in "True"
 
 In the future if you want to allow Alice to add that device, change True to False and then reconfigure alice with a "
-configure home assistant skill"
+configure home assistant skill". This is also handy if alice keeps adding a 
+pointless device to your My home screen. You can delete it from my home but it will return
+next time you configure HA skill. So in this case add the AliceIgnore steps above for that device in Home Assistant.
+
+
+<span style="color: #ff0000;"><strong>Icons - and what they are</strong></span>
+
+Icon - Description - state(where aplicable):
+
+- Battery - battery icon for device_class battery and device_class power
+
+- Green circle with a tick - Input_boolean, state= on
+
+- Red circle with Black X - Input_boolean, state = off
+
+- Green On button - switch.entity - state = on
+
+- Red Off button - switch.entity - state = off
+
+- Green Toggle switch - group.entity - state = on
+
+- Red toggle switch - Group.entity - state = off
+
+- yellow light bulb - light.entity
+
+- co2 sensor - device_ class = gas
+
+- humidity sensor - device_class humidity 
+
+- thermometer - device class temperature
+
+- motion sensor - sensor with man under it - device_class motion
+
+- dewpoint sensor
+
+- pressure gauge - device_class pressure
+
+- sensor with lightbulb = device_class illuminance
+
+- voltage sign - device_class voltage
+
+- electrical sparks - device_class current
+
+**Icons that will change based on high alert signal from telemetry:**
+
+- Gas (co2)
+- humidity
+- temperature

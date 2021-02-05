@@ -13,7 +13,7 @@ class HAlight(Device):
 			'deviceTypeName'        : 'HAlight',
 			'perLocationLimit'      : 0,
 			'totalDeviceLimit'      : 0,
-			'allowLocationLinks'    : False,
+			'allowLocationLinks'    : True,
 			'allowHeartbeatOverride': True,
 			'heartbeatRate'         : 320,
 			'abilities'             : [DeviceAbility.NONE]
@@ -28,13 +28,13 @@ class HAlight(Device):
 	def getDeviceIcon(self) -> Path:
 
 		if self.getParam(key='state') == "on":
-			return Path(f'{self._imagePath}Lights/HAlightOn.png')
+			return Path(f'{self._imagePath}Lights/lightOn.png')
 
 		elif self.getParam(key='state') == "off":
-			return Path(f'{self._imagePath}Lights/HAlightOff.png')
+			return Path(f'{self._imagePath}Lights/lightOff.png')
 
 		else:
-			return Path(f'{self._imagePath}Lights/HAlightOff.png')
+			return Path(f'{self._imagePath}Lights/lightOff.png')
 
 
 	def onUIClick(self):

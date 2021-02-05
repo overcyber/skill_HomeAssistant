@@ -13,7 +13,7 @@ class HApower(Device):
 			'deviceTypeName'        : 'HApower',
 			'perLocationLimit'      : 0,
 			'totalDeviceLimit'      : 0,
-			'allowLocationLinks'    : False,
+			'allowLocationLinks'    : True,
 			'allowHeartbeatOverride': True,
 			'heartbeatRate'         : 320,
 			'abilities'             : [DeviceAbility.NONE]
@@ -26,14 +26,16 @@ class HApower(Device):
 
 
 	def getDeviceIcon(self) -> Path:
-		powerType = self.uid.split('_')[-1]
+		powerType = self.getParam('entityName').split('_')[-1]
 
 		if powerType == "current":
 			return Path(f'{self._imagePath}GeneralSensors/HAcurrent.png')
 		elif powerType == "voltage":
 			return Path(f'{self._imagePath}GeneralSensors/HAvoltage.png')
+		elif powerType == "power" or powerType == 'battery':
+			return Path(f'{self._imagePath}GeneralSensors/battery.png')
 		else:
-			return Path(f'{self._imagePath}HAsensorOffline.png')
+			return Path(f'{self._imagePath}GeneralSensors/HAsensor.png')
 
 
 	def onUIClick(self):

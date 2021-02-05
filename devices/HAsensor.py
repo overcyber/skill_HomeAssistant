@@ -13,7 +13,7 @@ class HAsensor(Device):
 			'deviceTypeName'        : 'HAsensor',
 			'perLocationLimit'      : 0,
 			'totalDeviceLimit'      : 0,
-			'allowLocationLinks'    : False,
+			'allowLocationLinks'    : True,
 			'allowHeartbeatOverride': True,
 			'heartbeatRate'         : 320,
 			'abilities'             : [DeviceAbility.NONE]
@@ -27,9 +27,9 @@ class HAsensor(Device):
 
 	def getDeviceIcon(self) -> Path:
 		if self.connected:
-			return Path(f'{self._imagePath}HAsensor.png')
+			return Path(f'{self._imagePath}GeneralSensors/HAsensor.png')
 
-		return Path(f'{self._imagePath}HAsensor.png')
+		return Path(f'{self._imagePath}GeneralSensors/HAsensorOffline.png')
 
 
 	def onUIClick(self):
