@@ -1095,6 +1095,7 @@ class HomeAssistant(AliceSkill):
 				self.logWarning(f'HomeAssistant encounted a issue on boot up. Exception was : {e}')
 				return False
 		super().onBooted()
+		return True
 
 
 	def sendHeartBeatrequest(self):
