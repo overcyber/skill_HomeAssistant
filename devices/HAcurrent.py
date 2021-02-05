@@ -5,12 +5,12 @@ from pathlib import Path
 from core.device.model.DeviceAbility import DeviceAbility
 
 
-class HAmotion(Device):
+class HAcurrent(Device):
 
 	@classmethod
 	def getDeviceTypeDefinition(cls) -> dict:
 		return {
-			'deviceTypeName'        : 'HAmotion',
+			'deviceTypeName'        : 'HAcurrent',
 			'perLocationLimit'      : 0,
 			'totalDeviceLimit'      : 0,
 			'allowLocationLinks'    : True,
@@ -26,15 +26,12 @@ class HAmotion(Device):
 
 
 	def getDeviceIcon(self) -> Path:
-		if self.connected:
-			return Path(f'{self._imagePath}GeneralSensors/HAmotion.png')
 
-		return Path(f'{self._imagePath}GeneralSensors/HAsensorOffline.png')
+		return Path(f'{self._imagePath}GeneralSensors/HAcurrent.png')
 
 
 	def onUIClick(self):
-		location = self.LocationManager.getLocationName(self.parentLocation)
 
-		answer = f"The {location} motion sensor currently reads {self.getParam('state')}"
+		answer = f"The {self.displayName} is drawing {self.getParam('state')} amps"
 		self.MqttManager.say(text=answer)
 		return super().onUIClick()

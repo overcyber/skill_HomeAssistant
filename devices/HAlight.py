@@ -13,7 +13,7 @@ class HAlight(Device):
 			'deviceTypeName'        : 'HAlight',
 			'perLocationLimit'      : 0,
 			'totalDeviceLimit'      : 0,
-			'allowLocationLinks'    : False,
+			'allowLocationLinks'    : True,
 			'allowHeartbeatOverride': True,
 			'heartbeatRate'         : 320,
 			'abilities'             : [DeviceAbility.NONE]

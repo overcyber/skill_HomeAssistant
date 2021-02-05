@@ -468,6 +468,7 @@ class HomeAssistant(AliceSkill):
 		:param uid: The uid of the device
 		:return:
 		"""
+
 		if not self.checkConnection():
 			return
 		device = self.DeviceManager.getDevice(uid=uid)
@@ -475,6 +476,13 @@ class HomeAssistant(AliceSkill):
 			self._action = 'turn_on'
 		elif "off" in device.getParam("state") or "close" in device.getParam("state"):
 			self._action = 'turn_off'
+		else:
+			answer = f"Sorry but the {device.displayName} is currently unavailable. Is it connected to the network ?"
+			self.say(
+				text=answer,
+				siteId=self.DeviceManager.getMainDevice().uid
+			)
+			return
 
 		header, url = self.retrieveAuthHeader(urlPath=f'services/switch/', urlAction=self._action)
 		# Update json file on click via Myhome
@@ -482,7 +490,8 @@ class HomeAssistant(AliceSkill):
 		self._jsonDict[device.getParam('entityName')] = device.getParam("state")
 
 		jsonData = {"entity_id": device.getParam('entityName')}
-		requests.request("POST", url=url, headers=header, json=jsonData)
+		result = requests.request("POST", url=url, headers=header, json=jsonData)
+		print(f"{result.text} and {result.json()}")
 		self.updateDeviceStateJSONfile()
 
 
@@ -582,7 +591,6 @@ class HomeAssistant(AliceSkill):
 		EG: usage - header, url = self.requestAuthHeader(urlPath='services/switch/', urlAction=self._action)
 		:returns: header and url
 		"""
-
 		header = {"Authorization": f'Bearer {self.getConfig("haAccessToken")}', "content-type": "application/json", }
 
 		if urlAction:
@@ -655,10 +663,8 @@ class HomeAssistant(AliceSkill):
 
 	def sayNumberOfDeviceViaThread(self):
 		self.say(
-			text=self.randomTalk(
-				text='saynumberOfDevices', replace=[self._newDeviceCount, len(self._haDevicesFromAliceDatabase)]),
+			text=self.randomTalk(text='saynumberOfDevices', replace=[self._newDeviceCount, len(self._haDevicesFromAliceDatabase)]),
 			siteId=self.DeviceManager.getMainDevice().displayName
-
 		)
 
 
@@ -683,6 +689,7 @@ class HomeAssistant(AliceSkill):
 		if not self.checkConnection():
 			return
 		# todo LARRY sensor shortcut
+
 		self.updateDBStates()
 		self.getTelemetryValues()
 
@@ -799,7 +806,7 @@ class HomeAssistant(AliceSkill):
 		self.updateKnownDeviceLists()
 
 		# reset the device counter
-		self._newDeviceCount += 0
+		self._newDeviceCount = 0
 
 		entityNames = list()
 
@@ -831,7 +838,7 @@ class HomeAssistant(AliceSkill):
 								 "entityName"  : sensorDevice[4], "entityGroup": "sensor"}
 				)
 
-			classList = ["motion", 'power']
+			classList = ["motion", 'power', 'current']
 
 			if not sensorDevice[4] in entityNames and str(sensorDevice[3]).lower() in classList:
 				self._newDeviceCount += 1

@@ -37,6 +37,9 @@ class HAswitch(Device):
 
 
 	def onUIClick(self):
+		if self.getParam('entityGroup') == "input_boolean":
+			self.logInfo(f"Input booleans are currently not clickable. It's on the 'todo' list.")
+			return super().onUIClick()
 
 		if self.getParam(key='state') == "on":
 			self.updateParams(key='state', value='off')
@@ -50,7 +53,7 @@ class HAswitch(Device):
 			return super().onUIClick()
 
 		if self.getParam(key='state') == "unavailable":
-			self.logInfo(f"Sorry but device is currently unavailable. Is it connected ? connected to network ?")
+			self.updateStateOfDeviceInHA()
 			return super().onUIClick()
 
 

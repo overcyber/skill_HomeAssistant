@@ -14,7 +14,7 @@ class HAtelemetrySensor(Device):
 			'deviceTypeName'        : 'HAtelemetrySensor',
 			'perLocationLimit'      : 0,
 			'totalDeviceLimit'      : 0,
-			'allowLocationLinks'    : False,
+			'allowLocationLinks'    : True,
 			'allowHeartbeatOverride': True,
 			'heartbeatRate'         : 320,
 			'abilities'             : [DeviceAbility.NONE]
@@ -28,27 +28,29 @@ class HAtelemetrySensor(Device):
 
 		self._telemetryUnits = {
 			'airquality'   : '%',
-			'co2'          : 'ppm',
-			'gas'          : 'ppm',
+			'co2'          : 'parts per million',
+			'gas'          : 'parts per million',
 			'gust_angle'   : '°',
 			'gust_strength': 'km/h',
 			'humidity'     : '%',
 			'light'        : 'lux',
-			'pressure'     : 'mb',
-			'rain'         : 'mm',
+			'pressure'     : 'milli bars',
+			'rain'         : 'milli meters',
 			'temperature'  : '°C',
 			'wind_angle'   : '°',
-			'wind_strength': 'km/h'
+			'wind_strength': 'km/h',
+			'voltage'		: 'volts',
+			'current'		: 'amps',
+			'dewpoint'		: '°C',
+			'battery'		: '% charged'
 		}
 
 
 	def getDeviceIcon(self) -> Path:
 		telemetryConfig = self.telemetrySetPoints()
-		# haDeviceType: str = self.getParam("haDeviceType")
 
 		# Change icon depending on telemetry config setPoints
 		iconState = self.highOrLowIconAlert(telemetrySetPoint=telemetryConfig)
-		print(f"icon state {iconState}")
 		return iconState
 
 
@@ -71,30 +73,27 @@ class HAtelemetrySensor(Device):
 
 		# If Telemetry Alerts have both low and high alerts, do this
 		if alertHigh in telemetrySetPoint.keys() and alertLow in telemetrySetPoint.keys():
-			if self.connected and float(self.getParam("state")) >= telemetrySetPoint[alertHigh]:
-				return self.returnHigh(alert=alertHigh, telemetrySetPoint=telemetrySetPoint)
+			if float(self.getParam("state")) >= telemetrySetPoint[alertHigh]:
+				return self.returnHigh()
 
-			elif self.connected and float(self.getParam("state")) <= telemetrySetPoint[alertLow]:
-				return self.returnLow(alert=alertLow, telemetrySetPoint=telemetrySetPoint)
+			elif float(self.getParam("state")) <= telemetrySetPoint[alertLow]:
+				return self.returnLow()
 
 		# If Telemetry Alerts only have High alerts do this
 		elif alertHigh in telemetrySetPoint.keys() \
 				and not alertLow in telemetrySetPoint.keys() \
-				and self.connected and float(self.getParam("state")) >= telemetrySetPoint[alertHigh]:
-			print(f"state is high")
-			return self.returnHigh(alert=alertHigh, telemetrySetPoint=telemetrySetPoint)
+				and float(self.getParam("state")) >= telemetrySetPoint[alertHigh]:
+			return self.returnHigh()
 
 		# if any of the above fails return the devices standard icon
 		return Path(f'{self._imagePath}Telemetry/{str(self.getParam("haDeviceType")).lower()}.png')
 
 
 	# Return the path of the high alert icon
-	def returnHigh(self, alert: str, telemetrySetPoint) -> Path:
-		if self.connected and float(self.getParam("state")) >= telemetrySetPoint[alert]:
-			return Path(f'{self._imagePath}Telemetry/{str(self.getParam("haDeviceType")).lower()}High.gif')
+	def returnHigh(self) -> Path:
+		return Path(f'{self._imagePath}Telemetry/{str(self.getParam("haDeviceType")).lower()}High.png')
 
 
 	# Return the path of the low alert icon
-	def returnLow(self, alert: str, telemetrySetPoint) -> Path:
-		if self.connected and float(self.getParam("state")) >= telemetrySetPoint[alert]:
-			return Path(f'{self._imagePath}Telemetry/{str(self.getParam("haDeviceType")).lower()}Low.png')
+	def returnLow(self) -> Path:
+		return Path(f'{self._imagePath}Telemetry/{str(self.getParam("haDeviceType")).lower()}Low.png')
