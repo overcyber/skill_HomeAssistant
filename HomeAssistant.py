@@ -490,7 +490,11 @@ class HomeAssistant(AliceSkill):
 		self._jsonDict[device.getParam('entityName')] = device.getParam("state")
 
 		jsonData = {"entity_id": device.getParam('entityName')}
-		requests.request("POST", url=url, headers=header, json=jsonData)
+		result = requests.request("POST", url=url, headers=header, json=jsonData)
+		# debug helper
+		if self.getConfig(key='debugMode'):
+			self.Commons.getMethodCaller(resultText=result.text, resultContent=result.content )
+
 		self.updateDeviceStateJSONfile()
 
 
@@ -556,10 +560,9 @@ class HomeAssistant(AliceSkill):
 		for sensorName, entity, state, haClass, uid in self._dbSensorList:
 			# Locate sensor in the database and update it's value
 			for device in self._haDevicesFromAliceDatabase:
-				if device.getParam('entityName') == sensorName:
+				if device.getParam('entityName') == entity:
 
 					self._jsonDict[entity] = state
-
 					if self.getConfig('debugMode'):
 						self.logDebug(f'')
 						self.logDebug(f'I\'m now updating the SENSOR "{sensorName}" with the state of "{state}" ')

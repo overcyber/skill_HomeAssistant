@@ -25,6 +25,7 @@ class HAtelemetrySensor(Device):
 		super().__init__(data)
 		self._imagePath = f'{self.Commons.rootDir()}/skills/HomeAssistant/devices/img/'
 		self._telemetrySetpointPath = Path(f"{str(Path.home())}/ProjectAlice/skills/Telemetry/config.json")
+		self._tempUnit = self.ConfigManager.getSkillConfigByName(skillName='HomeAssistant', configName='temperatureUnits')
 
 		self._telemetryUnits = {
 			'airquality'   : '%',
@@ -36,12 +37,12 @@ class HAtelemetrySensor(Device):
 			'light'        : 'lux',
 			'pressure'     : 'milli bars',
 			'rain'         : 'milli meters',
-			'temperature'  : '°C',
+			'temperature'  : f'°{self._tempUnit}',
 			'wind_angle'   : '°',
 			'wind_strength': 'km/h',
 			'voltage'		: 'volts',
 			'current'		: 'amps',
-			'dewpoint'		: '°C',
+			'dewpoint'		: f'°{self._tempUnit}',
 			'battery'		: '% charged'
 		}
 
@@ -49,7 +50,7 @@ class HAtelemetrySensor(Device):
 	def getDeviceIcon(self) -> Path:
 		telemetryConfig = self.telemetrySetPoints()
 
-		# Change icon depending on telemetry config setPoints
+	# Change icon depending on telemetry config setPoints
 		iconState = self.highOrLowIconAlert(telemetrySetPoint=telemetryConfig)
 		return iconState
 
@@ -71,18 +72,24 @@ class HAtelemetrySensor(Device):
 		alertHigh = f'{str(self.getParam("haDeviceType")).capitalize()}AlertHigh'
 		alertLow = f'{str(self.getParam("haDeviceType")).capitalize()}AlertLow'
 
+		# FailSafe if device is a string value such as "null"
+		try:
+			state = float(self.getParam('state'))
+		except:
+			return Path(f'{self._imagePath}Telemetry/{str(self.getParam("haDeviceType")).lower()}.png')
+
 		# If Telemetry Alerts have both low and high alerts, do this
 		if alertHigh in telemetrySetPoint.keys() and alertLow in telemetrySetPoint.keys():
-			if float(self.getParam("state")) >= telemetrySetPoint[alertHigh]:
+			if state >= telemetrySetPoint[alertHigh]:
 				return self.returnHigh()
 
-			elif float(self.getParam("state")) <= telemetrySetPoint[alertLow]:
+			elif state <= telemetrySetPoint[alertLow]:
 				return self.returnLow()
 
 		# If Telemetry Alerts only have High alerts do this
 		elif alertHigh in telemetrySetPoint.keys() \
 				and not alertLow in telemetrySetPoint.keys() \
-				and float(self.getParam("state")) >= telemetrySetPoint[alertHigh]:
+				and state >= telemetrySetPoint[alertHigh]:
 			return self.returnHigh()
 
 		# if any of the above fails return the devices standard icon
@@ -97,3 +104,4 @@ class HAtelemetrySensor(Device):
 	# Return the path of the low alert icon
 	def returnLow(self) -> Path:
 		return Path(f'{self._imagePath}Telemetry/{str(self.getParam("haDeviceType")).lower()}Low.png')
+

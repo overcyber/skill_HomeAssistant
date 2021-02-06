@@ -165,7 +165,7 @@
         },
         {
             "name": "WhatHomeAssistantDevices",
-            "enabledByDefault": false,
+            "enabledByDefault": true,
             "utterances": [
                 "What home assistant devices do you know",
                 "what home assistant devices can you control",

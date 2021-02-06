@@ -11,6 +11,16 @@
 		"isSensitive": false,
 		"description": "Adds your HA address"
 	},
+	"temperatureUnits": {
+		"defaultValue": "C",
+		"dataType": "list",
+		"isSensitive": false,
+		"values": {
+			"Celcius": "C",
+			"Farenheit": "F"
+		},
+		"description": "Adds your preferred temperature unit"
+	},
 	"debugMode": {
 		"defaultValue": false,
 		"dataType": "boolean",
