@@ -97,7 +97,7 @@ class HomeAssistant(AliceSkill):
 			self.endDialog(
 				sessionId=session.sessionId,
 				text=self.randomTalk(text=textResponce, replace=[eventValue]),
-				siteId=session.siteId
+				deviceUid=session.deviceUid
 			)
 
 
@@ -113,7 +113,7 @@ class HomeAssistant(AliceSkill):
 		self.endDialog(
 			sessionId=session.sessionId,
 			text=self.randomTalk(text='sayListOfDevices', replace=[activeFriendlyName]),
-			siteId=session.siteId
+			deviceUid=session.deviceUid
 		)
 
 
@@ -234,7 +234,7 @@ class HomeAssistant(AliceSkill):
 		self.endDialog(
 			sessionId=session.sessionId,
 			text=self.randomTalk(text='addHomeAssistantDevices'),
-			siteId=session.siteId
+			deviceUid=session.deviceUid
 		)
 
 		# connect to the HomeAssistant API/States to retrieve entity names and values
@@ -277,7 +277,7 @@ class HomeAssistant(AliceSkill):
 			self.endDialog(
 				sessionId=session.sessionId,
 				text=self.randomTalk(text='addHomeAssistantDevicesError'),
-				siteId=session.siteId
+				deviceUid=session.deviceUid
 			)
 
 
@@ -315,7 +315,7 @@ class HomeAssistant(AliceSkill):
 			self.endDialog(
 				sessionId=session.sessionId,
 				text=self.randomTalk(text='homeAssistantSwitchDevice', replace=[self._action]),
-				siteId=session.siteId
+				deviceUid=session.deviceUid
 			)
 			self._entity = None
 
@@ -347,7 +347,7 @@ class HomeAssistant(AliceSkill):
 				sessionId=session.sessionId,
 				text=self.randomTalk(text='getActiveDeviceState',
 									 replace=[session.slotRawValue("DeviceState"), entityState]),
-				siteId=session.siteId
+				deviceUid=session.deviceUid
 			)
 
 
@@ -387,7 +387,7 @@ class HomeAssistant(AliceSkill):
 			self.endDialog(
 				sessionId=session.sessionId,
 				text=self.randomTalk(text='sayHorizon', replace=[horizon]),
-				siteId=session.siteId
+				deviceUid=session.deviceUid
 			)
 
 		elif 'dusk' in request:
@@ -435,7 +435,7 @@ class HomeAssistant(AliceSkill):
 			self.endDialog(
 				sessionId=session.sessionId,
 				text=self.randomTalk(text='sayIpError', replace=[session.slotRawValue("switchNames")]),
-				siteId=session.siteId
+				deviceUid=session.deviceUid
 			)
 			self.logWarning(
 				f'Getting devices IP failed: I may not have that data available from HA  - {session.slotRawValue("switchNames")}')
@@ -446,7 +446,7 @@ class HomeAssistant(AliceSkill):
 			self.endDialog(
 				sessionId=session.sessionId,
 				text=self.randomTalk(text='sayIpAddress', replace=[ipOfDevice]),
-				siteId=session.siteId
+				deviceUid=session.deviceUid
 			)
 			self.logInfo(f'You can view the {session.slotRawValue("switchNames")} at ->> http://{ipOfDevice}')
 
@@ -454,7 +454,7 @@ class HomeAssistant(AliceSkill):
 			self.endDialog(
 				sessionId=session.sessionId,
 				text=self.randomTalk(text='sayIpError2', replace=[session.slotRawValue("switchNames")]),
-				siteId=session.siteId
+				deviceUid=session.deviceUid
 			)
 			self.logWarning(f'Device name not available, HA may not of supplied that devices IP')
 
@@ -480,7 +480,7 @@ class HomeAssistant(AliceSkill):
 			answer = f"Sorry but the {device.displayName} is currently unavailable. Is it connected to the network ?"
 			self.say(
 				text=answer,
-				siteId=self.DeviceManager.getMainDevice().uid
+				deviceUid=self.DeviceManager.getMainDevice().uid
 			)
 			return
 
@@ -666,7 +666,7 @@ class HomeAssistant(AliceSkill):
 	def sayNumberOfDeviceViaThread(self):
 		self.say(
 			text=self.randomTalk(text='saynumberOfDevices', replace=[self._newDeviceCount, len(self._haDevicesFromAliceDatabase)]),
-			siteId=self.DeviceManager.getMainDevice().displayName
+			deviceUid=self.DeviceManager.getMainDevice().uid
 		)
 
 
@@ -674,7 +674,7 @@ class HomeAssistant(AliceSkill):
 		self.endDialog(
 			sessionId=session.sessionId,
 			text=self.randomTalk(text='sayConnectionOffline'),
-			siteId=session.siteId
+			deviceUid=session.deviceUid
 		)
 
 
@@ -1069,7 +1069,7 @@ class HomeAssistant(AliceSkill):
 						self.logWarning('Deleting all HomeAssistant devices and starting fresh')
 
 						session: DialogSession = self.DialogManager.newSession(
-							siteId=self.DeviceManager.getMainDevice().displayName
+							deviceUid=self.DeviceManager.getMainDevice().uid
 						)
 						self.wipeAllHaData(session)
 
@@ -1170,7 +1170,7 @@ class HomeAssistant(AliceSkill):
 		self.endDialog(
 			sessionId=session.sessionId,
 			text=self.randomTalk(text='saySunState', replace=[state, result, hours, minutes]),
-			siteId=session.siteId
+			deviceUid=session.deviceUid
 		)
 
 
@@ -1258,7 +1258,7 @@ class HomeAssistant(AliceSkill):
 			self.endDialog(
 				sessionId=session.sessionId,
 				text=self.randomTalk(text='dummyUtterance'),
-				siteId=session.siteId,
+				deviceUid=session.deviceUid,
 			)
 			return
 		userSlot = session.slotValue('HAintent')
@@ -1310,7 +1310,7 @@ class HomeAssistant(AliceSkill):
 					return True
 				else:
 					self.say(
-						siteId=session.siteId,
+						deviceUid=session.deviceUid,
 						text=self.randomTalk(text='utteranceExists'), )
 					self.createIntentRequest(session)
 
