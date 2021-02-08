@@ -272,7 +272,7 @@ Icon - Description - state(where aplicable):
 
 - pressure gauge - device_class pressure
 
-- sensor with lightbulb = device_class illuminance
+- sensor with light bulb = device_class illuminance
 
 - voltage sign - device_class voltage
 
@@ -283,3 +283,28 @@ Icon - Description - state(where aplicable):
 - Gas (co2)
 - humidity
 - temperature
+
+<span style="color: #ff0000;">Debug Control</span>
+
+In the skill settings you have a couple of options for monitoring debug info.
+
+1. ViewJsonPayload - This will write your incomming data from HA into a file found in
+your skill directory. Handy for seeing what comes from your HA and diagnosing why some things might not get captured
+   
+2. debugMode - This will print debug information to your syslog. Good for seeing what is happening behind
+   the scenes in regards too HA skill doing stuff
+   
+3. debugIcon - If his option is enabled it will display debug information as to why a icon may not be displaying
+please turn this on and send the results to the dev if requested.
+   
+NOTE on #2: debug mode prints alot of syslog debug messages (must also have debug mode enabled in alice admin)
+However, to personalise that a litle there is also a debugControl.json file found in your
+skill directory.
+
+By default, those values are set to true so that all debug messages are displayed
+Set to false in order to stop a specific type of debug message from displaying
+
+EG: "header" : false, won't display the header debug message you get on boot up but will display the others
+
+Some debug messages don't have this control such as synonym creation. This is ok as it only happens when you add 
+devices anyway so won't be a regular event

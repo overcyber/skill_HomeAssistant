@@ -44,5 +44,11 @@
 		"dataType": "boolean",
 		"isSensitive": false,
 		"description": "Allow user to start with a fresh set of settings"
+	},
+	"debugIcon": {
+		"defaultValue": false,
+		"dataType": "boolean",
+		"isSensitive": false,
+		"description": "Displays syslog message for diagnosing device icon issues"
 	}
 }

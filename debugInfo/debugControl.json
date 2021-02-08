@@ -1,0 +1,7 @@
+{
+	"header" : true,
+	"switching" : true,
+	"telemetry" : true,
+	"skippingDevice"	: true,
+	"updateStates" : true
+}

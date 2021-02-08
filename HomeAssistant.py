@@ -128,7 +128,7 @@ class HomeAssistant(AliceSkill):
 		try:
 			aliceIgnore: str = item['attributes']['AliceIgnore']
 			if 'true' in aliceIgnore.lower():
-				if self.getConfig('debugMode'):
+				if self.getConfig('debugMode') and self.getDebugControl('skippingDevice'):
 					self.logDebug(
 						f"Skipping the devices {item['attributes']['friendly_name']}. AliceIgnore set to {item['attributes']['AliceIgnore']} ")
 					self.logDebug("")
@@ -244,8 +244,8 @@ class HomeAssistant(AliceSkill):
 		if self.getConfig('viewJsonPayload'):
 			self.logDebug(f'!-!-!-!-!-!-!-! **INCOMING JSON PAYLOAD** !-!-!-!-!-!-!-!')
 			self.logDebug(f'')
-			self.logDebug(f'Incomming payload has been written to  HomeAssistant/jsonPayload.json ')
-			file = self.getResource('jsonPayload.json')
+			self.logDebug(f'Incomming payload has been written to  HomeAssistant/debugInfo/jsonPayload.json ')
+			file = self.getResource('debugInfo/jsonPayload.json')
 			file.write_text(json.dumps(data, ensure_ascii=False, indent=4))
 			self.logDebug(f'')
 			self.logDebug(f'')
@@ -295,7 +295,7 @@ class HomeAssistant(AliceSkill):
 
 		if session.slotValue('switchNames'):
 			self._entity = self.DeviceManager.getDeviceByName(session.slotRawValue('switchNames'))
-			if self.getConfig('debugMode'):
+			if self.getConfig('debugMode') and self.getDebugControl('switching'):
 				self.logDebug(f'!-!-!-!-!-!-!-! **SWITCHING EVENT** !-!-!-!-!-!-!-!')
 				self.logDebug(f'')
 				self.logDebug(f'I was requested to "{self._action}" the devices called "{self._entity.displayName}" ')
@@ -483,17 +483,14 @@ class HomeAssistant(AliceSkill):
 				deviceUid=self.DeviceManager.getMainDevice().uid
 			)
 			return
-
-		header, url = self.retrieveAuthHeader(urlPath=f'services/switch/', urlAction=self._action)
+		deviceType = device.getParam('entityGroup')
+		header, url = self.retrieveAuthHeader(urlPath=f'services/{deviceType}/', urlAction=self._action)
 		# Update json file on click via Myhome
 		self._jsonDict = json.loads(str(self.getResource('currentStateOfDevices.json').read_text()))
 		self._jsonDict[device.getParam('entityName')] = device.getParam("state")
 
 		jsonData = {"entity_id": device.getParam('entityName')}
-		result = requests.request("POST", url=url, headers=header, json=jsonData)
-		# debug helper
-		if self.getConfig(key='debugMode'):
-			self.Commons.getMethodCaller(resultText=result.text, resultContent=result.content )
+		requests.request("POST", url=url, headers=header, json=jsonData)
 
 		self.updateDeviceStateJSONfile()
 
@@ -515,7 +512,7 @@ class HomeAssistant(AliceSkill):
 			if isinstance(item, dict):
 				self.sortThroughJson(item=item)
 
-		if self.getConfig('debugMode'):
+		if self.getConfig('debugMode') and self.getDebugControl('updateStates'):
 			self.logDebug(f'!-!-!-!-!-!-!-! **updateDBStates code** !-!-!-!-!-!-!-!')
 
 
@@ -540,7 +537,7 @@ class HomeAssistant(AliceSkill):
 					# update the state of the json states file
 					self._jsonDict[deviceId] = entityDetails['state']
 
-					if self.getConfig('debugMode'):
+					if self.getConfig('debugMode') and self.getDebugControl('updateStates'):
 						self.logDebug(f'')
 						self.logDebug(f'I\'m updating the "{deviceId}" with state "{entityDetails["state"]}" ')
 
@@ -563,7 +560,7 @@ class HomeAssistant(AliceSkill):
 				if device.getParam('entityName') == entity:
 
 					self._jsonDict[entity] = state
-					if self.getConfig('debugMode'):
+					if self.getConfig('debugMode') and self.getDebugControl('updateStates'):
 						self.logDebug(f'')
 						self.logDebug(f'I\'m now updating the SENSOR "{sensorName}" with the state of "{state}" ')
 						self.logDebug(f'HA class is "{haClass}" ')
@@ -691,7 +688,6 @@ class HomeAssistant(AliceSkill):
 		if not self.checkConnection():
 			return
 		# todo LARRY sensor shortcut
-
 		self.updateDBStates()
 		self.getTelemetryValues()
 
@@ -714,7 +710,7 @@ class HomeAssistant(AliceSkill):
 				if newPayload:
 
 					try:
-						if self.getConfig('debugMode') and debugtrigger == 0:
+						if self.getConfig('debugMode') and self.getDebugControl("telemetry") and debugtrigger == 0:
 							self.logDebug("")
 							self.logDebug(f'!-!-!-!-!-!-!-! **Now adding to the Telemetry DataBase** !-!-!-!-!-!-!-!')
 							debugtrigger = 1
@@ -751,16 +747,16 @@ class HomeAssistant(AliceSkill):
 						or device.getParam('entityGroup') == 'group' \
 						or device.getParam('entityGroup') == 'input_boolean':
 					switchValueList.append(dictValue)
-					# todo remove not
-					if not self.getConfig('debugMode'):
+
+					if self.getConfig('debugMode'):
 						self.logDebug(
 							f'Adding slotValue {device.displayName}, of type "{device.getParam("entityGroup")}"')
 						self.logDebug('')
 
 				if 'light' in device.getParam('entityGroup'):
 					lightValueList.append(dictValue)
-					# todo remove not
-					if not self.getConfig('debugMode'):
+
+					if self.getConfig('debugMode'):
 						self.logDebug(
 							f'Adding slot value {device.displayName}, of type "{device.getParam("entityGroup")}"')
 						self.logDebug('')
@@ -916,7 +912,7 @@ class HomeAssistant(AliceSkill):
 												service=self.name,
 												deviceId=device.id,
 												locationId=locationID)
-			if self.getConfig('debugMode'):
+			if self.getConfig('debugMode') and self.getDebugControl('telemetry'):
 				self.logDebug(f'')
 				self.logDebug(
 					f'The {str(haTelemetryType)} reading for the {device.displayName} is {newPayload[str(haTelemetryType)]} ')
@@ -1055,7 +1051,7 @@ class HomeAssistant(AliceSkill):
 				header, url = self.retrieveAuthHeader(' ', ' ')
 				response = get(self.getConfig('haIpAddress'), headers=header)
 
-				if self.getConfig('debugMode'):
+				if self.getConfig('debugMode') and self.getDebugControl('header'):
 					self.logDebug(f'!-!-!-!-!-!-!-! **OnBooted code** !-!-!-!-!-!-!-!')
 					self.logDebug(f'')
 					self.logDebug(f'{response.text} - onBooted connection code')
@@ -1065,6 +1061,7 @@ class HomeAssistant(AliceSkill):
 
 				if '{"message": "API running."}' in response.text:
 					self.logInfo(f'HomeAssistant Connected')
+
 					if self.getConfig('wipeAll'):
 						self.logWarning('Deleting all HomeAssistant devices and starting fresh')
 
@@ -1074,6 +1071,8 @@ class HomeAssistant(AliceSkill):
 						self.wipeAllHaData(session)
 
 					self.updateKnownDeviceLists()
+					if self.getConfig('debugIcon'):
+						self.getIconDebugInfo()
 					heartBeatList = self._haDevicesFromAliceDatabase
 
 					if heartBeatList:
@@ -1513,3 +1512,26 @@ class HomeAssistant(AliceSkill):
 			sessionId=session.sessionId,
 			text=self.randomTalk(text='finishUp')
 		)
+
+	def getDebugControl(self, key: str) -> bool:
+		data: dict = json.loads(str(self.getResource('debugInfo/debugControl.json').read_text()))
+		return data[key]
+
+	def getIconDebugInfo(self) -> dict:
+		file = self.getResource('debugInfo/iconDebug.json')
+		iconInfo = dict()
+		for device in self._haDevicesFromAliceDatabase:
+			iconInfo[device.getParam('entityName')] = {
+				"entityName" 		: device.getParam('entityName'),
+				"entityGroup"		: device.getParam('entityGroup'),
+				"haDeviceType"		: device.getParam('haDeviceType'),
+				"state"				: device.getParam('state'),
+				"AliceDeviceType"	: device.deviceTypeName
+			}
+
+		file.write_text(json.dumps(iconInfo, ensure_ascii=False, indent='\t'))
+		self.logInfo(f"![Red](So you have missing icons and need help ??)")
+		self.logInfo(f"![green](Well you now have a debug file in {file} )")
+		self.logInfo(f"![yellow](Either send that file to the requesting dev or...)")
+		self.logInfo(f"![yellow](Copy the formatted contents of that file and paste it to pastebin, then send the link )")
+		self.logInfo(f"![yellow](Also please hover over the missing icon in my home and advise what the device name is)")

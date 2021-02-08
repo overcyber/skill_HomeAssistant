@@ -3,6 +3,7 @@ import sqlite3
 from core.device.model.Device import Device
 from pathlib import Path
 from core.device.model.DeviceAbility import DeviceAbility
+from skills.HomeAssistant.HomeAssistant import HomeAssistant
 
 
 class HAlight(Device):
@@ -38,5 +39,22 @@ class HAlight(Device):
 
 
 	def onUIClick(self):
-		self.logDebug(f'Currently there\'s no toggle event available for this light controller')
+		if self.getParam(key='state') == "on":
+			self.updateParams(key='state', value='off')
+			self.updateStateOfDeviceInHA()
+			return super().onUIClick()
+		if self.getParam(key='state') == "off":
+			self.updateParams(key='state', value='on')
+			self.updateStateOfDeviceInHA()
+			return super().onUIClick()
+		if self.getParam(key='state') == "unavailable":
+			self.updateStateOfDeviceInHA()
+			return super().onUIClick()
 		return super().onUIClick()
+
+	def updateStateOfDeviceInHA(self):
+		""" Sends uid to HomeAssistant skill which then sends the command over
+			API to HomeAssistant to turn on or off the device
+		"""
+		haClass = HomeAssistant()
+		haClass.deviceClicked(uid=self.uid)

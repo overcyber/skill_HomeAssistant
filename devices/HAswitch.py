@@ -41,10 +41,6 @@ class HAswitch(Device):
 		if self.ConfigManager.getSkillConfigByName(skillName='HomeAssistant', configName='debugMode'):
 			self.Commons.getMethodCaller(name=self.displayName, haDeviceType=self.getParam('haDeviceType'), entity=self.getParam('entityName'), entityGroup=self.getParam('entityGroup'), state=self.getParam('state') )
 
-		if self.getParam('entityGroup') == "input_boolean":
-			self.logInfo(f"Input booleans are currently not clickable. It's on the 'todo' list.")
-			return super().onUIClick()
-
 		if self.getParam(key='state') == "on":
 			self.updateParams(key='state', value='off')
 			self.updateStateOfDeviceInHA()
