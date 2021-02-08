@@ -31,9 +31,6 @@ class HAlight(Device):
 		if self.getParam(key='state') == "on":
 			return Path(f'{self._imagePath}Lights/lightOn.png')
 
-		elif self.getParam(key='state') == "off":
-			return Path(f'{self._imagePath}Lights/lightOff.png')
-
 		else:
 			return Path(f'{self._imagePath}Lights/lightOff.png')
 
@@ -42,14 +39,14 @@ class HAlight(Device):
 		if self.getParam(key='state') == "on":
 			self.updateParams(key='state', value='off')
 			self.updateStateOfDeviceInHA()
-			return super().onUIClick()
-		if self.getParam(key='state') == "off":
+
+		elif self.getParam(key='state') == "off":
 			self.updateParams(key='state', value='on')
 			self.updateStateOfDeviceInHA()
-			return super().onUIClick()
-		if self.getParam(key='state') == "unavailable":
-			self.updateStateOfDeviceInHA()
-			return super().onUIClick()
+
+		else:
+			self.logInfo(f"Sorry but that light is currently not available")
+
 		return super().onUIClick()
 
 	def updateStateOfDeviceInHA(self):

@@ -929,9 +929,7 @@ class HomeAssistant(AliceSkill):
 		:return: Writes a json file to the skill directory /currentStateOfDevices.json
 		"""
 		if self.getConfig('debugMode'):
-			self.logDebug(f'')
 			self.logDebug(f'Updated currentStateOfDevices.json')
-			self.logDebug(f'')
 		self.getResource('currentStateOfDevices.json').write_text(
 			json.dumps(self._jsonDict, ensure_ascii=False, indent=4))
 
