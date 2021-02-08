@@ -1535,3 +1535,4 @@ class HomeAssistant(AliceSkill):
 		self.logInfo(f"![yellow](Either send that file to the requesting dev or...)")
 		self.logInfo(f"![yellow](Copy the formatted contents of that file and paste it to pastebin, then send the link )")
 		self.logInfo(f"![yellow](Also please hover over the missing icon in my home and advise what the device name is)")
+		return iconInfo
