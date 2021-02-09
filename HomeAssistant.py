@@ -650,14 +650,14 @@ class HomeAssistant(AliceSkill):
 	################# General Methods ###################
 	# todo General methods shortcut
 
-	def wipeAllHaData(self, session):
+	def wipeAllHaData(self):
 		# delete and existing values in DB so we can update with a fresh list of Devices
 		for device in self.DeviceManager.getDevicesBySkill(skillName=self.name, connectedOnly=False):
 			self.DeviceManager.deleteDevice(deviceId=device.id)
 
-		self.logWarning(f'Just deleted your Home Assistant records. Now going to reinstate them')
+		self.logWarning(f'Just deleted your Home Assistant records.')
 		self.updateConfig(key="wipeAll", value='false')
-		self.addHomeAssistantDevices(session)
+
 
 
 	def sayNumberOfDeviceViaThread(self):
@@ -1063,12 +1063,13 @@ class HomeAssistant(AliceSkill):
 					if self.getConfig('wipeAll'):
 						self.logWarning('Deleting all HomeAssistant devices and starting fresh')
 
-						session: DialogSession = self.DialogManager.newSession(
-							deviceUid=self.DeviceManager.getMainDevice().uid
-						)
-						self.wipeAllHaData(session)
+						self.wipeAllHaData()
 
 					self.updateKnownDeviceLists()
+
+					if self.noDevicePreChecks():
+						return
+
 					if self.getConfig('debugIcon'):
 						self.getIconDebugInfo()
 					heartBeatList = self._haDevicesFromAliceDatabase
@@ -1096,6 +1097,22 @@ class HomeAssistant(AliceSkill):
 				return False
 		super().onBooted()
 		return True
+
+	def noDevicePreChecks(self) -> bool:
+		if not self._haDevicesFromAliceDatabase:
+			self.logWarning('No devices found. let\'s see if I can fix that for you')
+			self.logInfo("Looking for new Home Assistant devices")
+			session: DialogSession = self.DialogManager.newSession(
+				deviceUid=self.DeviceManager.getMainDevice().uid
+			)
+			self.addHomeAssistantDevices(session)
+			self.updateKnownDeviceLists()
+
+			if not self._haDevicesFromAliceDatabase:
+				self.logInfo(f"Sorry but i simply can't find any devices.")
+				return True
+
+		return False
 
 
 	def sendHeartBeatrequest(self):
