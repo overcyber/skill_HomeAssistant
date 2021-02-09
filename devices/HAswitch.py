@@ -31,30 +31,24 @@ class HAswitch(Device):
 
 		if Path(iconPath).exists():
 			return iconPath
-
 		else:
 			return Path(f"{self._imagePath}Switches/HAswitch.png")
 
 
 	def onUIClick(self):
-		# debug helper
-		if self.ConfigManager.getSkillConfigByName(skillName='HomeAssistant', configName='debugMode'):
-			self.Commons.getMethodCaller(name=self.displayName, haDeviceType=self.getParam('haDeviceType'), entity=self.getParam('entityName'), entityGroup=self.getParam('entityGroup'), state=self.getParam('state') )
 
 		if self.getParam(key='state') == "on":
 			self.updateParams(key='state', value='off')
 			self.updateStateOfDeviceInHA()
 
-			return super().onUIClick()
-
-		if self.getParam(key='state') == "off":
+		elif self.getParam(key='state') == "off":
 			self.updateParams(key='state', value='on')
 			self.updateStateOfDeviceInHA()
-			return super().onUIClick()
 
-		if self.getParam(key='state') == "unavailable":
-			self.updateStateOfDeviceInHA()
-			return super().onUIClick()
+		else:
+			self.logInfo("Sorry but it appears that switch is currently unavailable")
+
+		return super().onUIClick()
 
 
 	def updateStateOfDeviceInHA(self):
