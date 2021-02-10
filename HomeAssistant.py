@@ -1074,7 +1074,7 @@ class HomeAssistant(AliceSkill):
 					self.updateKnownDeviceLists()
 
 					if self.noDevicePreChecks():
-						return
+						return True
 
 					if self.getConfig('debugIcon'):
 						self.getIconDebugInfo()
