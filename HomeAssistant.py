@@ -534,6 +534,10 @@ class HomeAssistant(AliceSkill):
 		for device in self._haDevicesFromAliceDatabase:
 			for deviceId, entityDetails in self._switchDictionary.items():
 				if device.getParam('entityName') == deviceId:
+					#todo Larry remove this check in version 3.0.6 onwards
+					if device.displayName != entityDetails['friendlyName']:
+						device.updateConfigs({"displayName" : entityDetails['friendlyName']})
+
 					# update the state of the json states file
 					self._jsonDict[deviceId] = entityDetails['state']
 
@@ -545,7 +549,7 @@ class HomeAssistant(AliceSkill):
 					# send HeartBeat
 					if not 'unavailable' in entityDetails['state'] and entityDetails['state']:
 						self.DeviceManager.onDeviceHeartbeat(uid=device.uid)
-						device.publishDevice()
+
 
 
 	def updateSensors(self):
@@ -558,7 +562,9 @@ class HomeAssistant(AliceSkill):
 			# Locate sensor in the database and update it's value
 			for device in self._haDevicesFromAliceDatabase:
 				if device.getParam('entityName') == entity:
-
+					#todo Larry remove this check in version 3.0.6 onwards
+					if device.displayName != sensorName:
+						device.updateConfigs({"displayName" : sensorName})
 					self._jsonDict[entity] = state
 					if self.getConfig('debugMode') and self.getDebugControl('updateStates'):
 						self.logDebug(f'')
@@ -1084,7 +1090,7 @@ class HomeAssistant(AliceSkill):
 						self.sendHeartBeatrequest()
 
 					# on boot update states to get My home states upto date
-					if self.updateKnownDeviceLists():
+					if self._haDevicesFromAliceDatabase:
 						self.updateDBStates()
 						return True
 
