@@ -30,12 +30,8 @@ class HomeAssistant(AliceSkill):
 	def __init__(self):
 
 		self._broadcastFlag = threading.Event()
-		self._newSlotValueList = list()
-		self._switchAndGroupList = list()
 		self._switchDictionary = dict()
-		self._inputBoolean = list()
 		self._dbSensorList = list()
-		self._grouplist = list()
 		self._lightList = list()
 		self._action = ""
 		self._entity: Device = None
@@ -44,7 +40,6 @@ class HomeAssistant(AliceSkill):
 		self._IpList = list()
 		self._configureActivated = False
 		self._jsonDict = dict()
-		self._heartbeatDeviceUID = dict()
 		self._newDeviceCount = 0
 		self._haDevicesFromAliceDatabase = list()
 
@@ -534,9 +529,6 @@ class HomeAssistant(AliceSkill):
 		for device in self._haDevicesFromAliceDatabase:
 			for deviceId, entityDetails in self._switchDictionary.items():
 				if device.getParam('entityName') == deviceId:
-					#todo Larry remove this check in version 3.0.6 onwards
-					if device.displayName != entityDetails['friendlyName']:
-						device.updateConfigs({"displayName" : entityDetails['friendlyName']})
 
 					# update the state of the json states file
 					self._jsonDict[deviceId] = entityDetails['state']
@@ -562,9 +554,6 @@ class HomeAssistant(AliceSkill):
 			# Locate sensor in the database and update it's value
 			for device in self._haDevicesFromAliceDatabase:
 				if device.getParam('entityName') == entity:
-					#todo Larry remove this check in version 3.0.6 onwards
-					if device.displayName != sensorName:
-						device.updateConfigs({"displayName" : sensorName})
 					self._jsonDict[entity] = state
 					if self.getConfig('debugMode') and self.getDebugControl('updateStates'):
 						self.logDebug(f'')
@@ -1084,8 +1073,6 @@ class HomeAssistant(AliceSkill):
 						self.logInfo(f'Sending Heartbeat connection requests')
 
 						for device in heartBeatList:
-							self._heartbeatDeviceUID[f"{device.uid}"] = f"{device.getParam('state')}"
-
 							self.DeviceManager.deviceConnecting(uid=device.uid)
 						self.sendHeartBeatrequest()
 
@@ -1123,7 +1110,8 @@ class HomeAssistant(AliceSkill):
 
 	def sendHeartBeatrequest(self):
 		"""
-		Send heartbeats every 319 seconds which is after the 5 min state updates
+		Send heartbeats every 319 seconds which is after the 5 min state updates.
+		Reason = Because we check for state condition. if unavailable etc then we don't send the heartbeat
 		:return:
 		"""
 		for device in self.DeviceManager.getDevicesBySkill(skillName=self.name, connectedOnly=False):
@@ -1543,6 +1531,7 @@ class HomeAssistant(AliceSkill):
 		iconInfo = dict()
 		for device in self._haDevicesFromAliceDatabase:
 			iconInfo[device.getParam('entityName')] = {
+				"deviceId"			: device.id,
 				"entityName" 		: device.getParam('entityName'),
 				"entityGroup"		: device.getParam('entityGroup'),
 				"haDeviceType"		: device.getParam('haDeviceType'),
