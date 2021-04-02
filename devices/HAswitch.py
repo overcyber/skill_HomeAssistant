@@ -2,7 +2,6 @@ import sqlite3
 from pathlib import Path
 from core.device.model.Device import Device
 from skills.HomeAssistant.HomeAssistant import HomeAssistant
-
 from core.device.model.DeviceAbility import DeviceAbility
 
 
@@ -37,6 +36,7 @@ class HAswitch(Device):
 
 	def onUIClick(self):
 
+		# Display default icons
 		if self.getParam(key='state') == "on":
 			self.updateParams(key='state', value='off')
 			self.updateStateOfDeviceInHA()
@@ -60,5 +60,5 @@ class HAswitch(Device):
 
 
 	def selectIconBasedOnState(self):
-		return Path(
-			f"{self._imagePath}Switches/{self.getParam('entityGroup')}{str(self.getParam('state')).capitalize()}.png")
+		return Path(f"{self._imagePath}Switches/{self.getParam('entityGroup')}{str(self.getParam('state')).capitalize()}.png")
+

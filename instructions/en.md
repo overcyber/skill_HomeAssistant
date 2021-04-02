@@ -36,7 +36,8 @@ Add either of those to your Home Assistant configuration.yaml, if you'd like Ali
 <li>In "HAaccessToken" field, add your copied long life token</li>
 <li>In "HAIpAddress" field, add your HomeAssistant IP address - make sure you append /api/
  
-<span style="color: #00ff00;">Example</span> http://192.168.4.1:8123/api/</li>
+<span style="color: #00ff00;">Example</span> http://192.168.4.1:8123/api/
+</li>
 <li>Restart Alice</li>
 </ol>
 
@@ -167,7 +168,8 @@ sensor:
 ```
 
 For available device classes, have a look here <a href="https://www.home-assistant.io/integrations/sensor/" target="_blank">Sensors</a>
-and here <a href="https://www.home-assistant.io/integrations/binary_sensor/"target="_blank">Binary sensors</a>
+and here 
+<a href="https://www.home-assistant.io/integrations/binary_sensor/" target="_blank">Binary sensors</a>
 
 <span style="color: #ffff00;">Note:</span> state_topic will of course be the topic of your mqtt device :)
 
@@ -308,3 +310,114 @@ EG: "header" : false, won't display the header debug message you get on boot up 
 
 Some debug messages don't have this control such as synonym creation. This is ok as it only happens when you add 
 devices anyway so won't be a regular event
+
+
+<span style="color: #ff0000;">Adding and displaying water tank levels</span>
+
+The HA skill now comes with the ability to display tank levels of what ever you have set up.
+This has been based on, and tested on, using digital non contact level "sensors" configured with Tasmota sending MQTT
+payload to Home Assistant (search google for non contact water level sensors) . If you're using float "switches" you may have to do some tweaking in HA so that they become a 
+sensor.sensorname_tank1 device rather than a switch.switchname_tank1 device and of course follow the below setup guide. 
+
+Perhaps you have a 
+- Fish tank you want to monitor the level of ?
+- or maybe you live remotely and want to check on rainwater tank levels ?
+- or perhaps you have a boat or a caravan and want to monitor fresh or grey water tanks or even fuel tanks?
+
+The possibilities could be many. The HA skill will now display in "my home" those tank levels in four different version.
+
+1. 4 different levels , for those that have 4 sensors on the water tank.
+	- Full
+	- 75 % full
+	- 50 % full
+	- 25 % full
+	- Empty (When all sensors are "off")
+	
+2. 3 Different levels
+	- Full
+	- 2/3rds Full
+	- 1/3rd Full
+	- Empty (When all sensors are "off")
+	
+3. 2 different levels
+	- High
+	- Low
+	- Empty ( When both sensors read "off")
+	
+4. 1 level
+	- High
+	- Empty ( When the high level trigger is "off")
+
+<span style="color: #ff0000;">Tank Level setup</span>
+
+For the tank level gauges to work in "My Home" there are a few setup steps to take. Because the icons have the ability to be 
+customised, that means there are a few specific steps to get them to display correctly.
+
+- In HA the name of the device should be called whatever you want but with a tank number on the end of it.
+
+<span style="color: #00ff00;">Example being</span>, "sensor.Fresh_Water_Tank_1" and "sensor.Fresh_Water_Tank_2"
+  
+Reason being is... The code will then detect if you have more than 1 fresh_Water_Tank (in this example) and display the
+appropriate icon IE: Fresh water Tank 1 or Fresh Water Tank 2. Leaving the number off won't hurt but will just 
+always display the tank 1 image
+
+<span style="color: #ffff00;">NOTE:</span> tank2 icons have only been done for fourLevelTank devices (refer devices/img/TankLevel/FourLevels).
+If you need more tank icons or more icons for other tankLevel devices
+please edit the provided svg files and create as many more png files as required (following the existing naming format)
+
+- Once the device has been added to HA, edit the customize.yaml file and add the following attribute
+	- Attribute name -> HaDeviceType
+	- Attribute Value -> tankLevel4
+	
+Change out the value tankLevel4 with tankLevel3 or tankLevel2 or tankLevel1 depending on how many sensors you have on that tank
+
+<span style="color: #ffff00;">NOTE:</span> Attribute name and value are case-sensitive so add them exactly as per above example. Without adding this attribute
+HA skill WILL NOT pick up on it being a tank level and therefore will not display in My Home.
+
+- The json payload that alice expects from a tankLevel device is in the following format (example is for a 3 level tank)
+
+```{"Switch1": "ON", "Switch2": "OFF", "Switch3": "OFF", "Time": "2021-03-02T10:31:58"}```
+
+You can achieve this easily by using a similar configuration in your configuration.yaml file in HA as per below.
+<span style="color: #ffff00;">NOTE:</span> The "time" key is ignored and not important
+```
+sensor:
+  - platform: mqtt
+    name: Fresh Water Tank 1
+    state_topic: "FreshWaterTank1/tele/SENSOR"
+    value_template: "{{ value_json | tojson }}"
+    json_attributes_topic: "FreshWaterTank1/tele/HASS_STATE"
+    json_attributes_template: "{{ value_json | tojson }}"
+```
+Obviously adjust your topics and name to suit your set up.
+
+In ```ProjectAlice/skills/HomeAssistant/devices/img/svgFiles```
+There are the actual svg files used for creating the icons. 
+Feel free to modify the svg files as required then overwrite the existing png images
+to suit your needs EG: maybe you want to change the colors ? change the tank name etc
+
+IMPORTANT: The downside to displaying specific images is you'll need to manually rename the image files to suit.
+here's the steps involved.
+
+Let's assume you have named your "rain water tank sensors" as sensor.Rain_Water_Tank_1 for this example and it
+has 4 sensors on it. Therefore you have made the attribute as per above as tankLevel4.
+
+1. go to ```ProjectAlice/skills/HomeAssistant/devices/img/TankLevel/FourLevels/```
+2. Rename all the FourLevelTank1-XXX.png files to rainwatertank1-1-xxx.png
+3. Example : FourlevelTank1-Full.png becomes rainwatertank1-1-Full.png
+   (the -1- part denotes the tank number, if you had a second rainwater tank it would be 
+   rainwatertank2-2-Full.png) Note the lowercase name with no spaces
+   
+The syntax is... devices displayname (in lowercase with no spaces) - tanknumber - theLevel.png
+By following the above steps... once you "configure home assistant skill" Alice should
+hopefully display tank level icons in your "my home" on the web UI. 
+
+####You could also then consider writing your own skills to do something with those tank levels.
+
+<span style="color: #00ff00;">Example</span>
+- "Hey Alice"  "how full is my rain water tank ?"
+- on the hour, have alice check tank levels and have her report the fish are dying cause there's no water left :)
+- Have alice turn a pump on when a tank reaches a certain level and off again when full
+etc.
+  
+

@@ -1,0 +1,510 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="210mm"
+   height="297mm"
+   viewBox="0 0 210 297"
+   version="1.1"
+   id="svg8"
+   inkscape:version="1.0.1 (0767f8302a, 2020-10-17)"
+   sodipodi:docname="WaterTankTemplateEmpty.svg"
+   inkscape:export-filename="/home/larry/Pictures/device icon/FreshWater25.png"
+   inkscape:export-xdpi="37.41"
+   inkscape:export-ydpi="37.41">
+  <defs
+     id="defs2">
+    <rect
+       x="64.190669"
+       y="131.40459"
+       width="12.589651"
+       height="15.629515"
+       id="rect164" />
+    <rect
+       x="50.274585"
+       y="50.990393"
+       width="70.415522"
+       height="13.607884"
+       id="rect347" />
+    <rect
+       x="48.606609"
+       y="30.852784"
+       width="69.887825"
+       height="15.934515"
+       id="rect341" />
+    <rect
+       x="59.339558"
+       y="233.83475"
+       width="49.038352"
+       height="14.508077"
+       id="rect245" />
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="42.652761 : 9.2208763 : 1"
+       inkscape:vp_y="0 : 935.05523 : 0"
+       inkscape:vp_z="344.29735 : 9.2208763 : 1"
+       inkscape:persp3d-origin="193.47507 : -37.064358 : 1"
+       id="perspective10" />
+    <filter
+       inkscape:label="Chalk and Sponge"
+       inkscape:menu="Distort"
+       inkscape:menu-tooltip="Low turbulence gives sponge look and high turbulence chalk"
+       style="color-interpolation-filters:sRGB;"
+       id="filter88"
+       width="1.6"
+       height="2"
+       y="-0.5"
+       x="-0.3">
+      <feGaussianBlur
+         result="result0"
+         in="SourceGraphic"
+         stdDeviation="0.5"
+         id="feGaussianBlur62" />
+      <feTurbulence
+         baseFrequency="0.2"
+         seed="300"
+         numOctaves="10"
+         result="result1"
+         type="fractalNoise"
+         id="feTurbulence64" />
+      <feGaussianBlur
+         stdDeviation="0.5"
+         result="result8"
+         id="feGaussianBlur66" />
+      <feDisplacementMap
+         result="result7"
+         in2="result8"
+         scale="5"
+         in="result0"
+         xChannelSelector="R"
+         id="feDisplacementMap68" />
+      <feComposite
+         result="result2"
+         operator="in"
+         in2="result1"
+         in="result7"
+         id="feComposite70" />
+      <feComposite
+         k3="3"
+         in2="result2"
+         in="result0"
+         operator="arithmetic"
+         id="feComposite72" />
+      <feBlend
+         result="fbSourceGraphic"
+         mode="multiply"
+         in2="result2"
+         id="feBlend74" />
+      <feColorMatrix
+         values="1 0 0 -1 0 1 0 1 -1 0 1 0 0 -1 0 -1.8 -0.5 0 5.7 -3.5 "
+         in="fbSourceGraphic"
+         result="fbSourceGraphicAlpha"
+         id="feColorMatrix76" />
+      <feGaussianBlur
+         stdDeviation="0.5"
+         in="fbSourceGraphicAlpha"
+         result="result0"
+         id="feGaussianBlur78" />
+      <feSpecularLighting
+         result="result6"
+         surfaceScale="5"
+         specularExponent="3"
+         id="feSpecularLighting82">
+        <feDistantLight
+           azimuth="225"
+           elevation="10"
+           id="feDistantLight80" />
+      </feSpecularLighting>
+      <feComposite
+         in2="fbSourceGraphicAlpha"
+         in="result6"
+         result="result2"
+         operator="in"
+         id="feComposite84" />
+      <feComposite
+         in="fbSourceGraphic"
+         result="fbSourceGraphic"
+         operator="arithmetic"
+         k2="1"
+         k3="0.7"
+         in2="result2"
+         id="feComposite86" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix178" />
+      <feTurbulence
+         id="feTurbulence180"
+         baseFrequency="0.4"
+         type="fractalNoise"
+         seed="0"
+         numOctaves="5"
+         result="result1"
+         in="fbSourceGraphic" />
+      <feDisplacementMap
+         in2="result1"
+         id="feDisplacementMap182"
+         xChannelSelector="R"
+         yChannelSelector="G"
+         scale="30"
+         in="fbSourceGraphic" />
+    </filter>
+    <filter
+       inkscape:label="Chalk and Sponge"
+       inkscape:menu="Distort"
+       inkscape:menu-tooltip="Low turbulence gives sponge look and high turbulence chalk"
+       width="1.6"
+       height="2"
+       y="-0.5"
+       x="-0.3"
+       style="color-interpolation-filters:sRGB;"
+       id="filter176">
+      <feTurbulence
+         baseFrequency="0.4"
+         type="fractalNoise"
+         seed="0"
+         numOctaves="5"
+         result="result1"
+         id="feTurbulence172" />
+      <feDisplacementMap
+         xChannelSelector="R"
+         yChannelSelector="G"
+         scale="30"
+         in="SourceGraphic"
+         in2="result1"
+         id="feDisplacementMap174" />
+    </filter>
+    <filter
+       inkscape:label="Chalk and Sponge"
+       inkscape:menu="Distort"
+       inkscape:menu-tooltip="Low turbulence gives sponge look and high turbulence chalk"
+       width="1.6"
+       height="2"
+       y="-0.5"
+       x="-0.3"
+       style="color-interpolation-filters:sRGB;"
+       id="filter188">
+      <feTurbulence
+         baseFrequency="0.4"
+         type="fractalNoise"
+         seed="0"
+         numOctaves="5"
+         result="result1"
+         id="feTurbulence184" />
+      <feDisplacementMap
+         xChannelSelector="R"
+         yChannelSelector="G"
+         scale="30"
+         in="SourceGraphic"
+         in2="result1"
+         id="feDisplacementMap186" />
+    </filter>
+    <filter
+       inkscape:label="Chalk and Sponge"
+       inkscape:menu="Distort"
+       inkscape:menu-tooltip="Low turbulence gives sponge look and high turbulence chalk"
+       width="1.6"
+       height="2"
+       y="-0.5"
+       x="-0.3"
+       style="color-interpolation-filters:sRGB;"
+       id="filter194">
+      <feTurbulence
+         baseFrequency="0.4"
+         type="fractalNoise"
+         seed="0"
+         numOctaves="5"
+         result="result1"
+         id="feTurbulence190" />
+      <feDisplacementMap
+         xChannelSelector="R"
+         yChannelSelector="G"
+         scale="30"
+         in="SourceGraphic"
+         in2="result1"
+         id="feDisplacementMap192" />
+    </filter>
+    <filter
+       inkscape:label="Dark Glass"
+       inkscape:menu="Bevels"
+       inkscape:menu-tooltip="Illuminated glass effect with light coming from beneath"
+       height="1.5"
+       width="1.5"
+       y="-0.25"
+       x="-0.25"
+       style="color-interpolation-filters:sRGB;"
+       id="filter240">
+      <feBlend
+         in2="SourceGraphic"
+         result="result1"
+         mode="screen"
+         id="feBlend220" />
+      <feGaussianBlur
+         stdDeviation="2"
+         result="result6"
+         id="feGaussianBlur222" />
+      <feComposite
+         operator="xor"
+         in="result6"
+         in2="result1"
+         result="result7"
+         id="feComposite224" />
+      <feComposite
+         result="result4"
+         in="result7"
+         operator="xor"
+         in2="result7"
+         id="feComposite226" />
+      <feGaussianBlur
+         result="result3"
+         stdDeviation="3"
+         in="result4"
+         id="feGaussianBlur228" />
+      <feSpecularLighting
+         result="result5"
+         specularExponent="55"
+         specularConstant="1.5"
+         surfaceScale="6"
+         in="result3"
+         id="feSpecularLighting232">
+        <fePointLight
+           z="20000"
+           y="-8000"
+           x="-5000"
+           id="fePointLight230" />
+      </feSpecularLighting>
+      <feComposite
+         in="result3"
+         k3="1"
+         k2="1.5"
+         operator="arithmetic"
+         in2="SourceGraphic"
+         result="result92"
+         id="feComposite234" />
+      <feComposite
+         in="result5"
+         operator="atop"
+         in2="result92"
+         result="result93"
+         id="feComposite236" />
+      <feBlend
+         mode="multiply"
+         in2="result93"
+         id="feBlend238" />
+    </filter>
+    <rect
+       x="59.339558"
+       y="233.83475"
+       width="49.038353"
+       height="14.508077"
+       id="rect245-7" />
+    <rect
+       x="59.339558"
+       y="233.83475"
+       width="49.038353"
+       height="14.508077"
+       id="rect258" />
+    <rect
+       x="59.339558"
+       y="233.83475"
+       width="49.038353"
+       height="14.508077"
+       id="rect245-7-3" />
+    <rect
+       x="59.339558"
+       y="233.83475"
+       width="49.038353"
+       height="14.508077"
+       id="rect287" />
+    <rect
+       x="59.339558"
+       y="233.83475"
+       width="49.038353"
+       height="14.508077"
+       id="rect245-7-3-6" />
+    <rect
+       x="59.339558"
+       y="233.83475"
+       width="49.038353"
+       height="14.508077"
+       id="rect317" />
+    <filter
+       style="color-interpolation-filters:sRGB;"
+       inkscape:label="Rough Paper"
+       id="filter585"
+       y="-0.15"
+       height="1.3"
+       x="-0.15"
+       width="1.3"
+       inkscape:menu-tooltip="Aquarelle paper effect which can be used for pictures as for objects"
+       inkscape:menu="Textures">
+      <feFlood
+         flood-opacity="0.498039"
+         flood-color="rgb(0,0,0)"
+         result="flood"
+         id="feFlood575" />
+      <feComposite
+         in="flood"
+         in2="SourceGraphic"
+         operator="in"
+         result="composite1"
+         id="feComposite577" />
+      <feGaussianBlur
+         in="composite1"
+         stdDeviation="3"
+         result="blur"
+         id="feGaussianBlur579" />
+      <feOffset
+         dx="6"
+         dy="6"
+         result="offset"
+         id="feOffset581" />
+      <feComposite
+         in="SourceGraphic"
+         in2="offset"
+         operator="over"
+         result="fbSourceGraphic"
+         id="feComposite583" />
+      <feColorMatrix
+         result="fbSourceGraphicAlpha"
+         in="fbSourceGraphic"
+         values="0 0 0 -1 0 0 0 0 -1 0 0 0 0 -1 0 0 0 0 1 0"
+         id="feColorMatrix833" />
+      <feTurbulence
+         id="feTurbulence835"
+         type="fractalNoise"
+         baseFrequency="0.04"
+         numOctaves="5"
+         seed="0"
+         result="result4"
+         in="fbSourceGraphic" />
+      <feDisplacementMap
+         in2="result4"
+         id="feDisplacementMap837"
+         in="fbSourceGraphic"
+         yChannelSelector="G"
+         xChannelSelector="R"
+         scale="10"
+         result="result3" />
+      <feDiffuseLighting
+         id="feDiffuseLighting839"
+         lighting-color="rgb(233,230,215)"
+         diffuseConstant="1"
+         surfaceScale="2"
+         result="result1"
+         in="result4">
+        <feDistantLight
+           id="feDistantLight841"
+           azimuth="235"
+           elevation="40" />
+      </feDiffuseLighting>
+      <feComposite
+         in2="result1"
+         id="feComposite843"
+         operator="in"
+         in="result3"
+         result="result2" />
+      <feComposite
+         in2="result1"
+         id="feComposite845"
+         result="result5"
+         operator="arithmetic"
+         k1="1.7" />
+      <feBlend
+         in2="result3"
+         id="feBlend847"
+         in="result5"
+         mode="normal" />
+    </filter>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.41607814"
+     inkscape:cx="227.56369"
+     inkscape:cy="444.66118"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     inkscape:document-rotation="0"
+     showgrid="false"
+     inkscape:window-width="1294"
+     inkscape:window-height="704"
+     inkscape:window-x="72"
+     inkscape:window-y="27"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata5">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <path
+       style="fill:#aa8800;stroke:#000000;stroke-width:0.264583px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;filter:url(#filter240)"
+       d="M 19.573743,66.956495 18.820972,280.95212 192.9423,281.36689 192.986,67.254469 175.54745,67.361556 176.24395,265.2105 39.420927,265.43203 37.855228,66.982765 Z"
+       id="path26"
+       sodipodi:nodetypes="ccccccccc" />
+    <text
+       inkscape:export-xdpi="37.41"
+       inkscape:export-ydpi="37.41"
+       xml:space="preserve"
+       id="text162"
+       style="font-size:10.5833px;line-height:1.25;font-family:aakar;word-spacing:0px;white-space:pre;shape-inside:url(#rect164);fill:#ff0000;-inkscape-font-specification:'aakar, Normal';font-weight:normal;font-style:normal;font-stretch:normal;font-variant:normal;font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;"
+       transform="matrix(17.512096,0,0,15.410489,-1081.8886,-1940.5898)"><tspan
+         x="64.191406"
+         y="139.80367"><tspan
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10.5833px;font-family:aakar;-inkscape-font-specification:'aakar, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#ff0000">X</tspan></tspan></text>
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer3"
+     inkscape:label="Tank Label">
+    <rect
+       style="fill:#ffb380;stroke-width:0.264583;filter:url(#filter585)"
+       id="rect573"
+       width="127.79405"
+       height="52.779831"
+       x="43.182407"
+       y="2.997056"
+       ry="0"
+       transform="matrix(1.2811586,0,0,0.98262324,-35.852233,0.51065026)" />
+    <text
+       xml:space="preserve"
+       id="text339"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10.5833px;line-height:1.25;font-family:'URW Chancery L';-inkscape-font-specification:'URW Chancery L, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;word-spacing:0px;white-space:pre;shape-inside:url(#rect341);fill:#241c1c;"
+       transform="matrix(2.7688481,0,0,3.3057411,-98.857353,-103.95227)"><tspan
+         x="48.607422"
+         y="40.369419"><tspan>Fresh Water</tspan></tspan></text>
+    <text
+       xml:space="preserve"
+       id="text345"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10.5833px;line-height:1.25;font-family:Likhan;-inkscape-font-specification:'Likhan, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;word-spacing:0px;white-space:pre;shape-inside:url(#rect347);fill:#483745;"
+       transform="matrix(2.0987959,0,0,1.4911385,-39.426193,-41.749904)"><tspan
+         x="50.275391"
+         y="60.777719"><tspan
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:10.5833px;font-family:Likhan;-inkscape-font-specification:'Likhan, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#483745">Tank 1</tspan></tspan></text>
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="text 1" />
+</svg>

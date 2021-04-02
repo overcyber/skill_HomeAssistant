@@ -5,6 +5,7 @@ from pathlib import Path
 from core.device.model.DeviceAbility import DeviceAbility
 
 
+
 class HAsensor(Device):
 
 	@classmethod

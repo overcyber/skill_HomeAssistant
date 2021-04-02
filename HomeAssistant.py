@@ -161,6 +161,12 @@ class HomeAssistant(AliceSkill):
 								item["attributes"]["device_class"], item["entity_id"]]
 
 				self._dbSensorList.append(dbSensorList)
+
+			# if a user has added the haDeviceType attribute in HA customise.yaml
+			if not 'device_class' in item["attributes"] and 'HaDeviceType' in item["attributes"] and item["entity_id"].split('.')[0] == 'sensor':
+				dbSensorList = [self.getFriendyNameAttributes(item=item), item["entity_id"], item["state"],
+								item["attributes"]["HaDeviceType"], item["entity_id"]]
+				self._dbSensorList.append(dbSensorList)
 			try:
 
 				if 'DewPoint' in item["attributes"]["friendly_name"]:
@@ -631,7 +637,7 @@ class HomeAssistant(AliceSkill):
 		# register the device type if not already existing
 		if not self.DeviceManager.getDeviceType(skillName=self.name, deviceType=deviceType):
 			self.DeviceManager.registerDeviceType(skillName=self.name, data={"deviceTypeName": deviceType})
-
+		print(f"displayName should be {friendlyName} adding to alice db this")
 		self.DeviceManager.addNewDevice(deviceType=deviceType,
 										skillName=self.name,
 										locationId=self.LocationManager.getLocation(locationName='StoreRoom').id,
@@ -822,7 +828,8 @@ class HomeAssistant(AliceSkill):
 			## If the sensor matches the TelemetryType Enum list. then do this block
 			if not sensorDevice[4] in entityNames and isTelemtryType:
 				self._newDeviceCount += 1
-
+				print(f'deviceName should be the first item in {sensorDevice}')
+				print('')
 				self.AddToAliceDB(
 					uID=newUid,
 					friendlyName=sensorDevice[0],
@@ -831,16 +838,15 @@ class HomeAssistant(AliceSkill):
 								 "entityName"  : sensorDevice[4], "entityGroup": "sensor"}
 				)
 
-			classList = ["motion", 'power', 'current']
+			classList = ["motion", 'power', 'current', 'tanklevel4', 'tanklevel3', 'tanklevel2', 'tanklevel1']
 
 			if not sensorDevice[4] in entityNames and str(sensorDevice[3]).lower() in classList:
 				self._newDeviceCount += 1
-
 				self.AddToAliceDB(uID=newUid,
 								  friendlyName=sensorDevice[0],
-								  deviceType=f"HA{str(sensorDevice[3]).lower()}",
+								  deviceType=f"HA{sensorDevice[3]}",
 								  deviceParam={
-									  "haDeviceType": str(sensorDevice[3]).lower(),
+									  "haDeviceType": sensorDevice[3],
 									  "state"       : sensorDevice[2],
 									  "entityName"  : sensorDevice[4],
 									  "entityGroup" : "sensor"
@@ -1204,7 +1210,7 @@ class HomeAssistant(AliceSkill):
 
 	def onTemperatureLowAlert(self, **kwargs):
 		if self.name in kwargs['service']:
-			self._triggerType = 'Telemetry'
+			self._triggerType = 'Temperature'
 			self.telemetryEvents(kwargs)
 
 
@@ -1239,7 +1245,6 @@ class HomeAssistant(AliceSkill):
 		threshold = kwargs['threshold']
 		area = self.LocationManager.getLocationName(
 			self.DeviceManager.getDevice(deviceId=kwargs['area']).parentLocation)
-
 		if 'upperThreshold' in trigger:
 			trigger = 'high'
 		else:
