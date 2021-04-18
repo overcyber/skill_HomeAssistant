@@ -1,111 +1,111 @@
-<span style="color: #ff0000;"><strong>SetUp Steps </span><span style="color: #0000ff;">--- In Home Assistant: ---</strong></span>
-<ol>
-<li>Create a long life token from your user profile screen. (Copy it and store it safely for now as you'll 
-only get once chance to copy it)</li>
-<li>Add the following to your Home Assistant configuration.yaml file</li>
-</ol>
+##SetUp Steps --- In Home Assistant: ---
+
+1. Create a long life token from your user profile screen. (Copy it and store it safely for now as you'll 
+only get once chance to copy it)
+2. Add the following to your Home Assistant configuration.yaml file
+
 api;
 
 &nbsp;&nbsp;&nbsp; http://your-HomeassistantIP:port/api/
 
-<span style="color: #00ff00;">Example:</span>
+####Example:
 
 api:
 
 &nbsp;&nbsp;&nbsp; http://192.168.4.1:8123/api/
 
-<span style="color: #ffff00;">NOTE</span> the /api/ not just /api
+####NOTE:the /api/ not just /api
 
 while in there, check if you have in your Home Assistant yaml
-<ul>
-<li>default_config:
 
-or </li>
-<li>sun:</li>
-</ul>
+- default_config:
+
+or 
+- sun:
+
 Add either of those to your Home Assistant configuration.yaml, if you'd like Alice to tell you about sun events
 
 - Now restart Home Assistant and carry on with the below Alice setup
 
-<span style="color: #ff0000;"><strong>SetUp Steps </span><span style="color: #0000ff;">--- In Alice: ----</strong></span>
-<ol>
-<li>Go to the Alice web ui</li>
-<li>Click into Skills</li>
-<li>Install the HomeAssistant skill</li>
-<li>Once installed, Go to the HomeAssistant skill and click on -&gt; Settings</li>
-<li>In "HAaccessToken" field, add your copied long life token</li>
-<li>In "HAIpAddress" field, add your HomeAssistant IP address - make sure you append /api/
- 
-<span style="color: #00ff00;">Example</span> http://192.168.4.1:8123/api/
-</li>
-<li>Restart Alice</li>
-</ol>
+##SetUp Steps --- In Alice: ----
 
-<span style="color: #ffff00;">SIDE NOTE:</span>
+1. Go to the Alice web ui
+2. Click into Skills
+3. Install the HomeAssistant skill
+4. Once installed, Go to the HomeAssistant skill and click on -&gt; Settings
+5. In "HAaccessToken" field, add your copied long life token
+6. In "HAIpAddress" field, add your HomeAssistant IP address - make sure you append /api/
+ 
+####Example http://192.168.4.1:8123/api/
+
+7. Restart Alice
+
+
+####SIDE NOTE:
 For now all devices captured by Alice from HA will get installed in one location
 - You may want to at some stage, go to "My Home" in the web Ui and move each device to an appropriate location. To keep
   a tidy house keeps Alice happy :)
 
 Once alice restarts you can then ask her :
-<ul>
-<li>"Hey Snips/Alice"</li>
-<li>"Setup home assistant skill" </li>
+
+- "Hey Snips/Alice"
+- "Setup home assistant skill" 
 or
-<li>"configure the home assistant skill"</li>
-</ul>
+- "configure the home assistant skill"
+
 You really only need to ask that once. By asking that she will
 
-<ol>
-<li>Get the list of device entities from Home Assistant</li>
-<li>Write them to Alices devices Database</li>
-<li>Takes all the friendly names and automatically writes them to dialogTemplate file</li>
-</ol>
-Once setup is completed (takes 30 seconds or so) and <strong>you restart alice</strong> again for training.
+
+1. Get the list of device entities from Home Assistant
+2. Write them to Alices devices Database
+3. Takes all the friendly names and automatically writes them to dialogTemplate file
+
+Once setup is completed (takes 30 seconds or so) and **you restart alice** again for training.
 
 You should be able to ask 
 
 - "Hey Alice/Snips"
 - "Turn off / on the entity Friendly name"
 
-<span style="color: #00ff00;">Example:</span> turn off the bathroom light
+####Example: turn off the bathroom light
 
 - "Hey Alice/Snips"
 - "What's the state of the pool pump"
 
-<span style="color: #ff6600;">Usage:</span>
+###Usage:
 
 Some examples of what to say
 
-<em>For initial set up</em> 
+*For initial set up* 
 
 - "Add my home assistant devices"
 or
 - "Configure the home assistant skill"
 
-<em>General usage</em>
-<ul>
-<li>Turn on the Bedroom light</li>
-<li>Turn off the Bathroom light</li>
-<li>Close the bedroom blinds</li>
-<li>Open the garage door</li>
-<li>What's the state of the garage door</li>
-<li>What home assistant devices do you know</li>
-<li>Tell me what my home assistant devices are please</li>
-<li>What can you turn on or off</li>
-<li>When is sunrise</li>
-<li>When is sunset</li>
-<li>What position is the sun</li>
-<li>How long until dusk</li>
-<li>What's the ip of the kitchen light</li>
-<li>Change the bedroom light to blue</li>
-<li>set the kitchen light to 50 percent brightness</li>
-</ul>
+*General usage*
 
-<span style="color: #ff0000;">Configuration Tips</span> #####<span style="color: #0000ff;"></strong> Manually setting up
-sensors</span></strong> #####
+- Turn on the Bedroom light
+- Turn off the Bathroom light
+- Close the bedroom blinds 
+- Open the garage door
+- What's the state of the garage door
+- What home assistant devices do you know
+- Tell me what my home assistant devices are please
+- What can you turn on or off
+- When is sunrise
+- When is sunset
+- What position is the sun
+- How long until dusk
+- What's the ip of the kitchen light
+- Change the bedroom light to blue
+- set the kitchen light to 50 percent brightness
 
-Currently, the sensors from HA that will get captured are "<i>sensor.sensor_name"</i> and
-<i>binary_sensor.sensor_name</i> devices
+
+###Configuration Tips</span> -- Manually setting up sensors</strong> #####
+
+Currently, the sensors from HA that will get captured are "
+
+*sensor.sensor_name* and *binary_sensor.sensor_name* devices
 
 EG: "sensor.inside_temperature".
 
@@ -114,26 +114,26 @@ To be captured however they must have a "device_class" attribute assigned to the
 HA will tend to automatically do this for you in some cases. Especially if you're running HASS.IO and the MQTT Addon and
 Tasmota firmware on your devices. However, you may find that currently not all sensors are being captured.
 
-<span style="color: #ff6600;">There's potentially at least two common reasons for this</span>
-<ol>
-<li> Currently only sensors that have a function in the HA skill are concentrated on. This will change as the 
+There's potentially at least two common reasons for this
+
+1. Currently only sensors that have a function in the HA skill are concentrated on. This will change as the 
 skill progresses. Devices that have a device_class of , temperature, humidity, gas, illuminance, pressure, dewpoint,
 battery, power, current, voltage, motion are used and can be reported on by Alice.
 
 NOTE: HA skill may collect other sensor's above what i've listed. So if you notice some sensors
 added to Home Assistant that don't display a Icon, Please let lazza in discord
 know about these sensors and i'll add that support.
- </li>
+ 
 
-<li> You've manually configured a MQTT device in the yaml but have not added a "device_class" attribute </li>
-</ol>
+2. You've manually configured a MQTT device in the yaml but have not added a "device_class" attribute 
+
 
 
 If manually creating sensors in your home assistant configuration.yaml be sure to add a "device_class" such as the below
 example and Alice should pick up on that the next time you ask Alice to
 "configure the home Assistant skill " and then retrain her.
 
-<span style="color: #00ff00;">Example configuration.yaml entry</span>
+####Example configuration.yaml entry
 ```
 
 sensor:
@@ -171,9 +171,10 @@ For available device classes, have a look here <a href="https://www.home-assista
 and here 
 <a href="https://www.home-assistant.io/integrations/binary_sensor/" target="_blank">Binary sensors</a>
 
-<span style="color: #ffff00;">Note:</span> state_topic will of course be the topic of your mqtt device :)
+####Note:
+state_topic will of course be the topic of your mqtt device :)
 
-<span style="color: #ff6600;">Accessing sensor data that Alice captures but currently does nothing with</span>
+###Accessing sensor data that Alice captures but currently does nothing with
 
 So let's say for example you know Alice is capturing your outside motion sensor and storing that data in the
 HomeAsistant database, and you want to use that value in your own skill to do something.
@@ -184,7 +185,7 @@ they are also written to a file in the skills' directory called "currentStateOfD
 This will allow you to grab the state of all devices via your own skill or perhaps via the "file in" node of Node red,
 without the need to extract it from the database directly.
 
-<span style="color: #ff0000;">Creating Extra intents on the fly</span> #####
+###Creating Extra intents on the fly
 
 There are things in HA that don't get reported on by the API. Such as the RMpro for RF signals that you might use to do
 certain things like turn on a tv, or tune tv stations rather than using your tv remote. In that situation and many
@@ -221,7 +222,7 @@ Obviously this is just one simple example. Let your mind be creative, and you co
 Basically Alice is just going to send a keyword that you can intercept and trigger a Node Red flow to do what ever you
 want it to.
 
-<span style="color: #ff0000;"><strong>Ignore device discovery</strong></span> 
+##Ignore device discovery 
 
 Let's say you want to use the Phillips Hue skill for example rather than HA skill to control those devices. You can skip adding those devices 
 to the HA skill by adding a custom attribute to that device in Home assistant and Alice will skip adding it.
@@ -242,7 +243,7 @@ pointless device to your My home screen. You can delete it from my home but it w
 next time you configure HA skill. So in this case add the AliceIgnore steps above for that device in Home Assistant.
 
 
-<span style="color: #ff0000;"><strong>Icons - and what they are</strong></span>
+##Icons - and what they are
 
 Icon - Description - state(where aplicable):
 
@@ -286,7 +287,7 @@ Icon - Description - state(where aplicable):
 - humidity
 - temperature
 
-<span style="color: #ff0000;">Debug Control</span>
+##Debug Control
 
 In the skill settings you have a couple of options for monitoring debug info.
 
@@ -312,7 +313,7 @@ Some debug messages don't have this control such as synonym creation. This is ok
 devices anyway so won't be a regular event
 
 
-<span style="color: #ff0000;">Adding and displaying water tank levels</span>
+Adding and displaying water tank levels
 
 The HA skill now comes with the ability to display tank levels of what ever you have set up.
 This has been based on, and tested on, using digital non contact level "sensors" configured with Tasmota sending MQTT
@@ -348,20 +349,22 @@ The possibilities could be many. The HA skill will now display in "my home" thos
 	- High
 	- Empty ( When the high level trigger is "off")
 
-<span style="color: #ff0000;">Tank Level setup</span>
+Tank Level setup
 
 For the tank level gauges to work in "My Home" there are a few setup steps to take. Because the icons have the ability to be 
 customised, that means there are a few specific steps to get them to display correctly.
 
 - In HA the name of the device should be called whatever you want but with a tank number on the end of it.
 
-<span style="color: #00ff00;">Example being</span>, "sensor.Fresh_Water_Tank_1" and "sensor.Fresh_Water_Tank_2"
+###Example is,
+"sensor.Fresh_Water_Tank_1" and "sensor.Fresh_Water_Tank_2"
   
 Reason being is... The code will then detect if you have more than 1 fresh_Water_Tank (in this example) and display the
 appropriate icon IE: Fresh water Tank 1 or Fresh Water Tank 2. Leaving the number off won't hurt but will just 
 always display the tank 1 image
 
-<span style="color: #ffff00;">NOTE:</span> tank2 icons have only been done for fourLevelTank devices (refer devices/img/TankLevel/FourLevels).
+###NOTE:
+tank2 icons have only been done for fourLevelTank devices (refer devices/img/TankLevel/FourLevels).
 If you need more tank icons or more icons for other tankLevel devices
 please edit the provided svg files and create as many more png files as required (following the existing naming format)
 
@@ -371,7 +374,8 @@ please edit the provided svg files and create as many more png files as required
 	
 Change out the value tankLevel4 with tankLevel3 or tankLevel2 or tankLevel1 depending on how many sensors you have on that tank
 
-<span style="color: #ffff00;">NOTE:</span> Attribute name and value are case-sensitive so add them exactly as per above example. Without adding this attribute
+###NOTE:
+Attribute name and value are case-sensitive so add them exactly as per above example. Without adding this attribute
 HA skill WILL NOT pick up on it being a tank level and therefore will not display in My Home.
 
 - The json payload that alice expects from a tankLevel device is in the following format (example is for a 3 level tank)
@@ -379,7 +383,8 @@ HA skill WILL NOT pick up on it being a tank level and therefore will not displa
 ```{"Switch1": "ON", "Switch2": "OFF", "Switch3": "OFF", "Time": "2021-03-02T10:31:58"}```
 
 You can achieve this easily by using a similar configuration in your configuration.yaml file in HA as per below.
-<span style="color: #ffff00;">NOTE:</span> The "time" key is ignored and not important
+###NOTE:
+The "time" key is ignored and not important
 ```
 sensor:
   - platform: mqtt
@@ -414,7 +419,7 @@ hopefully display tank level icons in your "my home" on the web UI.
 
 ####You could also then consider writing your own skills to do something with those tank levels.
 
-<span style="color: #00ff00;">Example</span>
+###Example
 - "Hey Alice"  "how full is my rain water tank ?"
 - on the hour, have alice check tank levels and have her report the fish are dying cause there's no water left :)
 - Have alice turn a pump on when a tank reaches a certain level and off again when full
