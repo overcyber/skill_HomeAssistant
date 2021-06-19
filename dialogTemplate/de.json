@@ -123,8 +123,8 @@
 			"name": "HomeAssistantState",
 			"enabledByDefault": true,
 			"utterances": [
-				"was ist der Zustand des {Küchenlicht:=>} Device",
-				"was ist der Zustand des {Toilette Licht:=>} Device"
+				"was ist der Zustand des {Küchenlicht:=>switchNames} Device",
+				"was ist der Zustand des {Toilette Licht:=>switchNames} Device"
 			],
 			"slots": [
 				{
@@ -175,7 +175,7 @@
 			"enabledByDefault": true,
 			"utterances": [
 				"Was ist die IP-Adresse des {Schlafzimmerlicht:=>switchNames}",
-				"Was ist die IP des {Garage Licht:=>Schalter Namen}",
+				"Was ist die IP des {Garage Licht:=>switchNames}",
 				"sagen Sie mir, die IP-Adresse des {Garage Licht:=>switchNames} bitte",
 				"sagen Sie mir die ip der {Küchenleuchten:=>switchNames}"
 			],
