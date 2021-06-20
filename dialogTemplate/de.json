@@ -123,8 +123,8 @@
 			"name": "HomeAssistantState",
 			"enabledByDefault": true,
 			"utterances": [
-				"was ist der Zustand des {Küchenlicht:=>switchNames} Device",
-				"was ist der Zustand des {Toilette Licht:=>switchNames} Device"
+				"was ist der Zustand des {Küchenlicht:=>DeviceState} Device",
+				"was ist der Zustand des {Toilette Licht:=>DeviceState} Device"
 			],
 			"slots": [
 				{
