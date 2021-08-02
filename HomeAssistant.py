@@ -342,7 +342,7 @@ class HomeAssistant(AliceSkill):
 			entityState = data['state']
 			# add the devices state to the database
 			device = self.DeviceManager.getDevice(uid=entityID)
-			device.updateParams(key='state', value=entityState)
+			device.updateParam(key='state', value=entityState)
 
 			self.endDialog(
 				sessionId=session.sessionId,
@@ -543,7 +543,7 @@ class HomeAssistant(AliceSkill):
 						self.logDebug(f'')
 						self.logDebug(f'I\'m updating the "{deviceId}" with state "{entityDetails["state"]}" ')
 
-					device.updateParams(key='state', value=entityDetails['state'])
+					device.updateParam(key='state', value=entityDetails['state'])
 					# send HeartBeat
 					if not 'unavailable' in entityDetails['state'] and entityDetails['state']:
 						self.DeviceManager.onDeviceHeartbeat(uid=device.uid)
@@ -567,8 +567,8 @@ class HomeAssistant(AliceSkill):
 						self.logDebug(f'HA class is "{haClass}" ')
 						self.logDebug(f'The entity ID is "{entity}"')
 
-					device.updateParams(key='state', value=state)
-					device.updateParams(key="haDeviceType", value=haClass)
+					device.updateParam(key='state', value=state)
+					device.updateParam(key="haDeviceType", value=haClass)
 
 					if not 'unavailable' in state and state:
 						self.DeviceManager.onDeviceHeartbeat(uid=device.uid)
@@ -858,7 +858,7 @@ class HomeAssistant(AliceSkill):
 			# self.updateDeviceIPInfo(ip=deviceDetails[1], nameIdentity=deviceDetails[0])
 			device = self.DeviceManager.getDeviceByName(deviceDetails[0])
 			if device:
-				device.updateParams(key="entityIP", value=deviceDetails[1])
+				device.updateParam(key="entityIP", value=deviceDetails[1])
 
 
 	def updateKnownDeviceLists(self):

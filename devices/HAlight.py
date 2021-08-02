@@ -37,11 +37,11 @@ class HAlight(Device):
 
 	def onUIClick(self):
 		if self.getParam(key='state') == "on":
-			self.updateParams(key='state', value='off')
+			self.updateParam(key='state', value='off')
 			self.updateStateOfDeviceInHA()
 
 		elif self.getParam(key='state') == "off":
-			self.updateParams(key='state', value='on')
+			self.updateParam(key='state', value='on')
 			self.updateStateOfDeviceInHA()
 
 		else:
