@@ -1,23 +1,23 @@
 {
-	"name": "HomeAssistant",
-	"speakableName": "home assistant skill",
-	"version": "3.1.4",
-	"icon": "fas fa-house-user",
-	"category": "household",
-	"author": "Lazza",
-	"maintainers": [],
-	"desc": "Connects Alice to your home assistant. You can then control any switches you have in Home Assistant . Refer to the readme and instructions for more info.",
-	"aliceMinVersion": "1.0.0-rc1",
-	"systemRequirements": [
-		""
-	],
-	"pipRequirements": [
-		"pytz"
-	],
-	"conditions": {
-		"lang": [
-			"en",
-			"de",
+    "name": "HomeAssistant",
+    "speakableName": "home assistant skill",
+    "version": "3.1.5",
+    "icon": "fas fa-house-user",
+    "category": "household",
+    "author": "Lazza",
+    "maintainers": [],
+    "desc": "Connects Alice to your home assistant. You can then control any switches you have in Home Assistant . Refer to the readme and instructions for more info.",
+    "aliceMinVersion": "1.0.0-rc1",
+    "systemRequirements": [
+        ""
+    ],
+    "pipRequirements": [
+        "pytz"
+    ],
+    "conditions": {
+        "lang": [
+            "en",
+            "de",
             "it",
             "fr"
         ],
