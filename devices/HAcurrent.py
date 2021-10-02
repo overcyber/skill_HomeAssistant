@@ -1,4 +1,5 @@
 import sqlite3
+from typing import Optional
 
 from core.device.model.Device import Device
 from pathlib import Path
@@ -25,9 +26,8 @@ class HAcurrent(Device):
 		super().__init__(data)
 
 
-	def getDeviceIcon(self) -> Path:
-
-		return Path(f'{self._imagePath}GeneralSensors/HAcurrent.png')
+	def getDeviceIcon(self, path: Optional[Path] = None) -> Path:
+		return super().getDeviceIcon(Path(f'{self._imagePath}GeneralSensors/HAcurrent.png'))
 
 
 	def onUIClick(self):

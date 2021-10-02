@@ -1,4 +1,5 @@
 import sqlite3
+from typing import Optional
 
 from core.device.model.Device import Device
 from pathlib import Path
@@ -26,13 +27,14 @@ class HAlight(Device):
 		self._imagePath = f'{self.Commons.rootDir()}/skills/HomeAssistant/devices/img/'
 
 
-	def getDeviceIcon(self) -> Path:
+	def getDeviceIcon(self, path: Optional[Path] = None) -> Path:
 
-		if self.getParam(key='state') == "on":
-			return Path(f'{self._imagePath}Lights/lightOn.png')
-
+		if self.getParam(key='state') == 'on':
+			icon = Path(f'{self._imagePath}Lights/lightOn.png')
 		else:
-			return Path(f'{self._imagePath}Lights/lightOff.png')
+			icon = Path(f'{self._imagePath}Lights/lightOff.png')
+
+		return super().getDeviceIcon(icon)
 
 
 	def onUIClick(self):

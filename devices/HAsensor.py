@@ -1,4 +1,5 @@
 import sqlite3
+from typing import Optional
 
 from core.device.model.Device import Device
 from pathlib import Path
@@ -26,11 +27,13 @@ class HAsensor(Device):
 		super().__init__(data)
 
 
-	def getDeviceIcon(self) -> Path:
+	def getDeviceIcon(self, path: Optional[Path] = None) -> Path:
 		if self.connected:
-			return Path(f'{self._imagePath}GeneralSensors/HAsensor.png')
+			icon = Path(f'{self._imagePath}GeneralSensors/HAsensor.png')
+		else:
+			icon = Path(f'{self._imagePath}GeneralSensors/HAsensorOffline.png')
 
-		return Path(f'{self._imagePath}GeneralSensors/HAsensorOffline.png')
+		return super().getDeviceIcon(icon)
 
 
 	def onUIClick(self):

@@ -1,7 +1,7 @@
 {
     "name": "HomeAssistant",
     "speakableName": "home assistant skill",
-    "version": "3.1.6",
+    "version": "3.1.7",
     "icon": "fas fa-house-user",
     "category": "household",
     "author": "Lazza",

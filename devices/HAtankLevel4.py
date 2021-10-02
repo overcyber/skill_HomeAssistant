@@ -1,5 +1,7 @@
 import sqlite3
 import json
+from typing import Optional
+
 from core.device.model.Device import Device
 from pathlib import Path
 from core.device.model.DeviceAbility import DeviceAbility
@@ -51,24 +53,21 @@ class HAtankLevel4(Device):
 		super().__init__(data)
 
 
-	def getDeviceIcon(self) -> Path:
+	def getDeviceIcon(self, path: Optional[Path] = None) -> Path:
 		levelStates = json.loads(self.getParam('state'))
 
-		if levelStates['Switch4'] == "ON":
-			fullPath = self.checkPathExists(image='Full.png')
-			return fullPath
-		if levelStates['Switch3'] == "ON":
-			fullPath = self.checkPathExists(image='75.png')
-			return fullPath
-		if levelStates['Switch2'] == "ON":
-			fullPath = self.checkPathExists(image='50.png')
-			return fullPath
-		if levelStates['Switch1'] == "ON":
-			fullPath = self.checkPathExists(image='25.png')
-			return fullPath
+		if levelStates['Switch4'] == 'ON':
+			icon = self.checkPathExists(image='Full.png')
+		elif levelStates['Switch3'] == 'ON':
+			icon = self.checkPathExists(image='75.png')
+		elif levelStates['Switch2'] == 'ON':
+			icon = self.checkPathExists(image='50.png')
+		elif levelStates['Switch1'] == 'ON':
+			icon = self.checkPathExists(image='25.png')
+		else:
+			icon = self.checkPathExists(image='Empty.png')
 
-		fullPath = self.checkPathExists(image='Empty.png')
-		return fullPath
+		return super().getDeviceIcon(icon)
 
 
 

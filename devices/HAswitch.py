@@ -1,5 +1,7 @@
 import sqlite3
 from pathlib import Path
+from typing import Optional
+
 from core.device.model.Device import Device
 from skills.HomeAssistant.HomeAssistant import HomeAssistant
 from core.device.model.DeviceAbility import DeviceAbility
@@ -25,13 +27,15 @@ class HAswitch(Device):
 		super().__init__(data)
 
 
-	def getDeviceIcon(self) -> Path:
+	def getDeviceIcon(self, path: Optional[Path] = None) -> Path:
 		iconPath = self.selectIconBasedOnState()
 
 		if Path(iconPath).exists():
-			return iconPath
+			icon = iconPath
 		else:
-			return Path(f"{self._imagePath}Switches/HAswitch.png")
+			icon = Path(f"{self._imagePath}Switches/HAswitch.png")
+
+		return super().getDeviceIcon(icon)
 
 
 	def onUIClick(self):

@@ -1,4 +1,5 @@
 import sqlite3
+from typing import Optional
 
 from core.device.model.Device import Device
 from pathlib import Path
@@ -25,17 +26,19 @@ class HApower(Device):
 		super().__init__(data)
 
 
-	def getDeviceIcon(self) -> Path:
+	def getDeviceIcon(self, path: Optional[Path] = None) -> Path:
 		powerType = self.getParam('entityName').split('_')[-1]
 
 		if powerType == "current":
-			return Path(f'{self._imagePath}GeneralSensors/HAcurrent.png')
+			icon = Path(f'{self._imagePath}GeneralSensors/HAcurrent.png')
 		elif powerType == "voltage":
-			return Path(f'{self._imagePath}GeneralSensors/HAvoltage.png')
+			icon = Path(f'{self._imagePath}GeneralSensors/HAvoltage.png')
 		elif powerType == "power" or powerType == 'battery':
-			return Path(f'{self._imagePath}GeneralSensors/battery.png')
+			icon = Path(f'{self._imagePath}GeneralSensors/battery.png')
 		else:
-			return Path(f'{self._imagePath}GeneralSensors/HAsensor.png')
+			icon = Path(f'{self._imagePath}GeneralSensors/HAsensor.png')
+
+		return super().getDeviceIcon(icon)
 
 
 	def onUIClick(self):

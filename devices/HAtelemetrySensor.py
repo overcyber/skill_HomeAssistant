@@ -1,5 +1,6 @@
 import sqlite3
 import json
+from typing import Optional
 
 from core.device.model.Device import Device
 from pathlib import Path
@@ -47,12 +48,12 @@ class HAtelemetrySensor(Device):
 		}
 
 
-	def getDeviceIcon(self) -> Path:
+	def getDeviceIcon(self, path: Optional[Path] = None) -> Path:
 		telemetryConfig = self.telemetrySetPoints()
 
 	# Change icon depending on telemetry config setPoints
-		iconState = self.highOrLowIconAlert(telemetrySetPoint=telemetryConfig)
-		return iconState
+		icon = self.highOrLowIconAlert(telemetrySetPoint=telemetryConfig)
+		return super().getDeviceIcon(icon)
 
 
 	def onUIClick(self):

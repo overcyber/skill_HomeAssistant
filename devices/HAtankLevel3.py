@@ -1,4 +1,5 @@
 import sqlite3
+from typing import Optional
 
 from core.device.model.Device import Device
 from pathlib import Path
@@ -51,21 +52,19 @@ class HAtankLevel3(Device):
 		super().__init__(data)
 
 
-	def getDeviceIcon(self) -> Path:
+	def getDeviceIcon(self, path: Optional[Path] = None) -> Path:
 		levelStates = json.loads(self.getParam('state'))
 
-		if levelStates['Switch3'] == "ON":
-			fullPath = self.checkPathExists(image='Full.png')
-			return fullPath
-		if levelStates['Switch2'] == "ON":
-			fullPath = self.checkPathExists(image='23rd.png')
-			return fullPath
-		if levelStates['Switch1'] == "ON":
-			fullPath = self.checkPathExists(image='13rd.png')
-			return fullPath
+		if levelStates['Switch3'] == 'ON':
+			icon = self.checkPathExists(image='Full.png')
+		elif levelStates['Switch2'] == 'ON':
+			icon = self.checkPathExists(image='23rd.png')
+		elif levelStates['Switch1'] == 'ON':
+			icon = self.checkPathExists(image='13rd.png')
+		else:
+			icon = self.checkPathExists(image='Empty.png')
 
-		fullPath = self.checkPathExists(image='Empty.png')
-		return fullPath
+		return super().getDeviceIcon(icon)
 
 
 	def onUIClick(self):
