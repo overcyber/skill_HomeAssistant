@@ -637,7 +637,6 @@ class HomeAssistant(AliceSkill):
 		# register the device type if not already existing
 		if not self.DeviceManager.getDeviceType(skillName=self.name, deviceType=deviceType):
 			self.DeviceManager.registerDeviceType(skillName=self.name, data={"deviceTypeName": deviceType})
-		print(f"displayName should be {friendlyName} adding to alice db this")
 		self.DeviceManager.addNewDevice(deviceType=deviceType,
 										skillName=self.name,
 										locationId=self.LocationManager.getLocation(locationName='StoreRoom').id,
@@ -828,8 +827,6 @@ class HomeAssistant(AliceSkill):
 			## If the sensor matches the TelemetryType Enum list. then do this block
 			if not sensorDevice[4] in entityNames and isTelemtryType:
 				self._newDeviceCount += 1
-				print(f'deviceName should be the first item in {sensorDevice}')
-				print('')
 				self.AddToAliceDB(
 					uID=newUid,
 					friendlyName=sensorDevice[0],
