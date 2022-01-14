@@ -19,7 +19,8 @@
             "en",
             "de",
             "it",
-            "fr"
+            "fr",
+	    "pt"
         ],
         "asrArbitraryCapture": true,
         "skill": [
