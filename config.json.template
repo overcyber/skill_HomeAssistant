@@ -27,6 +27,12 @@
 		"isSensitive": false,
 		"description": "Allows debug mode to view whats going on"
 	},
+	"silenceAlerts": {
+		"defaultValue": false,
+		"dataType": "boolean",
+		"isSensitive": false,
+		"description": "Silence telemetry alerts"
+	},
 	"enableBackup": {
 		"defaultValue": true,
 		"dataType": "boolean",
@@ -44,11 +50,5 @@
 		"dataType": "boolean",
 		"isSensitive": false,
 		"description": "Allow user to start with a fresh set of settings"
-	},
-	"debugIcon": {
-		"defaultValue": false,
-		"dataType": "boolean",
-		"isSensitive": false,
-		"description": "Displays syslog message for diagnosing device icon issues"
 	}
 }

@@ -298,9 +298,6 @@ your skill directory. Handy for seeing what comes from your HA and diagnosing wh
 2. debugMode - This will print debug information to your syslog. Good for seeing what is happening behind
    the scenes in regards too HA skill doing stuff
    
-3. debugIcon - If his option is enabled it will display debug information as to why a icon may not be displaying
-please turn this on and send the results to the dev if requested.
-   
 NOTE on #2: debug mode prints alot of syslog debug messages (must also have debug mode enabled in alice admin)
 However, to personalise that a litle there is also a debugControl.json file found in your
 skill directory.
