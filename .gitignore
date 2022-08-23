@@ -116,3 +116,4 @@ package-lock.json
 /__init__.py
 /Backup
 /debugInfo/debugControl.json
+/devices/img
