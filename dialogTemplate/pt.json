@@ -11,7 +11,7 @@
             ]
         },
         {
-    "name": "HomeAssistantLigadoDesligado",
+    "name": "HomeAssistantOnOrOff",
     "matchingStrictness": null,
     "automaticallyExtensible": true,
     "useSynonyms": true,
@@ -261,5 +261,4 @@
                 }
         	]
         }
-    ]
-}
+
