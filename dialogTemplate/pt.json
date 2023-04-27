@@ -1,63 +1,61 @@
 {
-    "skill": "HomeAssistant",
-    "slotTypes": [
-        {
-            "name": "switchNames",
-            "matchingStrictness": null,
-            "automaticallyExtensible": true,
-            "useSynonyms": true,
-            "values": [
-
-            ]
-        },
-        {
-    "name": "HomeAssistantOnOrOff",
-    "matchingStrictness": null,
-    "automaticallyExtensible": true,
-    "useSynonyms": true,
-    "values": [
-        {
-            "value": "ligue"
-        },
-        {
-            "value": "desligue"
-        },
-        {
-            "value": "abrir"
-        },
-        {
-            "value": "fechar"
-        },
-        {
-            "value": "alternar"
-        }
-    ]
-        },
-        {
-            "name": "Sun",
-            "matchingStrictness": null,
-            "automaticallyExtensible": true,
-            "useSynonyms": true,
-"values": [
-    {
-        "value": "sol"
-    },
-    {
-        "value": "posição"
-    },
-    {
-        "value": "amanhecer"
-    },
-    {
-        "value": "nascer"
-    },
-    {
-        "value": "pôr do sol"
-    },
-    {
-        "value": "crepúsculo"
-    }
-    ]
+	"skill": "HomeAssistant",
+	"slotTypes": [
+		{
+			"name": "switchNames",
+			"matchingStrictness": null,
+			"automaticallyExtensible": true,
+			"useSynonyms": true,
+			"values": []
+		},
+		{
+			"name": "HomeAssistantOnOrOff",
+			"matchingStrictness": null,
+			"automaticallyExtensible": true,
+			"useSynonyms": true,
+			"values": [
+				{
+					"value": "on"
+				},
+				{
+					"value": "off"
+				},
+				{
+					"value": "open"
+				},
+				{
+					"value": "close"
+				},
+				{
+					"value": "toggle"
+				}
+			]
+		},
+		{
+			"name": "Sun",
+			"matchingStrictness": null,
+			"automaticallyExtensible": true,
+			"useSynonyms": true,
+			"values": [
+				{
+					"value": "sun"
+				},
+				{
+					"value": "position"
+				},
+				{
+					"value": "dawn"
+				},
+				{
+					"value": "rising"
+				},
+				{
+					"value": "setting"
+				},
+				{
+					"value": "dusk"
+				}
+			]
         },
         {
             "name": "HAintent",
@@ -85,7 +83,7 @@
     ],
     "intents": [
         {
-    "name": "AddHomeAssistantDevices",
+     "name": "AddHomeAssistantDevices",
     "enabledByDefault": true,
     "utterances": [
         "Adicionar meus dispositivos do Home Assistant",
@@ -99,15 +97,15 @@
         "name": "HomeAssistantAction",
         "enabledByDefault": true,
         "utterances": [
-            "{ligue:=>OnOrOff} a {luz do banheiro:=>switchNames}",
-            "{ligue:=>OnOrOff} a {luz do banheiro:=>switchNames} por favor",
-            " {desligue:=>OnOrOff} a {luz do quarto:=>switchNames}",
-            "por favor {desligue:=>OnOrOff} a {luz do quarto:=>switchNames} ",
+            "ligue {on:=>OnOrOff} a {luz do banheiro:=>switchNames}",
+            "ligue a {luz do banheiro:=>switchNames} {on:=>OnOrOff}",
+            "desligue {off:=>OnOrOff} a {luz do quarto:=>switchNames}",
+            "desligue a {luz do quarto:=>switchNames} {off:=>OnOrOff}",
             "desligue a {luz do quarto:=>switchNames}",
-            " {desligue:=>OnOrOff} a {luz do quarto:=>switchNames}",
-            "{desligue:=>OnOrOff} a {luz do quarto:=>switchNames} ",
-            " {desligue:=>OnOrOff} {luz do quarto:=>switchNames} por favor",
-            "{alterne:=>OnOrOff} as {luzes da cozinha:=>switchNames}",
+            "desligar {off:=>OnOrOff} a {luz do quarto:=>switchNames}",
+            "desligar a {luz do quarto:=>switchNames} {off:=>OnOrOff}",
+            "desligar {luz do quarto:=>switchNames} {off:=>OnOrOff} por favor",
+            "{mudar:=>OnOrOff} as {luzes da cozinha:=>switchNames}",
             "{abrir:=>OnOrOff} a {porta da garagem:=>switchNames}",
             "{fechar:=>OnOrOff} as {janelas do quarto:=>switchNames}"
         ],
@@ -130,8 +128,8 @@
             "name": "HomeAssistantState",
             "enabledByDefault": true,
             "utterances": [
-      	      "qual é o estado da {luz da cozinha:=>DeviceState}",
-     	       "qual é o estado da {luz do banheiro:=>DeviceState}"
+              "qual é o estado da {luz da cozinha:=>DeviceState}",
+               "qual é o estado da {luz do banheiro:=>DeviceState}"
             ],
             "slots": [
                 {
@@ -181,10 +179,10 @@
     "name": "GetIpOfDevice",
     "enabledByDefault": true,
     "utterances": [
-        "Qual é o endereço IP da {lâmpada quarto:=>switchNames}",
-        "Qual é o IP do {lâmpada garagem:=>switchNames}",
-        "Me diga o endereço IP da {lâmpada garagem:=>switchNames} por favor",
-        "Me diga o IP do {luzes cozinha:=>switchNames}"
+        "Qual é o endereço IP da {lâmpada do quarto:=>switchNames}",
+        "Qual é o IP do {lâmpada da garagem:=>switchNames}",
+        "Me diga o endereço IP da {lâmpada da garagem:=>switchNames} por favor",
+        "Me diga o IP do {luzes da cozinha:=>switchNames}"
     ],
     "slots": [
         {
@@ -224,19 +222,19 @@
     "name": "LightControl",
     "enabledByDefault": true,
     "utterances": [
-        "configure a {luz bancada:=>LightControllers} para {vermelho:=>AliceColor}",
-        "mudar a cor da {luz quarto:=>LightControllers} para {azul:=>AliceColor}",
-        "diminuir a {luz bancada:=>LightControllers} em {10 porcento:=>dimmer}",
+        "configure a {luz da bancada:=>LightControllers} para {vermelho:=>AliceColor}",
+        "mudar a cor da {luz do quarto:=>LightControllers} para {azul:=>AliceColor}",
+        "diminuir a {luz da bancada:=>LightControllers} em {10 porcento:=>dimmer}",
         "ajustar a cor da {luz quarto:=>LightControllers} para {amêndoa:=>AliceColor}",
-        "ajustar o brilho da {luz quarto:=>LightControllers} para {10 porcento:=>dimmer}",
-        "reduzir os níveis da {luz quarto:LightControllers} em {10 porcento:=>dimmer} por favor",
-        "ajustar o nível de brilho da {luz quarto:=>LightControllers} para {10 porcento:=>dimmer}",
+        "ajustar o brilho da {luz do quarto:=>LightControllers} para {10 porcento:=>dimmer}",
+        "reduzir os níveis da {luz do quarto:LightControllers} em {10 porcento:=>dimmer} por favor",
+        "ajustar o nível de brilho da {luz do quarto:=>LightControllers} para {10 porcento:=>dimmer}",
         "aumentar a {workbench light:=>LightControllers} em {30 porcento:=>dimmer}",
-        "aumentar o brilho da {luz quarto=>LightControllers} para {70 porcento:=>dimmer}",
-        "diminuir o brilho da {luz quarto:=>LightControllers} para {10 porcento:=>dimmer}",
-        "ajustar a {luz quarto:=>LightControllers} para {ciano:=>AliceColor}",
-        "alterar {luz quarto:=>LightControllers} para {verde:=>AliceColor}",
-        "ajustar a cor de {luz quarto:=>LightControllers} para {roxo:=>AliceColor}"
+        "aumentar o brilho da {luz do quarto=>LightControllers} para {70 porcento:=>dimmer}",
+        "diminuir o brilho da {luz do quarto:=>LightControllers} para {10 porcento:=>dimmer}",
+        "ajustar a {luz do quarto:=>LightControllers} para {ciano:=>AliceColor}",
+        "alterar {luz do quarto:=>LightControllers} para {verde:=>AliceColor}",
+        "ajustar a cor de {luz do quarto:=>LightControllers} para {roxo:=>AliceColor}"
     ],
     "slots": [
         {
@@ -259,6 +257,5 @@
                     "type": "snips/percentage",
                     "missingQuestion": ""
                 }
-        	]
+                ]
         }
-
