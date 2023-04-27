@@ -11,53 +11,53 @@
             ]
         },
         {
-            "name": "HomeAssistantOnOrOff",
-            "matchingStrictness": null,
-            "automaticallyExtensible": true,
-            "useSynonyms": true,
-            "values": [
-                {
-                    "value": "on"
-                },
-                {
-                    "value": "off"
-                },
-                {
-                    "value": "open"
-                },
-                {
-                    "value": "close"
-                },
-                {
-                    "value": "toggle"
-                }
-            ]
+    "name": "HomeAssistantLigadoDesligado",
+    "matchingStrictness": null,
+    "automaticallyExtensible": true,
+    "useSynonyms": true,
+    "values": [
+        {
+            "value": "ligado"
+        },
+        {
+            "value": "desligado"
+        },
+        {
+            "value": "aberto"
+        },
+        {
+            "value": "fechado"
+        },
+        {
+            "value": "alternar"
+        }
+    ]
         },
         {
             "name": "Sun",
             "matchingStrictness": null,
             "automaticallyExtensible": true,
             "useSynonyms": true,
-            "values": [
-                {
-                    "value": "sun"
-                },
-                {
-                    "value": "position"
-                },
-                {
-                    "value": "dawn"
-                },
-                {
-                    "value": "rising"
-                },
-                {
-                    "value": "setting"
-                },
-                {
-                    "value": "dusk"
-                }
-            ]
+"values": [
+    {
+        "value": "sol"
+    },
+    {
+        "value": "posição"
+    },
+    {
+        "value": "amanhecer"
+    },
+    {
+        "value": "nascer"
+    },
+    {
+        "value": "pôr do sol"
+    },
+    {
+        "value": "crepúsculo"
+    }
+    ]
         },
         {
             "name": "HAintent",
@@ -75,7 +75,7 @@
             "useSynonyms": true,
             "values": [
                 {
-                    "value": "workbench light",
+                    "value": "luz de bancada",
                     "synonyms": [
 
                     ]
@@ -85,52 +85,53 @@
     ],
     "intents": [
         {
-            "name": "AddHomeAssistantDevices",
-            "enabledByDefault": true,
-            "utterances": [
-                "Add my home assistant devices",
-                "Configure the home assistant skill",
-                "configure home assistant skill",
-                "setup home assistant skill",
-                "reset home assistant skill"
-            ]
+    "name": "AddHomeAssistantDevices",
+    "enabledByDefault": true,
+    "utterances": [
+        "Adicionar meus dispositivos do Home Assistant",
+        "Configurar a habilidade do Home Assistant",
+        "configurar habilidade do home assistant",
+        "configurar habilidade do assistant",
+        "redefinir habilidade do home assistant"
+    ]
         },
-        {
-            "name": "HomeAssistantAction",
-            "enabledByDefault": true,
-            "utterances": [
-                "turn {on:=>OnOrOff} the {toilet light:=>switchNames}",
-                "turn the {toilet light:=>switchNames} {on:=>OnOrOff}",
-                "turn {bedroom light:=>switchNames} {off:=>OnOrOff}",
-                "turn {off:=>OnOrOff} the {bedroom light:=>switchNames}",
-                "switch {off:=>OnOrOff} the {bedroom light:=>switchNames}",
-                "switch the {bedroom light:=>switchNames} {off:=>OnOrOff}",
-                "switch {bedroom light:=>switchNames} {off:=>OnOrOff} please",
-                "{toggle:=>OnOrOff} the {kitchen lights:=>switchNames}",
-                "{open:=>OnOrOff} the {garage door:=>switchNames}",
-                "{close:=>OnOrOff} the {bedroom windows:=>switchNames}"
-            ],
-            "slots": [
-                {
-                    "name": "switchNames",
-                    "required": false,
-                    "type": "switchNames",
-                    "missingQuestion": ""
-                },
-                {
-                    "name": "OnOrOff",
-                    "required": false,
-                    "type": "HomeAssistantOnOrOff",
-                    "missingQuestion": ""
-                }
-            ]
-        },
+    {
+        "name": "HomeAssistantAction",
+        "enabledByDefault": true,
+        "utterances": [
+            "ligue {on:=>OnOrOff} a {luz do banheiro:=>switchNames}",
+            "ligue a {luz do banheiro:=>switchNames} {on:=>OnOrOff}",
+            "desligue {off:=>OnOrOff} a {luz do quarto:=>switchNames}",
+            "desligue a {luz do quarto:=>switchNames} {off:=>OnOrOff}",
+            "desligue a {luz do quarto:=>switchNames}",
+            "desligar {off:=>OnOrOff} a {luz do quarto:=>switchNames}",
+            "desligar a {luz do quarto:=>switchNames} {off:=>OnOrOff}",
+            "desligar {luz do quarto:=>switchNames} {off:=>OnOrOff} por favor",
+            "{toggle:=>OnOrOff} as {luzes da cozinha:=>switchNames}",
+            "{abrir:=>OnOrOff} a {porta da garagem:=>switchNames}",
+            "{fechar:=>OnOrOff} as {janelas do quarto:=>switchNames}"
+        ],
+        "slots": [
+            {
+                "name": "switchNames",
+                "required": false,
+                "type": "switchNames",
+                "missingQuestion": ""
+            },
+            {
+                "name": "OnOrOff",
+                "required": false,
+                "type": "HomeAssistantOnOrOff",
+                "missingQuestion": ""
+            }
+        ]
+    },
         {
             "name": "HomeAssistantState",
             "enabledByDefault": true,
             "utterances": [
-                "what is the state of the {kitchen light:=>DeviceState}",
-                "what's the state of the {toilet light:=>DeviceState}"
+      	      "qual é o estado da {luz da cozinha:=>DeviceState}",
+     	       "qual é o estado da {luz do banheiro:=>DeviceState}"
             ],
             "slots": [
                 {
@@ -141,74 +142,74 @@
                 }
             ]
         },
+    {
+        "name": "HomeAssistantSun",
+        "enabledByDefault": true,
+        "utterances": [
+            "quando é {nascer do sol:=>sunState}",
+            "quando é o próximo {pôr do sol:=>sunState}",
+            "qual {posição:=>sunState} está o sol",
+            "quando será o próximo {nascer do sol:=>sunState}",
+            "quando será o próximo {pôr do sol:=>sunState}",
+            "que horas são {nascer do sol:=>sunState}",
+            "quanto tempo falta para {pôr do sol:=>sunState}",
+            "quando é {pôr do sol:=>sunState}"
+        ],
+        "slots": [
+            {
+                "name": "sunState",
+                "required": false,
+                "type": "Sun",
+                "missingQuestion": ""
+            }
+        ]
+    },
         {
-            "name": "HomeAssistantSun",
-            "enabledByDefault": true,
-            "utterances": [
-                "when is {sunrise:=>sunState}",
-                "when is the next {sunset:=>sunState}",
-                "what {position:=>sunState} is the sun",
-                "when's the next {sunrise:=>sunState}",
-                "when will {dusk:=>sunState} be next",
-                "what time is {sunrise:=>sunState}",
-                "how long until {sunset:=>sunState} ",
-                "when's {sunset:=>sunState}"
-            ],
-            "slots": [
-                {
-                    "name": "sunState",
-                    "required": false,
-                    "type": "Sun",
-                    "missingQuestion": ""
-                }
-            ]
-        },
+    "name": "WhatHomeAssistantDevices",
+    "enabledByDefault": true,
+    "utterances": [
+        "Quais dispositivos do Home Assistant você conhece",
+        "Quais dispositivos do Home Assistant você pode controlar",
+        "Me diga por favor quais são meus dispositivos do Home Assistant",
+        "O que você pode ligar ou desligar",
+        "O que você pode ligar e desligar",
+        "Quais interruptores você pode ligar ou desligar",
+        "Quais interruptores você pode ligar"
+    ]
+},
+{
+    "name": "GetIpOfDevice",
+    "enabledByDefault": true,
+    "utterances": [
+        "Qual é o endereço IP da {lâmpada do quarto:=>switchNames}",
+        "Qual é o IP do {lâmpada da garagem:=>switchNames}",
+        "Me diga o endereço IP da {lâmpada da garagem:=>switchNames} por favor",
+        "Me diga o IP do {luzes da cozinha:=>switchNames}"
+    ],
+    "slots": [
         {
-            "name": "WhatHomeAssistantDevices",
-            "enabledByDefault": true,
-            "utterances": [
-                "What home assistant devices do you know",
-                "what home assistant devices can you control",
-                "tell me what my home assistant devices are please",
-                "what can you turn on or off",
-                "what can you turn on and off",
-                "what switches can you turn on or off",
-                "what are the switches you can turn on"
-            ]
-        },
-        {
-            "name": "GetIpOfDevice",
-            "enabledByDefault": true,
-            "utterances": [
-                "what's the ip address of the {bedroom light:=>switchNames}",
-                "whats the ip of the {garage light:=>switchNames}",
-                "tell me the ip address of the {garage light:=>switchNames} please",
-                "tell me the ip of the {kitchen lights:=>switchNames}"
-            ],
-            "slots": [
-                {
-                    "name": "switchNames",
-                    "required": false,
-                    "type": "switchNames",
-                    "missingQuestion": ""
-                }
-            ]
-        },
-        {
-            "name": "CreateIntent",
-            "enabledByDefault": true,
-            "utterances": [
-                "Add a new Home Assistant intent",
-                "create home assistant utterance",
-                "add more home assistant dialogue",
-                "update home assistant dialogue"
-            ]
-        },
+            "name": "switchNames",
+            "required": false,
+            "type": "switchNames",
+            "missingQuestion": ""
+        }
+    ]
+},
+{
+    "name": "CreateIntent",
+    "enabledByDefault": true,
+    "utterances": [
+        "Adicionar um nova inteção ao Home Assistant",
+        "Criar uma nova frase do Home Assistant",
+        "Adicionar mais diálogo ao Home Assistant",
+        "Atualizar diálogo do Home Assistant"
+    ]
+},
         {
             "name": "UserIntent",
             "enabledByDefault": true,
             "utterances": [
-                "we need more home assistant utterances"
+                "precisamos de mais declarações de assistentes domésticos"
                 ],
             "slots": [
                 {
@@ -219,37 +220,39 @@
                 }
             ]
         },
+{
+    "name": "LightControl",
+    "enabledByDefault": true,
+    "utterances": [
+        "configure a {luz da bancada:=>LightControllers} para {vermelho:=>AliceColor}",
+        "mudar a cor da {luz do quarto:=>LightControllers} para {azul:=>AliceColor}",
+        "diminuir a {luz da bancada:=>LightControllers} em {10 porcento:=>dimmer}",
+        "ajustar a cor da {luz quarto:=>LightControllers} para {amêndoa:=>AliceColor}",
+        "ajustar o brilho da {luz do quarto:=>LightControllers} para {10 porcento:=>dimmer}",
+        "reduzir os níveis da {luz do quarto:LightControllers} em {10 porcento:=>dimmer} por favor",
+        "ajustar o nível de brilho da {luz do quarto:=>LightControllers} para {10 porcento:=>dimmer}",
+        "aumentar a {workbench light:=>LightControllers} em {30 porcento:=>dimmer}",
+        "aumentar o brilho da {luz do quarto=>LightControllers} para {70 porcento:=>dimmer}",
+        "diminuir o brilho da {luz do quarto:=>LightControllers} para {10 porcento:=>dimmer}",
+        "ajustar a {luz do quarto:=>LightControllers} para {ciano:=>AliceColor}",
+        "alterar {luz do quarto:=>LightControllers} para {verde:=>AliceColor}",
+        "ajustar a cor de {luz do quarto:=>LightControllers} para {roxo:=>AliceColor}"
+    ],
+    "slots": [
         {
-        	"name": "LightControl",
-        	"enabledByDefault": true,
-        	"utterances": [
-        		"set the {workbench light:=>LightControllers} to {red:=>AliceColor}",
-                "change the color of the {workbench light:=>LightControllers} to {blue:=>AliceColor}",
-                "dim the {workbench light:=>LightControllers} to {10 percent:=>dimmer}",
-                "set the color of the {workbench light:=>LightControllers} to {Almond:=>AliceColor}",
-                "Change the brightness of the {workbench light:=>LightControllers} to {10 percent:=>dimmer} ",
-                "lower the {workbench light:LightControllers} levels to {10 percent:=>dimmer} please",
-                "set brightness levels of the {workbench light:=>LightControllers} to {10 percent:=>dimmer}",
-                "raise the {workbench light:=>LightControllers} by {30 percent:=>dimmer}",
-                "increase {workbench light:=>LightControllers} brightness to {70 percent:=>dimmer}",
-                "decrease {workbench light:=>LightControllers} brightness to {10 percent:=>dimmer}",
-                "make the {workbench light:=>LightControllers} {cyan:=>AliceColor}",
-                "change {workbench light:=>LightControllers} to {green:=>AliceColor}",
-                "set Color of {workbench light:=>LightControllers} to a {purple:=>AliceColor}"
-            ],
-        	"slots": [
-        		{
-        			"name": "LightControllers",
-        			"required": true,
-        			"type": "LightControllers",
-        			"missingQuestion": ""
-        		},
-                {
-                    "name": "AliceColor",
-                    "required": false,
-                    "type": "Alice/Colors",
-                    "missingQuestion": ""
-                },
+            "name": "LightControllers",
+            "required": true,
+            "type": "LightControllers",
+            "missingQuestion": ""
+        },
+        {
+            "name": "AliceColor",
+            "required": false,
+            "type": "Alice/Colors",
+            "missingQuestion": ""
+        }
+    ]
+},
                 {
                     "name": "dimmer",
                     "required": false,
