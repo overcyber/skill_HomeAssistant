@@ -225,7 +225,7 @@
         "configure a {luz da bancada:=>LightControllers} para {vermelho:=>AliceColor}",
         "mudar a cor da {luz do quarto:=>LightControllers} para {azul:=>AliceColor}",
         "diminuir a {luz da bancada:=>LightControllers} em {10 porcento:=>dimmer}",
-        "ajustar a cor da {luz quarto:=>LightControllers} para {amêndoa:=>AliceColor}",
+        "ajustar a cor da {luz quarto:=>LightControllers} para {trevo:=>AliceColor}",
         "ajustar o brilho da {luz do quarto:=>LightControllers} para {10 porcento:=>dimmer}",
         "reduzir os níveis da {luz do quarto:LightControllers} em {10 porcento:=>dimmer} por favor",
         "ajustar o nível de brilho da {luz do quarto:=>LightControllers} para {10 porcento:=>dimmer}",
