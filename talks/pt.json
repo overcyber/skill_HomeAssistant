@@ -1,304 +1,294 @@
 {
-	"sayListOfDevices": {
-		"default": [
-			"I can turn on or off the following. {} ",
-			"These are the devices i can control. {} "
-		],
+    "sayListOfDevices": {
+        "default": [
+            "Eu posso ligar ou desligar o seguinte. {}",
+            "Estes são os dispositivos que eu posso controlar. {}"
+        ],
+        "short": [
+            "Eu posso controlar. {}"
+        ]
+    },
+    "sayConfigureMe": {
+        "default": [
+            "Parece que você instalou o Home Assistant, mas não o configurou. Por favor, consulte o arquivo README para obter instruções",
+            "Ótimo, você instalou o Home Assistant. Por favor, dê uma olhada no arquivo README para saber como configurá-lo"
+        ],
+        "short": [
+            "Para configurar a habilidade do Home Assistant, leia o arquivo README"
+        ]
+    },
+    "saynumberOfDevices": {
+        "default": [
+            "Acabei de adicionar {0} novos dispositivos, então agora tenho {1} dispositivos do Home Assistant em meu banco de dados. Para ouvir a lista, pergunte-me: Quais dispositivos do Home Assistant você conhece?",
+            "Acabei de adicionar {0} novos dispositivos, então agora tenho {1} dispositivos armazenados em minha memória. Para ouvir a lista, pergunte-me: O que você pode ligar ou desligar?"
+        ],
+        "short": [
+            "Você tem {0} novos dispositivos conectados"
+        ]
+    },
+    "sayConnectionOffline": {
+        "default": [
+            "Desculpe, mas seu Home Assistant parece estar offline",
+            "Estou tendo problemas para me conectar ao seu Home Assistant. Está online?"
+        ],
+        "short": [
+            "Seu Home Assistant está offline",
+            "O Home Assistant está offline"
+        ]
+    },
+    "getActiveDeviceState": {
+        "default": [
+            "{0} está atualmente {1}",
+            "o {0} está atualmente {1}"
+        ],
+        "short": [
+            "{0} está {1}"
+        ]
+    },
+    "getDeviceStateError": {
+        "default": [
+            "Desculpe por provocar você, mas ainda não tenho esses valores. É uma melhoria futura",
+            "Ops, isso é uma melhoria futura que ainda não aconteceu"
+        ],
+        "short": [
+            "Desculpe, ainda não posso fazer isso"
+        ]
+    },
+    "homeAssistantSwitchDevice": {
+        "default": [
+            "Sem dramas, fazendo isso agora",
+            "Tudo sob controle",
+            "Ok, pronto",
+            "Resolvido",
+            "Claro",
+            "Ok"
+        ],
+        "short": [
+            "Claro",
+            "Pronto",
+            "Ok"
+        ]
+    },
+    "addHomeAssistantDevices": {
+        "default": [
+            "Ok, vamos lá. Dê-me um momento para resolver isso para você. Depois que eu terminar, você precisará reiniciar-me",
+            "Isso pode levar um momento ou dois. Você terá que reiniciar-me depois que eu lhe disser quantos dispositivos encontrei",
+            "Tudo sob controle. Você terá que reiniciar-me depois que eu ler o número de dispositivos encontrados"
+        ],
+		
 		"short": [
-			"i can control. {}"
-			]
-	},
-	"sayConfigureMe": {
-		"default": [
-			"It looks like you have Home Assistant installed but not setup. Please refer to the read me file for instructions",
-			"Awesome, You've installed Home Assistant. Please take a look at the read me file to see how to set it up"
-		],
-		"short": [
-			"To set up home assistant skill, please read the readme file"
-		]
-	},
-	"saynumberOfDevices": {
-		"default": [
-			"I've just added {0} new devices, so now I have {1} Home Assistant devices in my Database. To hear the list ask me. What home assistant devices do you know ?",
-			"Just added {0} new devices so I now have {1} devices stored in my memory banks. To hear the list ask me. What can you turn on or off ?"
-		],
-		"short": [
-			"You have {0} new devices connected"
-		]
-	},
-	"sayConnectionOffline": {
-		"default": [
-			"Sorry but your home assistant seems to be offline",
-			"I'm having trouble connecting to your Home Assistant, Is it online ?"
-		],
-		"short": [
-			"Your Home Assistant is offline",
-			"Home Assistant is offline"
-		]
-	},
-	"getActiveDeviceState": {
-		"default": [
-			"{0} is currently {1}",
-			"the {0} is currently turned {1}"
-		],
-		"short": [
-			"{0} is {1}"
-		]
-	},
-	"getDeviceStateError": {
-		"default": [
-			"Sorry for teasing you but i havent got those values yet. It's a future enhancement",
-			"oops, That's a future enhancement that hasn't happened yet"
-		],
-		"short": [
-			"Can't do that yet sorry"
-		]
-	},
-	"homeAssistantSwitchDevice": {
-		"default": [
-			"No drama's doing that now",
-			"All over it like a bad rash",
-			"ok done",
-			"sorted",
-			"sure",
-			"ok"
-		],
-		"short": [
-			"sure",
-			"done",
-			"ok"
-		]
-	},
-	"addHomeAssistantDevices": {
-		"default": [
-			"Ok let's do this, give me a moment to sort this out for you. Once i'm finished you'll need to restart me",
-			"This may take a moment or two, You'll have to restart me after i've told you how many devices i've found",
-			"All over it. you'll have to restart me after i've read out the number of devices found"
-		],
-		"short": [
-			"no problem, give me a minute to configure",
-			"on it"
-		]
-	},
-	"addHomeAssistantDevicesError": {
-		"default": [
-			"I couldn't find and switches in Home assistant sorry",
-			"Sorry but wasn't able to add any devices. Please check Home Assistant has active switches",
-			"I wasn't able to add any devices sorry. Please check Home Assistant has switch's"
-		],
-		"short": [
-			"Couldnt add switches sorry",
-			"Un able to add any switches. Sorry"
+			"Não foi possível adicionar interruptores, desculpe",
+			"Não é possível adicionar quaisquer interruptores. Desculpe"
 		]
 	},
 	"saySunState": {
 		"default": [
-			"{0}{1} so that will be in {2} hours and {3} minutes"
+			"{0}{1} então será em {2} horas e {3} minutos"
 		],
 		"short": [
-			"{0}{1} so that will be in {2} hours and {3} minutes"
+			"{0}{1} então será em {2} horas e {3} minutos"
 		]
 	},
 	"sayHorizon": {
 		"default": [
-			"The sun is currently {0}"
+			"O sol está atualmente {0}"
 		],
 		"short": [
-			"The sun is currently {0}"
+			"O sol está atualmente {0}"
 		]
 	},
 	"sayTelemetryAlert": {
 		"default": [
-			"ATTENTION, ATTENTION. Your {0} readings for the {4} have exceeded the set {1} limit of {2} with a reading of {3}",
-			"Alert request. Your {4} {0} readings are at {3}",
-			"Just to let you know the {0} readings for the {4} are above {2}"
+			"ATENÇÃO, ATENÇÃO. Suas leituras de {0} para {4} excederam o limite estabelecido de {1} com uma leitura de {3}",
+			"Solicitação de alerta. Suas leituras de {0} para {4} estão em {3}",
+			"Só para avisar que as leituras de {0} para {4} estão acima de {2}"
 		],
 		"short": [
-			"Attention. Your {0} readings around the {4} are {3}"
+			"Atenção. Suas leituras de {0} ao redor de {4} estão em {3}"
 		]
 	},
 	"sayTelemetryFreezeAlert": {
 		"default": [
-			"ATTENTION, ATTENTION. It's starting to freeze in the {0}. temperature is currently {1}"
+			"ATENÇÃO, ATENÇÃO. Está começando a congelar em {0}. A temperatura atual é de {1}"
 		],
 		"short": [
-			"Attention. It's now starting to freeze in the {0} "
+			"Atenção. Está começando a congelar em {0}"
 		]
 	},
-	"sayIpError": {
-		"default": [
-			"Sorry but i don\\'t have a listing for {0}"
-		],
-		"short": [
-			"Sorry but i don\\'t have a listing for {0} "
-		]
-	},
-	"sayIpError2": {
-		"default": [
-			"Sorry but Home assistant didn\\'t provide me an address for {0}"
-		],
-		"short": [
-			"Sorry but Home assistant didn\\'t provide me an address for {0} "
-		]
-	},
-	"sayIpAddress": {
-		"default": [
-			"The I P address for that device is {0}"
-		],
-		"short": [
-			"{0}"
-		]
-	},
-	"nextSunEvent": {
-		"default": [
-			"The next {0} will be on "
-		],
-		"short": [
-			""
-		]
-	},
-	"sayYesICanCaptureIntent": {
-		"default": [
-			"Sure i can do that, what's the intent you want me to remember?",
-			"I'm all ears, what's the intent you'd like me to add to the list? "
-		],
-		"short": [
-			"whats the intent",
-			"what's the utterance"
-		]
-	},
-	"utteranceExists": {
-		"default": [
-			"looks like that intent alredy exists. Let's try that again from scratch",
-			"Seems you already have that utterance. lets start again"
-		],
-		"short": [
-			"try again. that exists",
-			"Already exists, try again"
-		]
-	},
-	"askSlotValue": {
-		"default": [
-			"What is the keyword from that intent that i should use as a slot value ?",
-			"tell me the keyword from that sentence that you'd like as the slot value"
-		],
-		"short": [
-			"Whats the slot word",
-			"what's the key word"
-		]
-	},
-	"keywordError": {
-		"default": [
-			"That keyword was not part of the sentence you just gave me, try again. As a reminder your utterance was. {0}",
-			"That keyword in not in the intent {0}, try again"
-		],
-		"short": [
-			"keyword not found try again"
-		]
-	},
-	"repeatIncomingValue": {
-		"default": [
-			"i heard you say {0}. Is that what you want me to add ?",
-			"What i heard you say was {0}. Are you happy for me to use that value ?"
-		],
-		"short": [
-			"I heard {0}, is it correct ?"
-		]
-	},
-	"userSaidNo": {
-		"default": [
-			"ok let's try that again then. What's the {0} you want to add",
-			"ok let me clean my microphones and we'll try that again. Please re say your {0} value"
-		],
-		"short": [
-			"what's the {0} then?",
-			"re speak your {0} please"
-		]
-	},
-	"addSyn": {
-		"default": [
-			"do you want to add {0} synonym to that slot ?",
-			"Shall we add {0} synonym to that slot ?"
-		],
-		"short": [
-			"Should i add {0} synonym?"
-		]
-	},
-	"addValue": {
-		"default": [
-			"what is the {0} name you'd like me to add ?",
-			"what should i add as a {0} name "
-		],
-		"short": [
-			"what {0} name ?"
-		]
-	},
-	"finishUp": {
-		"default": [
-			"All done, you're now a verbal coder ",
-			"Great. I have enough information to process. Will add all that now",
-			"Awesome, I've just added that for you. You'll have to restart me so i can train myself now",
-			"Next time you restart me i'll teach myself how to use that info. Thanks for making me smarter"
-		],
-		"short": [
-			"done",
-			"ok sorted"
-		]
-	},
-	"dummyUtterance": {
-		"default": [
-			"Fantastic, You've located my dummy intent. Try asking me something else instead",
-			"we sure do. Try saying. Add home assistant dialog, to get more intents in this section",
-			"well done for stumbling across this intent. You earn a gold star and free membership to the class of. Observant people",
-			"Well fancy that. And here i thought no one would find this dummy intent. Well done",
-			"Check with the post office. I think they are in the mail"
-		],
-		"short": [
-			"need is such a strong word"
-		]
-	},
-	"dummyIntent": {
-		"default": [
-			"we need more home assistant utterances"
-		],
-		"short": [
-			"we need more home assistant utterances",
-			""
-		]
-	},
-	"changeColor": {
-		"default": [
-			"good choice. I like {0}",
-			"Done",
-			"ok",
-			"Shall i order some {0} paint as well ? we could paint the walls to match",
-			"great, love a touch of {0} to brighten the day "
+"sayIpError": {
+	"default": [
+		"Desculpe, mas não tenho uma lista para {0}"
+	],
+	"short": [
+		"Desculpe, mas não tenho uma lista para {0} "
+	]
+},
+"sayIpError2": {
+	"default": [
+		"Desculpe, o Home Assistant não me forneceu um endereço para {0}"
+	],
+	"short": [
+		"Desculpe, o Home Assistant não me forneceu um endereço para {0} "
+	]
+},
+"sayIpAddress": {
+	"default": [
+		"O endereço IP para esse dispositivo é {0}"
+	],
+	"short": [
+		"{0}"
+	]
+},
+"nextSunEvent": {
+	"default": [
+		"O próximo {0} será em "
+	],
+	"short": [
+		""
+	]
+},	
+"sayYesICanCaptureIntent": {
+	"default": [
+		"Claro que posso fazer isso, qual é o intent que você quer que eu lembre?",
+		"Estou ouvindo, qual é o intent que você gostaria que eu adicionasse à lista?"
+	],
+	"short": [
+		"Qual é o intent?",
+		"Qual é o enunciado?"
+	]
+},
+"utteranceExists": {
+	"default": [
+		"Parece que esse intent já existe. Vamos tentar novamente desde o início.",
+		"Parece que você já tem esse enunciado. Vamos começar novamente."
+	],
+	"short": [
+		"Tente novamente. Isso já existe.",
+		"Já existe, tente novamente."
+	]
+},
+"askSlotValue": {
+	"default": [
+		"Qual é a palavra-chave desse intent que devo usar como valor do slot?",
+		"Diga-me a palavra-chave da sentença que você gostaria como valor do slot."
+	],
+	"short": [
+		"Qual é a palavra do slot?",
+		"Qual é a palavra-chave?"
+	]
+},
+"keywordError": {
+	"default": [
+		"A palavra-chave não faz parte da sentença que você acabou de me dar, tente novamente. Como lembrete, o seu enunciado foi: {0}",
+		"A palavra-chave não está no intent {0}, tente novamente."
+	],
+	"short": [
+		"Palavra-chave não encontrada, tente novamente."
+	]
+},
+"repeatIncomingValue": {
+	"default": [
+		"Eu ouvi você dizer {0}. É isso que você quer que eu adicione?",
+		"O que eu ouvi você dizer foi {0}. Você está feliz para eu usar esse valor?"
+	],
+	"short": [
+		"Eu ouvi {0}, está correto?"
+	]
+},
+"userSaidNo": {
+	"default": [
+		"Ok, vamos tentar novamente então. Qual é o {0} que você quer adicionar?",
+		"Ok, deixe-me limpar meus microfones e tentaremos novamente. Por favor, repita o seu valor de {0}."
+	],
+	"short": [
+		"Qual é o {0} então?",
+		"Repita o seu {0}, por favor."
+	]
+},
+"addSyn": {
+	"default": [
+		"Você deseja adicionar {0} como sinônimo desse slot?",
+		"Devemos adicionar {0} como sinônimo desse slot?"
+	],
+	"short": [
+		"Devo adicionar {0} como sinônimo?"
+	]
+},	
+"addValue": {
+	"default": [
+		"Qual nome de {0} você gostaria que eu adicionasse?",
+		"O que devo adicionar como nome de {0}?"
+	],
+	"short": [
+		"Qual nome de {0}?"
+	]
+},
+"finishUp": {
+	"default": [
+		"Pronto, agora você é um programador verbal",
+		"Ótimo. Eu tenho informação suficiente para processar. Vou adicionar tudo agora",
+		"Incrível, acabei de adicionar isso para você. Você precisará me reiniciar para que eu possa me treinar agora",
+		"Da próxima vez que você me reiniciar, vou me ensinar a usar essa informação. Obrigado por me tornar mais inteligente"
+	],
+	"short": [
+		"feito",
+		"ok, resolvido"
+	]
+},
+"dummyUtterance": {
+	"default": [
+		"Incrível, você encontrou meu instinto fictício. Tente me perguntar algo diferente",
+		"Nós com certeza temos. Tente dizer 'Adicionar diálogo de assistente doméstico' para obter mais inteções nesta seção",
+		"Bem feito por tropeçar neste intento. Você ganha uma estrela dourada e uma adesão gratuita à classe das pessoas observadoras",
+		"Bem, que chique. E eu pensava que ninguém encontraria este intento fictício. Parabéns",
+		"Verifique com o correio. Eu acho que eles estão no correio"
+	],
+	"short": [
+		"precisar é uma palavra forte demais"
+	]
+},
+"dummyIntent": {
+	"default": [
+		"precisamos de mais frases para assistente residencial"
+	],
+	"short": [
+		"precisamos de mais frases para assistente residencial",
+		""
+	]
+},
+"changeColor": {
+	"default": [
+		"boa escolha. Eu gosto de {0}",
+		"Feito",
+		"ok",
+		"Devo encomendar também tinta {0}? Podemos pintar as paredes para combinar",
+		"ótimo, adoro um toque de {0} para alegrar o dia"
 
+	],
+	"short": [
+		"ok",
+		"feito"
+	]
+},
+"changeBrightness": {
+	"default": [
+		"Está em um bom nível, {0} por cento. Vou definir isso para você agora",
+		"Certo, e espero que seu dia seja mais brilhante do que {0} por cento",
+		"Mudando para {0} por cento agora mesmo",
+		"Arrrr meus camaradas. Vou fazer isso mais rápido do que leva para se perguntar por que eu estou falando como um pirata. Resposta é: porque eu posso"
+	],
+	"short": [
+		"ok",
+		"feito"
+	]
+},
+"restored": {
+	"default": [
+		"Acabei de restaurar alguns arquivos de backup. Volto logo, só vou me re-treinar",
+		"Sinto-me como uma nova pessoa. Tanta informação para dar, mas primeiro. Vou me re-treinar"
 		],
-		"short": [
-			"ok",
-			"done"
-		]
-	},
-	"changeBrightness": {
-		"default": [
-			"It's a good level {0} percent. Will set that for you now",
-			"Certainly, and i hope your day is brighter than {0} percent",
-			"Changing to {0} percent as we speak",
-			"Arrrr me matey. will do dat quicker than it takes ya to wonder why me just went all pirate on ya. Answer is. Cause i can "
-		],
-		"short": [
-			"ok",
-			"done"
-		]
-	},
-	"restored": {
-		"default": [
-			"'I've just restored some backed up files. Be back soon, just going to do some re training'",
-			"I feel like a new person. So much knowledge to give, But first. i will re train myself"
-		],
-		"short": [
-			"retraining now"
-		]
-	}
+	"short": [
+		"re-treinando agora"
+	]
+}
 }
