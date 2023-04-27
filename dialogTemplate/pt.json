@@ -181,10 +181,10 @@
     "name": "GetIpOfDevice",
     "enabledByDefault": true,
     "utterances": [
-        "Qual é o endereço IP da {lâmpada do quarto:=>switchNames}",
-        "Qual é o IP do {lâmpada da garagem:=>switchNames}",
-        "Me diga o endereço IP da {lâmpada da garagem:=>switchNames} por favor",
-        "Me diga o IP do {luzes da cozinha:=>switchNames}"
+        "Qual é o endereço IP da {lâmpada quarto:=>switchNames}",
+        "Qual é o IP do {lâmpada garagem:=>switchNames}",
+        "Me diga o endereço IP da {lâmpada garagem:=>switchNames} por favor",
+        "Me diga o IP do {luzes cozinha:=>switchNames}"
     ],
     "slots": [
         {
@@ -224,19 +224,19 @@
     "name": "LightControl",
     "enabledByDefault": true,
     "utterances": [
-        "configure a {luz da bancada:=>LightControllers} para {vermelho:=>AliceColor}",
-        "mudar a cor da {luz do quarto:=>LightControllers} para {azul:=>AliceColor}",
-        "diminuir a {luz da bancada:=>LightControllers} em {10 porcento:=>dimmer}",
+        "configure a {luz bancada:=>LightControllers} para {vermelho:=>AliceColor}",
+        "mudar a cor da {luz quarto:=>LightControllers} para {azul:=>AliceColor}",
+        "diminuir a {luz bancada:=>LightControllers} em {10 porcento:=>dimmer}",
         "ajustar a cor da {luz quarto:=>LightControllers} para {amêndoa:=>AliceColor}",
-        "ajustar o brilho da {luz do quarto:=>LightControllers} para {10 porcento:=>dimmer}",
-        "reduzir os níveis da {luz do quarto:LightControllers} em {10 porcento:=>dimmer} por favor",
-        "ajustar o nível de brilho da {luz do quarto:=>LightControllers} para {10 porcento:=>dimmer}",
+        "ajustar o brilho da {luz quarto:=>LightControllers} para {10 porcento:=>dimmer}",
+        "reduzir os níveis da {luz quarto:LightControllers} em {10 porcento:=>dimmer} por favor",
+        "ajustar o nível de brilho da {luz quarto:=>LightControllers} para {10 porcento:=>dimmer}",
         "aumentar a {workbench light:=>LightControllers} em {30 porcento:=>dimmer}",
-        "aumentar o brilho da {luz do quarto=>LightControllers} para {70 porcento:=>dimmer}",
-        "diminuir o brilho da {luz do quarto:=>LightControllers} para {10 porcento:=>dimmer}",
-        "ajustar a {luz do quarto:=>LightControllers} para {ciano:=>AliceColor}",
-        "alterar {luz do quarto:=>LightControllers} para {verde:=>AliceColor}",
-        "ajustar a cor de {luz do quarto:=>LightControllers} para {roxo:=>AliceColor}"
+        "aumentar o brilho da {luz quarto=>LightControllers} para {70 porcento:=>dimmer}",
+        "diminuir o brilho da {luz quarto:=>LightControllers} para {10 porcento:=>dimmer}",
+        "ajustar a {luz quarto:=>LightControllers} para {ciano:=>AliceColor}",
+        "alterar {luz quarto:=>LightControllers} para {verde:=>AliceColor}",
+        "ajustar a cor de {luz quarto:=>LightControllers} para {roxo:=>AliceColor}"
     ],
     "slots": [
         {
