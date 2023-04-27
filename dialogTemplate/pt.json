@@ -146,7 +146,7 @@
         "utterances": [
             "quando é {nascer do sol:=>sunState}",
             "quando é o próximo {pôr do sol:=>sunState}",
-            "qual {posição:=>sunState} está o sol",
+            "qual {position:=>sunState} está o sol",
             "quando será o próximo {nascer do sol:=>sunState}",
             "quando será o próximo {pôr do sol:=>sunState}",
             "que horas são {nascer do sol:=>sunState}",
