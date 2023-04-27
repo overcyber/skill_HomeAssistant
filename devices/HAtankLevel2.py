@@ -23,7 +23,9 @@ class HAtankLevel2(Device):
 
 	There is a svg file here "devices/img/svgFiles/TwoLevelTankTemplate.svg" that can
 	be modified to refelct your own tank names/ colors etc. modify it then replace the apporpriate
-	png file in "devices/img/TankLevel/TwoLevels"
+	png file in "devices/img/TankLevel/TwoLevels"The nameing of your modified tank file png will be
+	<displayname>-tankNumber-tanklevel.png. So for example if the display name of your device is
+	"grey water tank 1" name the modified png file greaywatertank-1-Empty.png etc
 
 	The incoming payload / state from HA needs to be in json format such as
 	"{"Switch1": "ON", "Switch2": "OFF", "Time": "2021-03-02T10:31:58"}"
@@ -79,7 +81,7 @@ class HAtankLevel2(Device):
 
 	def tankNumberCheck(self):
 		tankNum: str = self.getParam('entityName')[-1]
-		condensedDisplayName = self.displayName.replace(" ", "")
+		condensedDisplayName = self.displayName.replace(" ", "")[:-1]
 
 		if tankNum.isnumeric() and int(tankNum) > 1:
 			return tankNum, condensedDisplayName

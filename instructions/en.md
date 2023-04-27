@@ -298,9 +298,6 @@ your skill directory. Handy for seeing what comes from your HA and diagnosing wh
 2. debugMode - This will print debug information to your syslog. Good for seeing what is happening behind
    the scenes in regards too HA skill doing stuff
    
-3. debugIcon - If his option is enabled it will display debug information as to why a icon may not be displaying
-please turn this on and send the results to the dev if requested.
-   
 NOTE on #2: debug mode prints alot of syslog debug messages (must also have debug mode enabled in alice admin)
 However, to personalise that a litle there is also a debugControl.json file found in your
 skill directory.
@@ -369,7 +366,7 @@ tank2 icons have only been done for fourLevelTank devices (refer devices/img/Tan
 If you need more tank icons or more icons for other tankLevel devices
 please edit the provided svg files and create as many more png files as required (following the existing naming format)
 
-- Once the device has been added to HA, edit the customize.yaml file and add the following attribute
+- Once the device has been added to HA, edit the customize.yaml file in home assistant and add the following attribute
 	- Attribute name -> HaDeviceType
 	- Attribute Value -> tankLevel4
 	
@@ -399,7 +396,7 @@ Obviously adjust your topics and name to suit your set up.
 
 In ```ProjectAlice/skills/HomeAssistant/devices/img/svgFiles```
 There are the actual svg files used for creating the icons. 
-Feel free to modify the svg files as required then overwrite the existing png images
+Feel free to modify the svg files as required then save them as png files
 to suit your needs EG: maybe you want to change the colors ? change the tank name etc
 
 IMPORTANT: The downside to displaying specific images is you'll need to manually rename the image files to suit.
@@ -408,11 +405,17 @@ here's the steps involved.
 Let's assume you have named your "rain water tank sensors" as sensor.Rain_Water_Tank_1 for this example and it
 has 4 sensors on it. Therefore you have made the attribute as per above as tankLevel4.
 
-1. go to ```ProjectAlice/skills/HomeAssistant/devices/img/TankLevel/FourLevels/```
-2. Rename all the FourLevelTank1-XXX.png files to rainwatertank1-1-xxx.png
-3. Example : FourlevelTank1-Full.png becomes rainwatertank1-1-Full.png
-   (the -1- part denotes the tank number, if you had a second rainwater tank it would be 
-   rainwatertank2-2-Full.png) Note the lowercase name with no spaces
+1. Go to ```ProjectAlice/skills/HomeAssistant/devices/img/svgFiles```
+2. Modify the FourLevelTankTemplate.svg file as you please
+3. When finished editing you will save it in ```ProjectAlice/skills/HomeAssistant/devices/img/TankLevel/FourLevels/``` as a .png file following the below steps
+4. For this example save the file as rainwatertank-1-xxx.png
+5. Example : rainwatertank-1-Full.png
+    (the -1- part denotes the tank number, if you had a second rainwater tank it would be 
+    rainwatertank-2-Full.png) Note the lowercase name with no spaces. For a four level sensor you will also be doing the same for 
+   - a Empty.png image
+   - a 25.png image (denoting 25% full)
+   - a 50.png image (denoting 50% full)
+   - a 75.png image (denoting 75% full)
    
 The syntax is... devices displayname (in lowercase with no spaces) - tanknumber - theLevel.png
 By following the above steps... once you "configure home assistant skill" Alice should

@@ -609,7 +609,7 @@ class HomeAssistant(AliceSkill):
 		try:
 			header, url = self.retrieveAuthHeader(' ', ' ')
 			response = get(self.getConfig('haIpAddress'), headers=header)
-			if '{"message": "API running."}' in response.text:
+			if 'API running.' in response.text:
 				return True
 			else:
 				self.logWarning(f'It seems HomeAssistant is currently not connected ')
@@ -934,7 +934,18 @@ class HomeAssistant(AliceSkill):
 
 	################### AUTO BACKUP AND RESTORE CODE ########################
 
-	# Make a backup directory if it doesnt exist
+	def restoreDisplaySettings(self):
+		"""
+		Restore display positions of devices if lost
+		:return nothing:
+		"""
+		#todo if option to restore backup display settings is enabled
+			#and display.json exists
+
+		#loop through devices in database and update location and display settings for each valid device name
+		print("this is a todo ")
+	# Make a backup directory if it doesn't exist
+
 	def runBackup(self):
 		"""
 		Initialises the backup Process, Creates the Backup directory if it doesn't exist
@@ -1055,7 +1066,7 @@ class HomeAssistant(AliceSkill):
 					self.logDebug(f'The Url is {url} ')
 					self.logDebug(f'')
 
-				if '{"message": "API running."}' in response.text:
+				if 'API running.' in response.text:
 					self.logInfo(f'HomeAssistant Connected')
 
 					if self.getConfig('wipeAll'):
@@ -1068,8 +1079,9 @@ class HomeAssistant(AliceSkill):
 					if self.noDevicePreChecks():
 						return True
 
-					if self.getConfig('debugIcon'):
-						self.getIconDebugInfo()
+					#temporarily disabled, as no longer needed ?
+					#if self.getConfig('debugIcon'):
+					#	self.getIconDebugInfo()
 					heartBeatList = self._haDevicesFromAliceDatabase
 
 					if heartBeatList:
@@ -1236,7 +1248,8 @@ class HomeAssistant(AliceSkill):
 
 
 	def telemetryEvents(self, kwargs):
-
+		if self.getConfig("silenceAlerts"):
+			return
 		trigger = kwargs['trigger']
 		value = kwargs['value']
 		threshold = kwargs['threshold']
@@ -1528,6 +1541,7 @@ class HomeAssistant(AliceSkill):
 		data: dict = json.loads(str(self.getResource('debugInfo/debugControl.json').read_text()))
 		return data[key]
 
+	# No longer used, retaining the method in case of reimplimenting jan 2022
 	def getIconDebugInfo(self) -> dict:
 		file = self.getResource('debugInfo/iconDebug.json')
 		iconInfo = dict()
