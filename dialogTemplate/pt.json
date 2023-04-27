@@ -17,16 +17,16 @@
     "useSynonyms": true,
     "values": [
         {
-            "value": "ligado"
+            "value": "ligue"
         },
         {
-            "value": "desligado"
+            "value": "desligue"
         },
         {
-            "value": "aberto"
+            "value": "abrir"
         },
         {
-            "value": "fechado"
+            "value": "fechar"
         },
         {
             "value": "alternar"
@@ -99,15 +99,15 @@
         "name": "HomeAssistantAction",
         "enabledByDefault": true,
         "utterances": [
-            "ligue {on:=>OnOrOff} a {luz do banheiro:=>switchNames}",
-            "ligue a {luz do banheiro:=>switchNames} {on:=>OnOrOff}",
-            "desligue {off:=>OnOrOff} a {luz do quarto:=>switchNames}",
-            "desligue a {luz do quarto:=>switchNames} {off:=>OnOrOff}",
+            "{ligue:=>OnOrOff} a {luz do banheiro:=>switchNames}",
+            "{ligue:=>OnOrOff} a {luz do banheiro:=>switchNames} por favor",
+            " {desligue:=>OnOrOff} a {luz do quarto:=>switchNames}",
+            "por favor {desligue:=>OnOrOff} a {luz do quarto:=>switchNames} ",
             "desligue a {luz do quarto:=>switchNames}",
-            "desligar {off:=>OnOrOff} a {luz do quarto:=>switchNames}",
-            "desligar a {luz do quarto:=>switchNames} {off:=>OnOrOff}",
-            "desligar {luz do quarto:=>switchNames} {off:=>OnOrOff} por favor",
-            "{toggle:=>OnOrOff} as {luzes da cozinha:=>switchNames}",
+            " {desligue:=>OnOrOff} a {luz do quarto:=>switchNames}",
+            "{desligue:=>OnOrOff} a {luz do quarto:=>switchNames} ",
+            " {desligue:=>OnOrOff} {luz do quarto:=>switchNames} por favor",
+            "{alterne:=>OnOrOff} as {luzes da cozinha:=>switchNames}",
             "{abrir:=>OnOrOff} a {porta da garagem:=>switchNames}",
             "{fechar:=>OnOrOff} as {janelas do quarto:=>switchNames}"
         ],
